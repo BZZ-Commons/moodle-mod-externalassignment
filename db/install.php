@@ -18,7 +18,6 @@
  * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
  * @package     mod_externalassignment
- * @category    install
  * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

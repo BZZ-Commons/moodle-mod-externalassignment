@@ -17,7 +17,7 @@
 /**
  * This file contains the forms to create and edit an instance of this module
  *
- * @package   mod_assignprogamram
+ * @package   mod_externalassignment
  * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -96,7 +96,14 @@ class mod_externalassignment_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    function validation($data, $files) {
+    /**
+     * Validates the data in the form
+     * @param $data
+     * @param $files
+     * @return array
+     * @throws coding_exception
+     */
+    public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
         if (!empty($data['allowsubmissionsfromdate']) && !empty($data['duedate'])) {
             if ($data['duedate'] <= $data['allowsubmissionsfromdate']) {
@@ -104,7 +111,7 @@ class mod_externalassignment_mod_form extends moodleform_mod {
             }
         }
         if (!empty($data['cutoffdate']) && !empty($data['duedate'])) {
-            if ($data['cutoffdate'] < $data['duedate'] ) {
+            if ($data['cutoffdate'] < $data['duedate']) {
                 $errors['cutoffdate'] = get_string('cutoffdatevalidation', 'externalassignment');
             }
         }
@@ -116,6 +123,7 @@ class mod_externalassignment_mod_form extends moodleform_mod {
 
         return $errors;
     }
+
     /**
      * Add elements for setting the custom completion rules.
      *

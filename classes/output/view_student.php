@@ -15,18 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\output;
 
-use coding_exception;
 use core\context;
-use dml_exception;
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade;
 use renderable;
 use renderer_base;
-use stdClass;
 use templatable;
-use function mod_externalassignment\output\format_text;
-use function mod_externalassignment\output\format_time;
-use function mod_externalassignment\output\get_string;
+
 
 /**
  * Renderer for external assignment for students
@@ -37,6 +32,9 @@ use function mod_externalassignment\output\get_string;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class view_student implements renderable, templatable {
+    /**
+     * @var int|null the id of the course module
+     */
     private int|null $coursemoduleid;
     /** @var context the context of the course module for this assign instance
      *               (or just the course if we are creating a new one)
@@ -57,19 +55,17 @@ class view_student implements renderable, templatable {
      * Export this data, so it can be used as the context for a mustache template.
      *
      * @param renderer_base $output
-     * @return stdClass
-     * @throws dml_exception|coding_exception
+     * @return \stdClass
+     * @throws \dml_exception|\coding_exception
      */
-    public function export_for_template(renderer_base $output): stdClass {
+    public function export_for_template(renderer_base $output): \stdClass {
         global $CFG, $USER;
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/data/assign.php');
-        $assignment = new assign();
+        $assignment = new assign(null);
         $assignment->load_db($this->coursemoduleid, $USER->id);
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/data/grade.php');
-        $grade = new grade();
+        $grade = new grade(null);
         $grade->load_db($this->coursemoduleid, $USER->id);
 
-        $data = new stdClass();
+        $data = new \stdClass();
         $data->externallink = $grade->get_externallink();
         $data->gradingstatus = 'TODO';
         $data->modified = format_time($assignment->get_timemodified());

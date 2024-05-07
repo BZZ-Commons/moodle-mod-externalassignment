@@ -1,0 +1,122 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_externalassignment/view_grading
+
+    Overview of grading information for all students
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * userid, courseid, firstname, lastname, status, externalgrade, manualgrade, coursemoduleid, feedback, gradefinal
+
+    Example context (json):
+    {
+    }
+}}
+<div class="no-overflow">
+  <table class="flexible table table-striped table-hover generaltable generalbox">
+    <thead>
+    <tr>
+      <th class="header c1" scope="col">
+        {{#str}} select {{/str}} <br>
+        <input id="selectAll" type="checkbox"/>
+      </th>
+      <th class="header c2" scope="col" rowspan="2">
+        {{#str}} firstname, core {{/str}} / {{#str}} lastname, core {{/str}}
+      </th>
+      <th class="header c3" scope="col">
+        {{#str}} status, core {{/str}}
+      </th>
+      <th  class="header c4" scope="col">
+        &nbsp;
+      </th>
+      <th class="header c5" scope="col">
+        {{#str}} external, mod_externalassignment {{/str}}
+      </th>
+      <th class="header c6" scope="col">
+        {{#str}} manual, mod_externalassignment {{/str}}
+      </th>
+      <th class="header c7" scope="col">
+        {{#str}} finalgrade, mod_externalassignment {{/str}}
+      </th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {{#grades}}
+      <tr>
+        <td>
+          <input type="checkbox" name="selectbox" data-userid="{{userid}}"/>
+        </td>
+        <td>
+          <a href="{{ config.wwwroot }}/user/view.php?id={{ userid }}&course={{ courseid }}">
+            {{ firstname }} {{ lastname }}
+          </a>
+        </td>
+        <td>{{ status }}</td>
+        <td>
+          <a href="{{ config.wwwroot }}/mod/externalassignment/view.php?action=grader&id={{ coursemoduleid }}&userid={{ userid }}"
+          class="btn btn-primary">
+          {{#str}} grade, mod_externalassignment {{/str}}
+          </a>
+        </td>
+        <td>{{ externalgrade }}</td>
+        <td>
+          {{ manualgrade }}
+        </td>
+        <td>{{ gradefinal }} </td>
+      </tr>
+    {{/grades}}
+    </tbody>
+  </table>
+</div>
+<!--div id="fgroup_id_actionsgrp" class="form-group row fitem" data-groupname="actionsgrp">
+  <div class="col-md-9 form-inline align-items-start felement" data-fieldtype="group">
+    <fieldset class="w-100 m-0 p-0 border-0">
+      <div class="d-flex flex-wrap align-items-center">
+        <div class="form-group fitem">With selected...</div>
+        <div class="form-group fitem">
+          <label class="col-form-label sr-only" for="id_operation">
+            Choose operation
+          </label>
+          <span data-fieldtype="select">
+            <select class="custom-select" name="operation" id="id_operation">
+                <option value="grantextension">Grant extension</option>
+            </select>
+          </span>
+          <div class="form-group fitem">
+            <span data-fieldtype="submit">
+              <input type="submit" class="btn btn-primary" name="submit" id="id_submit" value="Go">
+            </span>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-control-feedback invalid-feedback" id="fgroup_id_error_actionsgrp">
+    </div>
+  </div>
+</div-->
+{{^element.frozen}}
+  {{#js}}
+    require(['mod_externalassignment/grading_actions'], (module) => module.init());
+  {{/js}}
+{{/element.frozen}}

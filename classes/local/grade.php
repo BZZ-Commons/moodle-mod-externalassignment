@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,9 +23,6 @@ namespace mod_externalassignment\local;
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace mod_externalassignment\local;
-
 class grade {
     /** @var int|null the unique id of this grade */
     private $id;
@@ -92,77 +88,187 @@ class grade {
         }
     }
 
+    /**
+     * loads the gradeing data from the database
+     * @param int $coursemodule
+     * @param int $userid
+     * @return void
+     * @throws \dml_exception
+     */
+    public function load_db($coursemodule, $userid): void {
+        global $DB;
+        $data = $DB->get_record(
+            'externalassignment_grades',
+            ['externalassignment' => $coursemodule, 'userid' => $userid],
+            '*',
+            IGNORE_MISSING
+        );
+
+        if ($data) {
+            $data->gradeid = $data->id;
+            $this->load_data($data);
+            $this->externalassignment = $data->externalassignment;
+            $this->grader = $data->grader;
+        }
+    }
+
+    /**
+     * casts the object to a stdClass
+     * @return \stdClass
+     */
+    public function to_stdclass(): \stdClass {
+        $result = new \stdClass();
+        foreach ($this as $property => $value) {
+            if ($value != null) {
+                $result->$property = $value;
+            }
+        }
+        return $result;
+
+    }
+
+    /**
+     * Gets the id
+     * @return int|null
+     */
     public function get_id(): ?int {
         return $this->id;
     }
 
+    /**
+     * Sets the id
+     * @param int|null $id
+     */
     public function set_id(?int $id): void {
         $this->id = $id;
     }
 
+    /**
+     * Gets the externalassignment
+     * @return int|null
+     */
     public function get_externalassignment(): ?int {
         return $this->externalassignment;
     }
 
+    /**
+     * Sets the externalassignment
+     * @param int|null $externalassignment
+     */
     public function set_externalassignment(?int $externalassignment): void {
         $this->externalassignment = $externalassignment;
     }
 
+    /**
+     * Gets the userid
+     * @return int|null
+     */
     public function get_userid(): ?int {
         return $this->userid;
     }
 
+    /**
+     * Sets the userid
+     * @param int|null $userid
+     */
     public function set_userid(?int $userid): void {
         $this->userid = $userid;
     }
 
+    /**
+     * Gets the grader
+     * @return int
+     */
     public function get_grader(): int {
         return $this->grader;
     }
 
+    /**
+     * Sets the grader
+     * @param int $grader
+     */
     public function set_grader(int $grader): void {
         $this->grader = $grader;
     }
 
+    /**
+     * Gets the externallink
+     * @return string
+     */
     public function get_externallink(): string {
         return $this->externallink;
     }
 
+    /**
+     * Sets the externallink
+     * @param string $externallink
+     */
     public function set_externallink(string $externallink): void {
         $this->externallink = $externallink;
     }
 
+    /**
+     * Gets the externalgrade
+     * @return float
+     */
     public function get_externalgrade(): float {
         return $this->externalgrade;
     }
 
+    /**
+     * Sets the externalgrade
+     * @param float $externalgrade
+     */
     public function set_externalgrade(float $externalgrade): void {
         $this->externalgrade = $externalgrade;
     }
 
+    /**
+     * Gets the externalfeedback
+     * @return string|null
+     */
     public function get_externalfeedback(): ?string {
         return $this->externalfeedback;
     }
 
+    /**
+     * Sets the externalfeedback
+     * @param string|null $externalfeedback
+     */
     public function set_externalfeedback(?string $externalfeedback): void {
         $this->externalfeedback = $externalfeedback;
     }
 
+    /**
+     * Gets the manualgrade
+     * @return float
+     */
     public function get_manualgrade(): float {
         return $this->manualgrade;
     }
 
+    /**
+     * Sets the manualgrade
+     * @param float $manualgrade
+     */
     public function set_manualgrade(float $manualgrade): void {
         $this->manualgrade = $manualgrade;
     }
 
+    /**
+     * Gets the manualfeedback
+     * @return string|null
+     */
     public function get_manualfeedback(): ?string {
         return $this->manualfeedback;
     }
 
+    /**
+     * Sets the manualfeedback
+     * @param string|null $manualfeedback
+     */
     public function set_manualfeedback(?string $manualfeedback): void {
         $this->manualfeedback = $manualfeedback;
     }
-
 
 }

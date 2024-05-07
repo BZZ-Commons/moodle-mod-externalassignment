@@ -36,9 +36,6 @@ require_once(__DIR__.'/upgradelib.php');
  */
 function xmldb_externalassignment_upgrade($oldversion) {
     global $DB;
-
     $dbman = $DB->get_manager();
-
-
     return true;
 }

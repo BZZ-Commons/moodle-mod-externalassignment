@@ -25,16 +25,21 @@ use cm_info;
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class assign_control {
     /** @var \stdClass the assignment record that contains the global settings for this assign instance */
     private \stdClass $instance;
     /** @var ?cm_info the course module for this assign instance */
     private ?cm_info $coursemodule;
 
-    /** @var stdClass the course this assign instance belongs to */
+    /** @var \stdClass the course this assign instance belongs to */
     private $course;
 
+    /**
+     * Default constructor
+     * @param $coursemodulecontext
+     * @param $coursemodule
+     * @throws \coding_exception
+     */
     public function __construct($coursemodulecontext, $coursemodule) {
         $this->coursemodule = cm_info::create($coursemodule);
     }
@@ -42,7 +47,7 @@ class assign_control {
     /**
      * Add this instance to the database.
      *
-     * @param stdClass $formdata The data submitted from the form
+     * @param \stdClass $formdata The data submitted from the form
      * @return mixed false if an error occurs or the int id of the new instance
      */
     public function add_instance(\stdClass $formdata) {
@@ -62,11 +67,10 @@ class assign_control {
      *
      * @param \stdClass $formdata - the data submitted from the form
      * @return bool false if an error occurs
-     * @throws dml_exception
+     * @throws \dml_exception
      */
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
-        global $CFG;
         $assign = new assign($formdata);
         $assign->set_coursemodule($coursemoduleid);
         $result = $DB->update_record('externalassignment', $assign->to_stdclass());
@@ -79,7 +83,7 @@ class assign_control {
      * Delete this instance from the database.
      *
      * @param int $id  the id of the external assignment
-     * @throws dml_exception
+     * @throws \dml_exception
      */
     public function delete_instance(int $id): void {
         global $DB;
@@ -110,29 +114,51 @@ class assign_control {
             $params);
     }
 
+    /**
+     * Gets the instance
+     * @return \stdClass
+     */
     public function get_instance(): \stdClass {
         return $this->instance;
     }
 
+    /**
+     * Sets the instance
+     * @param \stdClass $instance
+     */
     public function set_instance(\stdClass $instance): void {
         $this->instance = $instance;
     }
 
+    /**
+     * Gets the coursemodule
+     * @return cm_info|null
+     */
     public function get_coursemodule(): ?cm_info {
         return $this->coursemodule;
     }
 
+    /**
+     * Sets the coursemodule
+     * @param cm_info|null $coursemodule
+     */
     public function set_coursemodule(?cm_info $coursemodule): void {
         $this->coursemodule = $coursemodule;
     }
 
-    public function get_course(): stdClass {
+    /**
+     * Gets the course
+     * @return \stdClass
+     */
+    public function get_course(): \stdClass {
         return $this->course;
     }
 
-    public function set_course(stdClass $course): void {
+    /**
+     * Sets the course
+     * @param \stdClass $course
+     */
+    public function set_course(\stdClass $course): void {
         $this->course = $course;
     }
-
-
 }

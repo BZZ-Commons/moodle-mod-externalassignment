@@ -17,7 +17,7 @@
 /**
  * Code that is executed before the tables and data are dropped during the plugin uninstallation.
  *
- * @package     mod_assignexternal
+ * @package     mod_externalassignment
  * @category    upgrade
  * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
@@ -27,7 +27,7 @@
 /**
  * Custom uninstallation procedure.
  */
-function xmldb_mod_assignexternal_uninstall() {
+function xmldb_mod_externalassignment_uninstall() {
 
     return true;
 }

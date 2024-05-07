@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\output;
 
-use dml_exception;
 use mod_externalassignment\local\assign;
 use renderable;
 use renderer_base;
@@ -36,7 +35,7 @@ class view_link implements renderable, templatable {
     /**
      * default constructor
      * @param int $coursemoduleid
-     * @throws dml_exception
+     * @throws \dml_exception
      */
     public function __construct(int $coursemoduleid) {
         global $CFG;

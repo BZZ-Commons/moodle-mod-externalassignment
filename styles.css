@@ -1,0 +1,13 @@
+.externalassignment-grader .activity-header,
+.externalassignment-grading .activity-header {
+    display: none;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] .form-autocomplete-suggestions {
+    text-align: left;
+    margin-left: 48px;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] .form-autocomplete-downarrow {
+    top: 0;
+}

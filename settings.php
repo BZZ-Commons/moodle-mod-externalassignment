@@ -29,19 +29,18 @@ defined('MOODLE_INTERNAL') || die();
 if ($ADMIN->fulltree) {
     $settings->add(
         new admin_setting_heading(
-            'mod_assignexternal/intro',
+            'mod_externalassignment/intro',
             '',
-            get_string('configintro', 'assignexternal')
+            get_string('configintro', 'externalassignment')
         )
     );
     $settings->add(
         new admin_setting_configtext(
-            'mod_assignexternal/external_username',
-            get_string('externalusername', 'assignexternal'),
-            get_string('externalusername_desc', 'assignexternal'),
+            'mod_externalassignment/external_username',
+            get_string('externalusername', 'externalassignment'),
+            get_string('externalusername_desc', 'externalassignment'),
             'github_user',
             PARAM_TEXT
         )
     );
-
 }

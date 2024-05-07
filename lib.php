@@ -49,10 +49,9 @@ function externalassignment_add_instance(\stdClass $instancedata, mod_externalas
  * @param \stdClass $form - unused
  * @return bool
  */
-function assignexternal_update_instance(\stdClass $data, $form) {
-    global $CFG;
+function externalassignment_update_instance(\stdClass $data, $form) {
     $context = context_module::instance($data->coursemodule);
-    $assignment = new assign_control($context, null, null);
+    $assignment = new assign_control($context, null);
     return $assignment->update_instance($data, $context->instanceid);
 }
 
@@ -62,8 +61,7 @@ function assignexternal_update_instance(\stdClass $data, $form) {
  * @return bool
  * @throws dml_exception
  */
-function externalassignment_delete_instance($id): bool
-{
+function externalassignment_delete_instance($id): bool {
     $cm = get_coursemodule_from_instance('externalassignment', $id, 0, false, MUST_EXIST);
 
     $context = context_module::instance($cm->id);
@@ -71,18 +69,6 @@ function externalassignment_delete_instance($id): bool
     $assignment->delete_instance($id);
 
     return false;
-}
-
-/**
- * Update an assignment instance
- *
- * This is done by calling the update_instance() method of the assignment type class
- * @param stdClass $data
- * @param stdClass $form - unused
- * @return bool
- */
-function externalassignment_update_instance(stdClass $data, $form) {
-    return true;
 }
 
 /**
