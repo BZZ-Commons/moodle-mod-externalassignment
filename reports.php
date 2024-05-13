@@ -15,28 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Activity index for the mod_externalassignment plugin.
+ * shows reports for externalassignment
  *
- * @package   mod_externalassignment
+ * @package mod_externalassignment
  * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
-global $DB;
+global $DB, $PAGE;
 
-// The `id` parameter is the course id.
-$id = required_param('id', PARAM_INT);
+$courseid = required_param('courseid', PARAM_INT);
+$assignmentid  = required_param('assignmentid', PARAM_INT);
 
-// Fetch the requested course.
-$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+$coursemodule = get_coursemodule_from_instance('externalassignment', $assignmentid, $courseid, false, MUST_EXIST);
+$assignment = $DB->get_record('externalassignment', ['id' => $coursemodule->instance], '*', MUST_EXIST);
 
-// Require that the user is logged into the course.
-require_course_login($course);
+$PAGE->set_url('/mod/externalassignment/reports.php',
+    array('courseid' => $courseid, 'assignmentid' => $assignmentid));
 
-$modinfo = get_fast_modinfo($course);
+require_login($course, true, $coursemodule);
+$coursecontext = context_course::instance($courseid);
+$modulecontext = context_module::instance($coursemodule->id);
 
-foreach ($modinfo->get_instances_of('[modinfo]') as $instanceid => $cm) {
-    // TODO Display information about your activity.
-}
+require_capability('mod/assignment:view', $modulecontext);

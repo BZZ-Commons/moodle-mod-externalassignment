@@ -17,7 +17,6 @@ namespace mod_externalassignment\local;
 
 namespace mod_externalassignment\local;
 
-use core\check\performance\debugging;
 use core\context;
 use mod_externalassignment\form\grader_form;
 
@@ -25,8 +24,8 @@ use mod_externalassignment\form\grader_form;
  * Represents the model of an external assignment
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grade_control {
@@ -121,7 +120,6 @@ class grade_control {
      */
     private function read_grades(): array {
         global $DB;
-        debugging('read_grades / id=' . $this->get_assign()->get_id());
         $grades = $DB->get_records_list(
             'externalassignment_grades',
             'externalassignment',
@@ -141,7 +139,6 @@ class grade_control {
      */
     public function list_grades(): array {
         $grades = $this->read_grades();
-        debugging('list_grades: $grades=' . var_export($grades, true));
         $gradelist = [];
         foreach ($this->userlist as $userid => $user) {
             $grade = new \stdClass();
@@ -152,10 +149,10 @@ class grade_control {
             $grade->lastname = $user->lastname;
             if (array_key_exists($userid, $grades)) {
                 $gradedata = $grades[$userid];
-                $grade->status = $this->get_status($gradedata->externalgrade);
                 $grade->externalgrade = $gradedata->externalgrade;
                 $grade->manualgrade = $gradedata->manualgrade;
                 $grade->gradefinal = $gradedata->externalgrade + $gradedata->manualgrade;
+                $grade->status = $this->get_status($grade);
             } else {
                 $grade->status = $this->get_status(null);
             }
@@ -225,7 +222,11 @@ class grade_control {
             } else {
                 $result = $DB->update_record('externalassignment_grades', $grade->to_stdclass());
             }
-            $this->grade_item_update($grade);
+
+            $gradevalues = new \stdClass();
+            $gradevalues->userid = $this->get_userid();
+            $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
+            externalassignment_grade_item_update($this->get_assign()->to_stdclass(), $gradevalues);
 
             redirect(
                 new \moodle_url('view.php',
@@ -243,7 +244,7 @@ class grade_control {
                 $gradedata = $grades[$this->get_userid()];
                 $data->gradeid = $gradedata->id;
                 $data->externalassignment = $gradedata->externalassignment;
-                $data->status = $this->get_status($gradedata->externalgrade);
+                $data->status = $this->get_status($gradedata);
                 $data->externalgrade = $gradedata->externalgrade;
                 $data->externalfeedback['text'] = $gradedata->externalfeedback;
                 $data->externalfeedback['format'] = 1;
@@ -264,7 +265,9 @@ class grade_control {
      * @return int
      * @throws \moodle_exception
      */
-    public function grade_item_update($grade): int {
+
+    /*
+    public function grade_item_update(grade $grade): int {
         global $CFG;
         require_once($CFG->libdir . '/gradelib.php');
 
@@ -278,12 +281,12 @@ class grade_control {
             get_string('seefeedback', 'externalassignment') . '</a>';
         $gradevalues->feedbackformat = 1;
 
-        /* TODO completion
-        $completion = new \completion_info($this->get_context());
-        if ($completion->is_enabled($this->get_coursemoduleid())) {
-            $completion->update_state($this->get_coursemoduleid(), COMPLETION_UNKNOWN);
+        list ($course, $coursemodule) = get_course_and_cm_from_cmid($this->coursemoduleid, 'externalassignment');
+        $completion = new \completion_info($course);
+        if ($completion->is_enabled($coursemodule)) {
+            $completion->update_state($coursemodule, COMPLETION_COMPLETE, $this->userid);
         }
-        */
+
         return grade_update(
             'mod/externalassignment',
             $this->courseid,
@@ -292,7 +295,7 @@ class grade_control {
             $this->assign->get_id(),
             0,
             $gradevalues);
-    }
+    } */
 
     /**
      * get the status of the students assignment
@@ -300,11 +303,16 @@ class grade_control {
      * @return string
      */
     private function get_status($grade): string {
-        if (!$grade) {
-            return get_string('pending', 'externalassignment');
-        } else {
-            return get_string('done', 'externalassignment');
+        $status = get_string('pending', 'externalassignment');;
+        if ($grade && $this->get_assign()->get_needspassinggrade() != 0) {
+            $maximumgrade = $this->get_assign()->get_externalgrademax() + $this->get_assign()->get_manualgrademax();
+            $totalgrade = $grade->externalgrade + $grade->manualgrade;
+            $passinggrade = $maximumgrade * $this->get_assign()->get_passingpercentage() / 100;
+            if ($totalgrade >= $passinggrade) {
+                $status = get_string('done', 'externalassignment');
+            }
         }
+        return $status;
     }
 
     /**

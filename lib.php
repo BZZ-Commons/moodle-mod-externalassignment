@@ -25,14 +25,16 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_externalassignment\local\assign;
 use mod_externalassignment\local\assign_control;
+use mod_externalassignment\local\grade;
 
 /**
  * Adds an assignment instance
  *
  * This is done by calling the add_instance() method of the assignment type class
  * @param stdClass $instancedata
- * @param mod_externalassignment_mod_form $mform
+ * @param mod_externalassignment_mod_form|null $mform
  * @return int The instance id of the new assignment
  */
 function externalassignment_add_instance(\stdClass $instancedata, mod_externalassignment_mod_form $mform = null) {
@@ -60,6 +62,7 @@ function externalassignment_update_instance(\stdClass $data, $form) {
  * @param int $id
  * @return bool
  * @throws dml_exception
+ * @throws coding_exception
  */
 function externalassignment_delete_instance($id): bool {
     $cm = get_coursemodule_from_instance('externalassignment', $id, 0, false, MUST_EXIST);
@@ -68,7 +71,7 @@ function externalassignment_delete_instance($id): bool {
     $assignment = new assign_control($context, null, null);
     $assignment->delete_instance($id);
 
-    return false;
+    return true;
 }
 
 /**
@@ -79,8 +82,26 @@ function externalassignment_delete_instance($id): bool {
  * @throws dml_exception
  */
 function externalassignment_get_coursemodule_info(stdClass $coursemodule) {
+    $assignment = new assign(null);
+    $assignment->load_db($coursemodule->id);
     $result = new cached_cm_info();
+    $result->name = $assignment->get_name();
+    if ($assignment->get_duedate()) {
+        $result->customdata['duedate'] = $assignment->get_duedate();
+    }
+    if ($assignment->get_cutoffdate()) {
+        $result->customdata['cutoffdate'] = $assignment->get_cutoffdate();
+    }
+    if ($assignment->get_allowsubmissionsfromdate()) {
+        $result->customdata['allowsubmissionsfromdate'] = $assignment->get_allowsubmissionsfromdate();
+    }
+    $result->customdata['alwaysshowlink'] = $assignment->is_alwaysshowlink();
 
+    $result->customdata['externallink'] = $assignment->get_externallink();
+
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $result->customdata['customcompletionrules']['needspassinggrade'] = $assignment->get_needspassinggrade();
+    }
     return $result;
 }
 
@@ -89,10 +110,34 @@ function externalassignment_get_coursemodule_info(stdClass $coursemodule) {
  *
  * @param cm_info $coursemodule
  * @return void
- * @throws dml_exception
+ * @throws coding_exception
  */
 function externalassignment_cm_info_view(cm_info $coursemodule): void {
+    $externallink = '<a href="' . $coursemodule->customdata['externallink'] .
+        '" target="_blank">' . get_string('externallink', 'externalassignment') . '</a>';
+    $content = '';
+    if (array_key_exists('allowsubmissionsfromdate', $coursemodule->customdata)) {
+        if ($coursemodule->customdata['alwaysshowlink'] ||
+            $coursemodule->customdata['allowsubmissionsfromdate'] < time()) {
+            $content .= $externallink;
+        }
+        if ($coursemodule->customdata['allowsubmissionsfromdate'] >= time()) {
+            $label = get_string('submissionsopen', 'externalassignment');
+        } else {
+            $label = get_string('submissionsopened', 'externalassignment');
+        }
+        $content .= '<br><strong>' . $label . '</strong> ' . userdate($coursemodule->customdata['allowsubmissionsfromdate']);
 
+    } else {
+        $content .= $externallink;
+    }
+
+    if (array_key_exists('duedate', $coursemodule->customdata)) {
+        $content .= '<br><strong>' . get_string('submissionsdue', 'externalassignment') . '</strong> ' .
+            userdate($coursemodule->customdata['duedate']);
+    }
+
+    $coursemodule->set_content($content);
 }
 
 /**
@@ -136,7 +181,7 @@ function externalassignment_supports($feature) {
             return true;
          */
         case FEATURE_GRADE_HAS_GRADE:
-            return false;
+            return true;
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_MOD_PURPOSE:
@@ -148,40 +193,76 @@ function externalassignment_supports($feature) {
 }
 
 /**
- * Obtains the automatic completion state for this external assignment based on the conditions in settings.
- *
- * @param object $course Course
- * @param object $coursemodule Course-module
- * @param int $userid User ID
- * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
- * @return bool True if completed, false if not, $type if conditions not set.
- * @throws dml_exception
+ * Callback to update the grade settings or the grade for one student
+ * @param $modinstance
+ * @param $grades
+ * @return int
+ * @throws moodle_exception
  */
-function externalassignment_get_completion_state(
-    $course,
-    $coursemodule,
-    $userid,
-    $type
-) {
-    return $type;
+function externalassignment_grade_item_update($modinstance, $grades=null): int {
+    debugging('externalassignment_grade_item_update / $modinstance=' . var_export($modinstance, true));
+
+
+    $params = array(
+        'itemname'=>$modinstance->name,
+        'idnumber'=>$modinstance->coursemodule,
+        );
+
+    return grade_update(
+        'mod/externalassignment',
+        $modinstance->course,
+        'mod',
+        'externalassignment',
+        $modinstance->id,
+        0,
+        $grades);
+}
+
+function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
+    debugging('externalassignment_update_grades / $modinstance=' . var_export($modinstance, true));
+
+    $grade = new grade(null);
+    $grade->load_db($modinstance, $userid);
+    $gradevalues = new \stdClass;
+    $gradevalues->userid = $userid;
+    $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
+    $link = new \moodle_url('/mod/externalassignment/view.php',
+        ['id' => $modinstance->id]
+    );
+    $gradevalues->feedback = '<a href="' . $link->out(true) . '">' .
+        get_string('seefeedback', 'externalassignment') . '</a>';
+    $gradevalues->feedbackformat = 1;
+
+    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
+    $completion = new \completion_info($course);
+    if ($completion->is_enabled($coursemodule)) {
+        $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+    }
+    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
+    $completion = new \completion_info($course);
+    if ($completion->is_enabled($coursemodule)) {
+        $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+    }
+
 }
 
 /**
- * Callback which returns human-readable strings describing the active completion custom rules for the module instance.
+ * Callback to remove all grades from gradebook
  *
- * @param cm_info|stdClass $coursemodule object with fields ->completion and ->customdata['customcompletionrules']
- * @return array $descriptions the array of descriptions for the custom rules.
+ * @param int $courseid The ID of the course to reset
+ * @param string $type Optional type of activity to limit the reset to a particular activity type
  */
-function mod_externalassignment_get_completion_active_rule_descriptions($coursemodule) {
-    if (empty($cm->customdata['customcompletionrules']) || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
-        return ['foobar'];
-    }
+function externalassignment_reset_gradebook(int $courseid, string $type='') {
+    global $DB;
 
-    $descriptions = [];
-    foreach ($coursemodule->customdata['customcompletionrules'] as $key => $val) {
-        if ($key == 'haspassinggrade') {
-            $descriptions[] = get_string('haspassinggradedesc', 'externalassignment', $val);
+    $params = array('moduletype'=>'externalassignment', 'courseid'=>$courseid);
+    $sql = 'SELECT a.*, cm.idnumber as cmidnumber, a.course as courseid
+            FROM {externalassignment} a, {course_modules} cm, {modules} m
+            WHERE m.name=:moduletype AND m.id=cm.module AND cm.instance=a.id AND a.course=:courseid';
+
+    if ($assignments = $DB->get_records_sql($sql, $params)) {
+        foreach ($assignments as $assignment) {
+            assign_grade_item_update($assignment, 'reset');
         }
     }
-    return $descriptions;
 }

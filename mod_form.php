@@ -18,8 +18,8 @@
  * This file contains the forms to create and edit an instance of this module
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,6 +33,10 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * @package   mod_assign
  */
 class mod_externalassignment_mod_form extends moodleform_mod {
+    /**
+     * Definition of the settings form
+     * @return void
+     */
     public function definition() {
         $mform =& $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -136,9 +140,9 @@ class mod_externalassignment_mod_form extends moodleform_mod {
         $group = [
             $mform->createElement(
                 'checkbox',
-                $this->get_suffixed_name('haspassinggrade'),
+                $this->get_suffixed_name('needspassinggrade'),
                 ' ',
-                get_string('haspassinggrade', 'externalassignment'),
+                get_string('needspassinggradedesc', 'externalassignment'),
                 0
             ),
 
@@ -174,6 +178,6 @@ class mod_externalassignment_mod_form extends moodleform_mod {
      * @return bool
      */
     public function completion_rule_enabled($data) {
-        return (!empty($data[$this->get_suffixed_name('haspassinggrade')]));
+        return (!empty($data[$this->get_suffixed_name('needspassinggrade')]));
     }
 }

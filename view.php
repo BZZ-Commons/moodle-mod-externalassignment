@@ -17,8 +17,9 @@
 /**
  * Activity view page for the mod_externalassignment plugin.
  *
- * @package   mod_externalassignment
- * @copyright 2023 Marcel Suter <marcel@ghwalin.ch>
+ * @package mod_externalassignment
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -134,7 +135,6 @@ function show_grading($context, $coursemoduleid): void {
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
-
     $renderable = new view_grading($coursemoduleid, $context);
     echo $output->render($renderable);
     echo $output->footer();
@@ -186,5 +186,5 @@ function show_grader($context, $coursemoduleid, $userid): void {
  * @throws moodle_exception
  */
 function show_override($context, int $coursemoduleid, array $userids): void {
-    // TODO MDL-2
+    // TODO MDL-2 show the override form.
 }

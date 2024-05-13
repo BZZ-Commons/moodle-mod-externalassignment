@@ -19,8 +19,8 @@ namespace mod_externalassignment\local;
  * Represents the model of an external assignment
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign {
@@ -59,7 +59,7 @@ class assign {
     /** @var float|null the percentage of the total grade (external + manual) to reach for completing the assignment */
     private ?float $passingpercentage;
     /** @var int 1 = the user must reach the passingpercentage to complete the assignment */
-    private int $haspassinggrade;
+    private int $needspassinggrade;
 
     /**
      * Default constructor with optional formdata
@@ -79,11 +79,10 @@ class assign {
     /**
      * loads the attributes of the assignment from the database
      * @param int $coursemoduleid
-     * @param int|null $userid
      * @return void
-     * @throws dml_exception
+     * @throws \dml_exception
      */
-    public function load_db(int $coursemoduleid, ?int $userid = null): void {
+    public function load_db(int $coursemoduleid): void {
         global $DB;
         $data = $DB->get_record('externalassignment', ['coursemodule' => $coursemoduleid]);
         if (!empty($data)) {
@@ -152,10 +151,10 @@ class assign {
         $this->set_externalgrademax($data->externalgrademax);
         $this->set_manualgrademax($data->manualgrademax);
         $this->set_passingpercentage($data->passingpercentage);
-        if (isset($data->haspassinggrade)) {
-            $this->set_haspassinggrade($data->haspassinggrade);
+        if (isset($data->needspassinggrade)) {
+            $this->set_needspassinggrade($data->needspassinggrade);
         } else {
-            $this->set_haspassinggrade(0);
+            $this->set_needspassinggrade(0);
         }
     }
 
@@ -447,18 +446,18 @@ class assign {
     }
 
     /**
-     * Gets the haspassinggrade
+     * Gets the needspassinggrade
      * @return int
      */
-    public function get_haspassinggrade(): int {
-        return $this->haspassinggrade;
+    public function get_needspassinggrade(): int {
+        return $this->needspassinggrade;
     }
 
     /**
-     * Sets the haspassinggrade
-     * @param int $haspassinggrade
+     * Sets the needspassinggrade
+     * @param int $needspassinggrade
      */
-    public function set_haspassinggrade(int $haspassinggrade): void {
-        $this->haspassinggrade = $haspassinggrade;
+    public function set_needspassinggrade(int $needspassinggrade): void {
+        $this->needspassinggrade = $needspassinggrade;
     }
 }

@@ -102,7 +102,7 @@ class update_grade extends external_api {
                     'The assignment is overdue, points/feedback not updated'
                 ); */
             } else {
-                self::update_grades($assignment->get_id(), $userid, $params);
+                self::update_grades($assignment, $userid, $params);
             }
         } else {
             echo 'WARNING: no username ' . $params['user_name'] . ' found';
@@ -231,19 +231,19 @@ class update_grade extends external_api {
 
     /**
      * updates the grade for a programming assignment
-     * @param int $assignmentid
+     * @param assign $assignmentid
      * @param int $userid
      * @param array $params
      * @return void
      * @throws dml_exception
      */
-    private static function update_grades(int $assignmentid, int $userid, array $params): void {
-        debugging("assignmentid=$assignmentid / userid=$userid");
+    private static function update_grades(assign $assignment, int $userid, array $params): void {
+        debugging('assignment->id=' . $assignment->get_id() . ' / userid=' . $userid);
         debugging(var_export($params, true));
         global $DB;
         $grade = new grade(null);
-        $grade->load_db($assignmentid, $userid);
-        $grade->set_externalassignment($assignmentid);
+        $grade->load_db($assignment->get_id(), $userid);
+        $grade->set_externalassignment($assignment->get_id());
         $grade->set_userid($userid);
         $grade->set_externalgrade($params['points']);
         $feedback = urldecode($params['feedback']);
@@ -254,6 +254,11 @@ class update_grade extends external_api {
         } else {
             $DB->update_record('externalassignment_grades', $grade->to_stdclass());
         }
+
+        $gradevalues = new \stdClass();
+        $gradevalues->userid = $userid;
+        $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
+        externalassignment_grade_item_update($assignment->to_stdclass(), $gradevalues);
     }
 
     /**

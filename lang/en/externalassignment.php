@@ -41,6 +41,7 @@ $string['availability'] = 'Availability';
 $string['changeuser'] = 'Change user';
 $string['completiongradesgroup'] = ' FIXME ';
 $string['completiongradesgroup_help'] = ' FIXME ';
+$string['completionpassgrade'] = 'Passing grade needed';
 $string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
@@ -78,8 +79,6 @@ $string['gradingoverview'] = 'Grading overview';
 $string['gradingstatus'] = 'Grading status';
 $string['grantextension'] = 'Grant extension';
 
-$string['haspassinggrade'] = 'Student needs a passing grade to complete the assignment';
-
 $string['mandatory'] = 'Mandatory';
 $string['manual'] = 'Manual';
 $string['manualfeedback'] = 'Manual feedback';
@@ -90,6 +89,8 @@ $string['modulename'] = 'External assignment';
 $string['modulename_help'] = 'The external assignment activity module lets you give your students an assignment in an external system (e.g. GitHub Classroom).\nIt includes a webservice to update the student\'s grading from the external assessment';
 $string['modulenameplural'] = 'External assignments';
 
+$string['needspassinggrade'] = 'Achieve passing grade';
+$string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
 
 $string['override'] = 'Override';

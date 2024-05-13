@@ -19,29 +19,29 @@ namespace mod_externalassignment\local;
  * Represents the model of an external assignment
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grade {
     /** @var int|null the unique id of this grade */
-    private $id;
+    private ?int $id;
     /** @var int|null the id of the external assignment this grade belongs to */
-    private $externalassignment;
+    private ?int $externalassignment;
     /** @var int|null the id of the user this grade belongs to */
-    private $userid;
+    private ?int $userid;
     /** @var int the userid of the grader */
-    private $grader;
+    private int $grader;
     /** @var string the URL of the submission in the external system */
-    private $externallink;
+    private string $externallink;
     /** @var float the grade from the external system */
-    private $externalgrade;
+    private float $externalgrade = 0.0;
     /** @var string|null the feedback from the external system as HTML-code */
-    private $externalfeedback;
+    private ?string $externalfeedback = '';
     /** @var float the grade from manual grading */
-    private $manualgrade;
+    private float $manualgrade = 0.0;
     /** @var string|null the manual feedback as HTML-code */
-    private $manualfeedback;
+    private ?string $manualfeedback = '';
 
     /**
      * default constructor
@@ -89,17 +89,17 @@ class grade {
     }
 
     /**
-     * loads the gradeing data from the database
-     * @param int $coursemodule
+     * loads the grading data from the database
+     * @param int $coursemoduleid
      * @param int $userid
      * @return void
      * @throws \dml_exception
      */
-    public function load_db($coursemodule, $userid): void {
+    public function load_db($coursemoduleid, $userid): void {
         global $DB;
         $data = $DB->get_record(
             'externalassignment_grades',
-            ['externalassignment' => $coursemodule, 'userid' => $userid],
+            ['externalassignment' => $coursemoduleid, 'userid' => $userid],
             '*',
             IGNORE_MISSING
         );
@@ -196,7 +196,7 @@ class grade {
      * @return string
      */
     public function get_externallink(): string {
-        return $this->externallink;
+        return empty($this->externallink) ? '' : $this->externallink;
     }
 
     /**
@@ -204,7 +204,9 @@ class grade {
      * @param string $externallink
      */
     public function set_externallink(string $externallink): void {
-        $this->externallink = $externallink;
+
+            $this->externallink = $externallink;
+
     }
 
     /**
@@ -212,7 +214,7 @@ class grade {
      * @return float
      */
     public function get_externalgrade(): float {
-        return $this->externalgrade;
+        return empty($this->externalgrade) ? 0.0 : $this->externalgrade;
     }
 
     /**
@@ -244,7 +246,7 @@ class grade {
      * @return float
      */
     public function get_manualgrade(): float {
-        return $this->manualgrade;
+        return empty($this->manualgrade) ? 0.0 : $this->manualgrade;
     }
 
     /**

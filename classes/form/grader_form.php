@@ -156,7 +156,6 @@ class grader_form extends moodleform {
      */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);  // TODO MDL-1 validate grade external/manual.
-        debugging(var_export($errors, true));
         return $errors;
     }
 }

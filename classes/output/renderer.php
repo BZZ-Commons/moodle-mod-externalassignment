@@ -21,8 +21,8 @@ use plugin_renderer_base;
  * Renders the HTML
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
@@ -31,6 +31,7 @@ class renderer extends plugin_renderer_base {
      * Defer to template for view_grading.
      * @param $page the page to render
      * @return string html for the page
+     * @throws \moodle_exception
      */
     public function render_view_grading($page): string {
         $data = $page->export_for_template($this);
@@ -41,6 +42,7 @@ class renderer extends plugin_renderer_base {
      * Defer to template for view_grader_navigation.
      * @param $page the page to render
      * @return string html for the page
+     * @throws \moodle_exception
      */
     public function render_view_grader_navigation($page): string {
         $data = $page->export_for_template($this);
@@ -51,6 +53,7 @@ class renderer extends plugin_renderer_base {
      * Defer to template for view_link.
      * @param $page the page to render
      * @return string html for the page
+     * @throws \moodle_exception
      */
     public function render_view_link($page): string {
         $data = $page->export_for_template($this);
@@ -61,6 +64,7 @@ class renderer extends plugin_renderer_base {
      * Defer to template for view_summary.
      * @param $page the page to render
      * @return string html for the page
+     * @throws \moodle_exception
      */
     public function render_view_summary($page): string {
         $data = $page->export_for_template($this);
@@ -71,6 +75,7 @@ class renderer extends plugin_renderer_base {
      * Defer to template for view_student.
      * @param $page the page to render
      * @return string html for the page
+     * @throws \moodle_exception
      */
     public function render_view_student($page): string {
         $data = $page->export_for_template($this);

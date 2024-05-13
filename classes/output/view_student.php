@@ -27,8 +27,8 @@ use templatable;
  * Renderer for external assignment for students
  *
  * @package   mod_externalassignment
- * @copyright   2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class view_student implements renderable, templatable {
@@ -59,9 +59,9 @@ class view_student implements renderable, templatable {
      * @throws \dml_exception|\coding_exception
      */
     public function export_for_template(renderer_base $output): \stdClass {
-        global $CFG, $USER;
+        global $USER;
         $assignment = new assign(null);
-        $assignment->load_db($this->coursemoduleid, $USER->id);
+        $assignment->load_db($this->coursemoduleid);
         $grade = new grade(null);
         $grade->load_db($this->coursemoduleid, $USER->id);
 
