@@ -79,6 +79,8 @@ $string['gradingoverview'] = 'Grading overview';
 $string['gradingstatus'] = 'Grading status';
 $string['grantextension'] = 'Grant extension';
 
+$string['isdue'] = 'is due';
+
 $string['mandatory'] = 'Mandatory';
 $string['manual'] = 'Manual';
 $string['manualfeedback'] = 'Manual feedback';

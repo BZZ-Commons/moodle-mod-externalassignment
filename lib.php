@@ -266,3 +266,43 @@ function externalassignment_reset_gradebook(int $courseid, string $type='') {
         }
     }
 }
+
+/**
+ * Is the event visible?
+ *
+ * This is used to determine global visibility of an event in all places throughout Moodle.
+ *
+ * @param calendar_event $event
+ * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
+ * @return bool Returns true if the event is visible to the current user, false otherwise.
+ */
+function mod_externalassignment_core_calendar_is_event_visible(calendar_event $event, int $userid = 0): bool {
+    debugging('is_visible /' . var_export($event,true));
+    return true;
+}
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_externalassignment_core_calendar_provide_event_action(
+    calendar_event $event,
+    \core_calendar\action_factory $factory,
+    $userid = 0
+) {
+    debugging('event_action /' . var_export($event,true));
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['externalassignment'][$event->instance];
+    return $factory->create_instance(
+        get_string('FOOBAR', 'externalassigment'),
+        new \moodle_url('/mod/externalassignment/view.php', array('id' => $cm->id)),
+        1,
+        true
+    );
+}

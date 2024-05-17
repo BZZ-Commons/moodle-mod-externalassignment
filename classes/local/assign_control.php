@@ -41,7 +41,7 @@ class assign_control {
      * @throws \coding_exception
      */
     public function __construct($coursemodulecontext, $coursemodule) {
-        $this->coursemodule = cm_info::create($coursemodule);
+        $this->set_coursemodule(cm_info::create($coursemodule));
     }
 
     /**
@@ -59,6 +59,7 @@ class assign_control {
         // Cache the course record.
         $this->set_course($DB->get_record('course', ['id' => $formdata->course], '*', MUST_EXIST));
         $this->grade_item_update();
+        $this->calendar_event_update();
         return $returnid;
     }
 
@@ -75,18 +76,29 @@ class assign_control {
         $assign->set_coursemodule($coursemoduleid);
         $result = $DB->update_record('externalassignment', $assign->to_stdclass());
         $this->set_instance($DB->get_record('externalassignment', ['id' => $assign->get_id()], '*', MUST_EXIST));
+        $this->set_course($DB->get_record('course', ['id' => $formdata->course], '*', MUST_EXIST));
         $this->grade_item_update();
+        $this->calendar_event_update();
         return $result;
     }
 
     /**
      * Delete this instance from the database.
      *
-     * @param int $id  the id of the external assignment
+     * @param int $id the id of the external assignment
      * @throws \dml_exception
      */
     public function delete_instance(int $id): void {
         global $DB;
+        $eventid = $DB->get_field('event',
+            'id',
+            array(
+                'instance' => $this->get_coursemodule()->id,
+                'eventtype' => 'due',
+            )
+        );
+        $calendarevent = \calendar_event::load($eventid);
+        $calendarevent->delete();
         $DB->delete_records('externalassignment_overrides', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment_grades', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment', ['id' => $id]);
@@ -112,6 +124,60 @@ class assign_control {
             0,
             null,
             $params);
+    }
+
+    /**
+     * Insert, Update or Delete the calendar event for this assignment
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    private function calendar_event_update(): void {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $name = $this->get_instance()->name;
+        $event = new \stdClass();
+        $event->eventtype = 'due';
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
+        $event->name = $name . ' ' . get_string('isdue', 'externalassignment', $name);
+        $event->description = format_module_intro(
+            'externalassignment',
+            $this->get_instance(),
+            $this->get_instance()->coursemodule,
+            false
+        );
+        $event->format = FORMAT_HTML;
+        $event->courseid = $this->get_course()->id;
+        $event->groupid = 0;
+        $event->userid = 0;
+        $event->modulename = 'externalassignment';
+        $event->instance = $this->get_instance()->id;
+        $event->timestart = $this->get_instance()->duedate;
+        $event->timesort = $this->get_instance()->duedate;
+        $event->visible = true;
+        $event->timeduration = 0;
+
+        $event->id = $DB->get_field('event',
+            'id',
+            array(
+                'instance' => $this->get_instance()->id,
+                'eventtype' => 'due',
+            )
+        );
+
+        if ($event->id) {   // The event already exists
+            $calendarevent = \calendar_event::load($event->id);
+            if ($this->get_instance()->duedate !== null) {
+                $calendarevent->update($event, false);
+            } else {    // No more due date, so delete the event
+                // Calendar event is no longer needed.
+                $calendarevent->delete();
+            }
+        } else {
+            \calendar_event::create($event);
+        }
     }
 
     /**
