@@ -91,7 +91,7 @@ $string['modulename'] = 'External assignment';
 $string['modulename_help'] = 'The external assignment activity module lets you give your students an assignment in an external system (e.g. GitHub Classroom).\nIt includes a webservice to update the student\'s grading from the external assessment';
 $string['modulenameplural'] = 'External assignments';
 
-$string['needspassinggrade'] = 'Achieve passing grade';
+$string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
 

@@ -202,12 +202,6 @@ function externalassignment_supports($feature) {
 function externalassignment_grade_item_update($modinstance, $grades=null): int {
     debugging('externalassignment_grade_item_update / $modinstance=' . var_export($modinstance, true));
 
-
-    $params = array(
-        'itemname'=>$modinstance->name,
-        'idnumber'=>$modinstance->coursemodule,
-        );
-
     return grade_update(
         'mod/externalassignment',
         $modinstance->course,
