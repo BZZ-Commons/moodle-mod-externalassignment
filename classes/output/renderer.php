@@ -29,6 +29,7 @@ class renderer extends plugin_renderer_base {
 
     /**
      * Defer to template for view_grading.
+     *
      * @param $page the page to render
      * @return string html for the page
      * @throws \moodle_exception

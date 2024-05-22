@@ -33,8 +33,10 @@ $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $coursemodule = get_coursemodule_from_instance('externalassignment', $assignmentid, $courseid, false, MUST_EXIST);
 $assignment = $DB->get_record('externalassignment', ['id' => $coursemodule->instance], '*', MUST_EXIST);
 
-$PAGE->set_url('/mod/externalassignment/reports.php',
-    array('courseid' => $courseid, 'assignmentid' => $assignmentid));
+$PAGE->set_url(
+    '/mod/externalassignment/reports.php',
+    ['courseid' => $courseid, 'assignmentid' => $assignmentid],
+);
 
 require_login($course, true, $coursemodule);
 $coursecontext = context_course::instance($courseid);

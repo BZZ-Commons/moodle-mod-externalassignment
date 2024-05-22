@@ -259,43 +259,6 @@ class grade_control {
         }
     }
 
-    /**
-     * Inserts or updates the grade for a user in grade_grades
-     * @param grade $grade the grading data for this user
-     * @return int
-     * @throws \moodle_exception
-     */
-
-    /*
-    public function grade_item_update(grade $grade): int {
-        global $CFG;
-        require_once($CFG->libdir . '/gradelib.php');
-
-        $gradevalues = new \stdClass;
-        $gradevalues->userid = $this->userid;
-        $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
-        $link = new \moodle_url('/mod/externalassignment/view.php',
-            ['id' => $this->coursemoduleid]
-        );
-        $gradevalues->feedback = '<a href="' . $link->out(true) . '">' .
-            get_string('seefeedback', 'externalassignment') . '</a>';
-        $gradevalues->feedbackformat = 1;
-
-        list ($course, $coursemodule) = get_course_and_cm_from_cmid($this->coursemoduleid, 'externalassignment');
-        $completion = new \completion_info($course);
-        if ($completion->is_enabled($coursemodule)) {
-            $completion->update_state($coursemodule, COMPLETION_COMPLETE, $this->userid);
-        }
-
-        return grade_update(
-            'mod/externalassignment',
-            $this->courseid,
-            'mod',
-            'externalassignment',
-            $this->assign->get_id(),
-            0,
-            $gradevalues);
-    } */
 
     /**
      * get the status of the students assignment

@@ -48,15 +48,13 @@ class custom_completion extends activity_custom_completion {
         $coursemoduleid = $this->cm->id;
         $assign = new assign(null);
         $assign->load_db($coursemoduleid);
-
         if ($assign->get_needspassinggrade()) {
             $grade = new grade(null);
-            $grade->load_db($coursemoduleid, $this->userid);
-
-                $maxgrade = $assign->get_externalgrademax() + $assign->get_manualgrademax();
-                $passinggrade = $maxgrade * $assign->get_passingpercentage() / 100;
-                $totalgrade = $grade->get_externalgrade() + $grade->get_manualgrade();
-                $completed = $totalgrade >= $passinggrade;
+            $grade->load_db($assign->get_id(), $this->userid);
+            $maxgrade = $assign->get_externalgrademax() + $assign->get_manualgrademax();
+            $passinggrade = $maxgrade * $assign->get_passingpercentage() / 100;
+            $totalgrade = $grade->get_externalgrade() + $grade->get_manualgrade();
+            $completed = $totalgrade >= $passinggrade;
         }
         return $completed ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
     }

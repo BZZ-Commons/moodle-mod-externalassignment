@@ -34,7 +34,7 @@ class mod_externalassignment_generator extends testing_module_generator {
      */
     public function create_instance($record = null, array $options = null) {
         $record = (object)(array)$record;
-        $defaultsettings = array(
+        $defaultsettings = [
             'alwaysshowdescription'             => 1,
             'externalname'                      => 'behat_test',
             'externallink'                      => 'https://ghwalin.ch',
@@ -47,7 +47,7 @@ class mod_externalassignment_generator extends testing_module_generator {
             'passingpercentage'                 => 60,
             'needspassinggrade'                 => 1,
 
-        );
+        ];
 
         foreach ($defaultsettings as $name => $value) {
             if (!isset($record->{$name})) {

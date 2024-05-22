@@ -16,7 +16,7 @@
 namespace mod_externalassignment\local;
 
 /**
- * Represents the model of an external assignment
+ * Represents the model of a students grade for an external assignment
  *
  * @package   mod_externalassignment
  * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
@@ -90,16 +90,16 @@ class grade {
 
     /**
      * loads the grading data from the database
-     * @param int $coursemoduleid
+     * @param int $externalassignment  the id of the external assignment
      * @param int $userid
      * @return void
      * @throws \dml_exception
      */
-    public function load_db($coursemoduleid, $userid): void {
+    public function load_db($externalassignment, $userid): void {
         global $DB;
         $data = $DB->get_record(
             'externalassignment_grades',
-            ['externalassignment' => $coursemoduleid, 'userid' => $userid],
+            ['externalassignment' => $externalassignment, 'userid' => $userid],
             '*',
             IGNORE_MISSING
         );

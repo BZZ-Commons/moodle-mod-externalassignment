@@ -238,8 +238,6 @@ class update_grade extends external_api {
      * @throws dml_exception
      */
     private static function update_grades(assign $assignment, int $userid, array $params): void {
-        debugging('assignment->id=' . $assignment->get_id() . ' / userid=' . $userid);
-        debugging(var_export($params, true));
         global $DB;
         $grade = new grade(null);
         $grade->load_db($assignment->get_id(), $userid);

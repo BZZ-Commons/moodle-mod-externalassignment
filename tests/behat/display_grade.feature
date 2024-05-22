@@ -30,6 +30,7 @@ Feature: Check that the assignment grade can be updated correctly
     When I am on the "Test assignment name" Activity page logged in as teacher1
     Then I follow "Show all"
     And I click on "Grade" "link" in the "Student 1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 100)" to "50"
     And I set the field "Grading (max. 10)" to "7"
     And I press "Save changes"

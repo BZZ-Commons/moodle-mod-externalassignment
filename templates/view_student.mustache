@@ -26,8 +26,8 @@
     * none
 
     Context variables required for this template:
-    * externallink, gradingstatus, timeremaining, modified, totalgrade, totalgrademax, externalgrade, externalgrademax,
-      manualgrade, manualgrademax, externalfeedback, manualfeedback
+    * externallink, timeremaining, modified, totalgrade, totalgrademax, externalgrade, externalgrademax,
+      manualgrade, manualgrademax, hasmanualgrade, externalfeedback, manualfeedback
 
     Example context (json):
     {
@@ -42,10 +42,6 @@
         <tr class="">
           <th class="cell c0" style="" scope="row">{{#str}}studentlink, externalassignment{{/str}}</th>
           <td class="cell c1 lastcol" style="">{{externallink}}</td>
-        </tr>
-        <tr class="">
-          <th class="cell c0" style="" scope="row">{{#str}}gradingstatus, externalassignment{{/str}}</th>
-          <td class="cell c1 lastcol" style="">{{gradingstatus}}</td>
         </tr>
         <tr class="">
           <th class="cell c0" style="" scope="row">{{#str}}timeremaining, externalassignment{{/str}}</th>
@@ -67,26 +63,33 @@
   <table class="generaltable table-bordered">
     <thead>
     <tr>
-      <th>{{#str}}scores, externalassignment{{/str}}</th>
-      <th>{{#str}}scorereached, externalassignment{{/str}}</th>
-      <th>{{#str}}scoremaximum, externalassignment{{/str}}</th>
+      <th>{{#str}}gradecomponent, externalassignment{{/str}}</th>
+      <th class="text-right">{{#str}}scorereached, externalassignment{{/str}}</th>
+      <th class="text-right">{{#str}}scoremaximum, externalassignment{{/str}}</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-      <td class="cell c0">{{#str}}externalgrade, externalassignment{{/str}}:</td>
-      <td class="cell c1">{{externalgrade}}</td>
-      <td class="cell c2 lastcol">{{externalgrademax}}</td>
+      <td class="cell c0">{{#str}}externalgrading, externalassignment{{/str}}</td>
+      <td class="cell c1 text-right">{{externalgrade}}</td>
+      <td class="cell c2 text-right lastcol">{{externalgrademax}}</td>
+    </tr>
+    {{#hasmanualgrade}}
+    <tr>
+      <td class="cell c0">{{#str}}manualgrading, externalassignment{{/str}}</td>
+      <td class="cell c1 text-right" style="">{{manualgrade}}</td>
+      <td class="cell c2 text-right lastcol" style="">{{manualgrademax}}</td>
     </tr>
     <tr>
-      <td class="cell c0">{{#str}}manualgrade, externalassignment{{/str}}: </td>
-      <td class="cell c1" style="">{{manualgrade}}</td>
-      <td class="cell c2 lastcol" style="">{{manualgrademax}}</td>
+      <td class="cell c0 font-weight-bold">{{#str}}totalgrade, externalassignment{{/str}}</td>
+      <td class="cell c1 text-right font-weight-bold">{{totalgrade}}</td>
+      <td class="cell c2 text-right font-weight-bold lastcol">{{totalgrademax}}</td>
     </tr>
+    {{/hasmanualgrade}}
     <tr>
-      <td class="cell c0">{{#str}}totalgrade, externalassignment{{/str}}:</td>
-      <td class="cell c1">{{totalgrade}}</td>
-      <td class="cell c2 lastcol">{{totalgrademax}}</td>
+      <td class="cell c0">{{#str}}passinggrade, externalassignment{{/str}}</td>
+      <td class="cell c1 text-right">{{passinggrade}}</td>
+      <td class="cell c2 text-right lastcol"></td>
     </tr>
     </tbody>
   </table>

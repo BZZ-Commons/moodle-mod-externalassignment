@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'external assignmentX';
+$string['pluginname'] = 'external assignment';
 
 $string['allowsubmissionsfromdate'] = 'Allow submissions from';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
@@ -62,6 +62,7 @@ $string['externalgrade'] = 'External grade';
 $string['externalfeedback'] = 'Feedback from external system';
 $string['externalgrademax'] = 'External grade max.';
 $string['externalgrademax_help'] = 'Maximum grade from external assignment';
+$string['externalgrading'] = 'Grading from external system';
 $string['externallink'] = 'Assignment link';
 $string['externallink_help'] = 'The link to the assignment in the external system';
 $string['externalname'] = 'External assignment';
@@ -73,7 +74,9 @@ $string['feedback'] = 'Feedback';
 $string['finalgrade'] = 'Final grade';
 
 $string['grade'] = 'Grade';
+$string['gradecomponent'] = 'Grading component';
 $string['graded'] = 'Graded';
+$string['grades'] = 'Grades';
 $string['grading'] = 'Grading';
 $string['gradingoverview'] = 'Grading overview';
 $string['gradingstatus'] = 'Grading status';
@@ -87,6 +90,7 @@ $string['manualfeedback'] = 'Manual feedback';
 $string['manualgrade'] = 'Manual grade';
 $string['manualgrademax'] = 'Manual grade max.';
 $string['manualgrademax_help'] = 'Maximum grade from manual grading';
+$string['manualgrading'] = 'Manual grading';
 $string['modulename'] = 'External assignment';
 $string['modulename_help'] = 'The external assignment activity module lets you give your students an assignment in an external system (e.g. GitHub Classroom).\nIt includes a webservice to update the student\'s grading from the external assessment';
 $string['modulenameplural'] = 'External assignments';
@@ -97,6 +101,7 @@ $string['nextuser'] = 'Next user';
 
 $string['override'] = 'Override';
 
+$string['passinggrade'] = 'Points needed to pass';
 $string['passingpercentage'] = 'Percentage to pass';
 $string['passingpercentage_help'] = 'What percentage of the maximum grade (external + manual) must be achieved to pass';
 $string['pending'] = 'pending';
@@ -105,8 +110,8 @@ $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
 
 $string['scores'] = 'Scores';
-$string['scorereached'] = 'Score reached';
-$string['scoremaximum'] = 'Maximum score';
+$string['scorereached'] = 'Points earned';
+$string['scoremaximum'] = 'Maximum points';
 $string['seefeedback'] = 'See feedback';
 $string['selectedusers'] = 'Selected users';
 $string['submissionsdue'] = 'Due:';
@@ -117,4 +122,6 @@ $string['studentlink'] = 'Link to your assignment';
 
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';
-$string['totalgrade'] = 'Total grade';
+$string['totalgrade'] = 'Total points';
+
+$string['view'] = 'View';

@@ -22,6 +22,7 @@
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once('../../config.php');
 global $DB;
 

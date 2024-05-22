@@ -92,10 +92,10 @@ class assign_control {
         global $DB;
         $eventid = $DB->get_field('event',
             'id',
-            array(
+            [
                 'instance' => $this->get_coursemodule()->id,
                 'eventtype' => 'due',
-            )
+            ]
         );
         $calendarevent = \calendar_event::load($eventid);
         $calendarevent->delete();
@@ -167,7 +167,7 @@ class assign_control {
             )
         );
 
-        if ($event->id) {   // The event already exists
+        if ($event->id) {   // Does the event already exists?
             $calendarevent = \calendar_event::load($event->id);
             if ($this->get_instance()->duedate !== null) {
                 $calendarevent->update($event, false);

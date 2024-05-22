@@ -63,11 +63,10 @@ class view_student implements renderable, templatable {
         $assignment = new assign(null);
         $assignment->load_db($this->coursemoduleid);
         $grade = new grade(null);
-        $grade->load_db($this->coursemoduleid, $USER->id);
+        $grade->load_db($assignment->get_id(), $USER->id);
 
         $data = new \stdClass();
         $data->externallink = $grade->get_externallink();
-        $data->gradingstatus = 'TODO';
         $data->modified = format_time($assignment->get_timemodified());
         $timeremaining = $assignment->get_duedate() - time();
         if ($timeremaining <= 0) {
@@ -81,8 +80,10 @@ class view_student implements renderable, templatable {
         $data->externalgrademax = $assignment->get_externalgrademax();
         $data->manualgrade = $grade->get_manualgrade();
         $data->manualgrademax = $assignment->get_manualgrademax();
+        $data->hasmanualgrade = $data->manualgrademax > 0;
         $data->totalgrade = $data->externalgrade + $data->manualgrade;
         $data->totalgrademax = $data->externalgrademax + $data->manualgrademax;
+        $data->passinggrade = $data->totalgrademax * $assignment->get_passingpercentage() / 100;
 
         $data->externalfeedback = format_text($grade->get_externalfeedback(), FORMAT_MARKDOWN);
         $data->manualfeedback = $grade->get_manualfeedback();

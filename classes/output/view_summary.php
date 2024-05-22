@@ -67,7 +67,8 @@ class view_summary implements renderable, templatable {
         $data = new \stdClass();
         $data->link_grading = "view.php?id=$this->coursemoduleid&action=grading";
         $data->link_grader = "view.php?id=$this->coursemoduleid&action=grader";
-        $data->hidden = 'TODO hidden';
+        $data->externalgrademax = $assignment->get_externalgrademax();
+        $data->manualgrademax = $assignment->get_manualgrademax();
         $data->student_count = $gradecontrol->count_coursemodule_students();
         $data->graded_count = $gradecontrol->count_grades();
 

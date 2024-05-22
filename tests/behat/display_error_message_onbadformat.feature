@@ -30,6 +30,7 @@ Feature: Check that the assignment grade can not be input in a wrong format.
     When I am on the "Test assignment name" Activity page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Student 1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 100)" to "50,,6"
     And I press "Save changes"
     Then I should see "You must enter a number here"
@@ -39,6 +40,7 @@ Feature: Check that the assignment grade can not be input in a wrong format.
     When I am on the "Test assignment name" Activity page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Student 1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 100)" to "50..6"
     And I press "Save changes"
     Then I should see "You must enter a number here"
@@ -48,6 +50,7 @@ Feature: Check that the assignment grade can not be input in a wrong format.
     When I am on the "Test assignment name" Activity page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Student 1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 10)" to "43,,2"
     And I press "Save changes"
     Then I should see "- Mandatory"
@@ -57,6 +60,7 @@ Feature: Check that the assignment grade can not be input in a wrong format.
     When I am on the "Test assignment name" Activity page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Student 1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 10)" to "4..3"
     And I press "Save changes"
     Then I should see "- Mandatory"

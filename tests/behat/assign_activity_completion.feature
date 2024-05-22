@@ -71,23 +71,28 @@ Feature: View activity completion in the assignment activity
     Then "Automatic completion" should have the "Receive a passing grade" completion condition
 
   @javascript
-  Scenario: View automatic completion items as a student
+  Scenario: View pending automatic completion item as a student
     Given I am on the "Automatic completion" "externalassignment activity" page logged in as student1
     And the "Receive a passing grade" completion condition of "Automatic completion" is displayed as "todo"
     And I log out
     And I am on the "Automatic completion" "externalassignment activity" page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Vinnie Student1" "table_row"
+    And I wait "10" seconds
     And I set the field "Grading (max. 100)" to "30"
     And I set the field "Grading (max. 10)" to "5"
     And I press "Save changes"
     And I log out
     And I am on the "Automatic completion" "externalassignment activity" page logged in as student1
-    And the "Receive a passing grade" completion condition of "Automatic completion" is displayed as "todo"
-    And I log out
-    And I am on the "Automatic completion" "externalassignment activity" page logged in as teacher1
+    Then the "Receive a passing grade" completion condition of "Automatic completion" is displayed as "todo"
+
+
+  @javascript
+  Scenario: View passed automatic completion items as a student
+    Given I am on the "Automatic completion" "externalassignment activity" page logged in as teacher1
     And I follow "Show all"
     And I click on "Grade" "link" in the "Vinnie Student1" "table_row"
+    And I wait "5" seconds
     And I set the field "Grading (max. 100)" to "70"
     And I set the field "Grading (max. 10)" to "10"
     And I press "Save changes"

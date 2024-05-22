@@ -53,8 +53,8 @@ function externalassignment_add_instance(\stdClass $instancedata, mod_externalas
  */
 function externalassignment_update_instance(\stdClass $data, $form) {
     $context = context_module::instance($data->coursemodule);
-    $assignment = new assign_control($context, null);
-    return $assignment->update_instance($data, $context->instanceid);
+    $assigncontrol = new assign_control($context, null);
+    return $assigncontrol->update_instance($data, $context->instanceid);
 }
 
 /**
@@ -159,25 +159,13 @@ function externalassignment_cm_info_dynamic(cm_info $coursemodule) {
 function externalassignment_supports($feature) {
     switch ($feature) {
         /*  TODO
-         case FEATURE_GROUPS:
-            return true;
-        case FEATURE_GROUPINGS:
-            return true;
         case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
             return true;
-        case FEATURE_GRADE_OUTCOMES:
-            return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
         case FEATURE_SHOW_DESCRIPTION:
-            return true;
-        case FEATURE_ADVANCED_GRADING:
-            return true;
-        case FEATURE_PLAGIARISM:
-            return true;
-        case FEATURE_COMMENT:
             return true;
          */
         case FEATURE_GRADE_HAS_GRADE:
@@ -200,8 +188,6 @@ function externalassignment_supports($feature) {
  * @throws moodle_exception
  */
 function externalassignment_grade_item_update($modinstance, $grades=null): int {
-    debugging('externalassignment_grade_item_update / $modinstance=' . var_export($modinstance, true));
-
     return grade_update(
         'mod/externalassignment',
         $modinstance->course,
@@ -212,9 +198,17 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
         $grades);
 }
 
+/**
+ * Updates the grade for one student
+ * @param $modinstance
+ * @param $userid
+ * @param $nullifnone
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
-    debugging('externalassignment_update_grades / $modinstance=' . var_export($modinstance, true));
-
     $grade = new grade(null);
     $grade->load_db($modinstance, $userid);
     $gradevalues = new \stdClass;
@@ -249,7 +243,7 @@ function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=t
 function externalassignment_reset_gradebook(int $courseid, string $type='') {
     global $DB;
 
-    $params = array('moduletype'=>'externalassignment', 'courseid'=>$courseid);
+    $params = ['moduletype' => 'externalassignment', 'courseid' => $courseid];
     $sql = 'SELECT a.*, cm.idnumber as cmidnumber, a.course as courseid
             FROM {externalassignment} a, {course_modules} cm, {modules} m
             WHERE m.name=:moduletype AND m.id=cm.module AND cm.instance=a.id AND a.course=:courseid';
@@ -271,7 +265,6 @@ function externalassignment_reset_gradebook(int $courseid, string $type='') {
  * @return bool Returns true if the event is visible to the current user, false otherwise.
  */
 function mod_externalassignment_core_calendar_is_event_visible(calendar_event $event, int $userid = 0): bool {
-    debugging('is_visible /' . var_export($event,true));
     return true;
 }
 
@@ -291,11 +284,10 @@ function mod_externalassignment_core_calendar_provide_event_action(
     \core_calendar\action_factory $factory,
     $userid = 0
 ) {
-    debugging('event_action /' . var_export($event,true));
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['externalassignment'][$event->instance];
     return $factory->create_instance(
-        get_string('FOOBAR', 'externalassigment'),
-        new \moodle_url('/mod/externalassignment/view.php', array('id' => $cm->id)),
+        get_string('view', 'externalassigment'),
+        new \moodle_url('/mod/externalassignment/view.php', ['id' => $cm->id]),
         1,
         true
     );

@@ -86,7 +86,6 @@ class mod_externalassignment_mod_form extends moodleform_mod {
         $mform->addHelpButton('externalgrademax', 'externalgrademax', 'externalassignment');
 
         $mform->addElement('float', 'manualgrademax', get_string('manualgrademax', 'externalassignment'));
-        $mform->addRule('manualgrademax', null, 'required', null, 'client');
         $mform->setDefault('manualgrademax', 0);
         $mform->addHelpButton('manualgrademax', 'manualgrademax', 'externalassignment');
 
