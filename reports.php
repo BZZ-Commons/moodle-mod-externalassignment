@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * shows reports for externalassignment
+ * shows reports for external assignment
  *
  * @package mod_externalassignment
  * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>

@@ -37,15 +37,16 @@ class view_grader_navigation implements renderable, templatable {
      */
     private context $context;
 
-    /** @var int the userid of the currently selected user */
-    private int $userid;
+    /** @var int|null the userid of the currently selected user */
+    private ?int $userid;
 
     /**
      * default constructor
-     * @param $coursemoduleid
-     * @param $context
+     * @param int $coursemoduleid
+     * @param context $context
+     * @param int|null $userid
      */
-    public function __construct(int $coursemoduleid, context $context, int $userid) {
+    public function __construct(int $coursemoduleid, context $context, ?int $userid) {
         $this->coursemoduleid = $coursemoduleid;
         $this->context = $context;
         $this->userid = $userid;
@@ -111,17 +112,17 @@ class view_grader_navigation implements renderable, templatable {
 
     /**
      * Gets the userid
-     * @return int
+     * @return int|null
      */
-    public function get_userid(): int {
+    public function get_userid(): ?int {
         return $this->userid;
     }
 
     /**
      * Sets the userid
-     * @param int $userid
+     * @param int|null $userid
      */
-    public function set_userid(int $userid): void {
+    public function set_userid(?int $userid): void {
         $this->userid = $userid;
     }
 

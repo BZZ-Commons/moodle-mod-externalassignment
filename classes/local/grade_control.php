@@ -45,17 +45,17 @@ class grade_control {
     /** @var array A key used to identify userlists created by this object. */
     private array $userlist;
 
-    /** @var string The key to identify the user */
+    /** @var int The key to identify the user */
     private $userid;
 
     /**
      * default constructor
      * @param $coursemoduleid
      * @param $context
-     * @param $userid
+     * @param int|null $userid
      * @throws \dml_exception
      */
-    public function __construct($coursemoduleid, $context, $userid = 0) {
+    public function __construct($coursemoduleid, $context, ?int $userid = 0) {
         $this->set_coursemoduleid($coursemoduleid);
         $this->set_courseid($context->get_course_context()->instanceid);
         $this->set_context($context);
@@ -362,15 +362,15 @@ class grade_control {
      * Gets the userid
      * @return string
      */
-    public function get_userid(): string {
+    public function get_userid(): ?int {
         return $this->userid;
     }
 
     /**
      * Sets the userid
-     * @param string $userid
+     * @param int|null $userid
      */
-    public function set_userid(string $userid): void {
+    public function set_userid(?int $userid): void {
         $this->userid = $userid;
     }
 

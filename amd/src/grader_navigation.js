@@ -22,18 +22,21 @@
  * @since      4.1
  */
 import {fetchAllStudents} from './repository';
+
 export const init = () => {
-    loadAllStudents().then(() => {
-        document.getElementById('user_autocomplete_downarrow').addEventListener('click', toggleUserlist);
-        document.getElementById('user_autocomplete_input').addEventListener('input', filterUserlist);
-        document.getElementById('user_autocomplete_suggestions').addEventListener('click', selectUser);
-        document.getElementById('previous-user').addEventListener('click', navigateUser);
-        document.getElementById('next-user').addEventListener('click', navigateUser);
-        return true;
-    })
+    loadAllStudents()
+        .then(() => {
+            document.getElementById('user_autocomplete_downarrow').addEventListener('click', toggleUserlist);
+            document.getElementById('user_autocomplete_input').addEventListener('input', filterUserlist);
+            document.getElementById('user_autocomplete_suggestions').addEventListener('click', selectUser);
+            document.getElementById('previous-user').addEventListener('click', navigateUser);
+            document.getElementById('next-user').addEventListener('click', navigateUser);
+            return true;
+        })
         .catch((error) => {
             window.alert('Oops!' + error);
         });
+
 };
 
 /**
@@ -48,7 +51,7 @@ const loadAllStudents = async() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const currentId = urlParams.get('userid');
-    for (let i= 0; i < response.length; i++) {
+    for (let i = 0; i < response.length; i++) {
         addStudents(response[i], dropdown, datalist, currentId);
     }
 };
@@ -84,7 +87,7 @@ function addStudents(student, dropdown, datalist, currentStudentId) {
 function toggleUserlist() {
     let userlist = document.getElementById('user_autocomplete_suggestions');
     if (userlist.style.display === 'none') {
-        userlist.style.display = 'inline';
+        userlist.style.display = 'block';
         document.getElementById('user_autocomplete_input').focus();
     } else {
         userlist.style.display = 'none';

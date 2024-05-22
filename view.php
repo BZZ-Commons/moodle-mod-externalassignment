@@ -155,6 +155,19 @@ function show_grader($context, $coursemoduleid, $userid): void {
     global $PAGE;
     require_capability('mod/assign:reviewgrades', $context);
 
+    $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
+    if ($userid == null) {
+        $userid = array_key_first($gradecontrol->get_userlist());
+        $urlparams = [
+            'id' => $coursemoduleid,
+            'action' => 'grader',
+            'userid' => $userid
+        ];
+
+        $url = new moodle_url('/mod/externalassignment/view.php', $urlparams);
+        redirect($url);
+    }
+
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
     $assignmentname = $context->get_context_name(false, true);
     $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('grade', 'externalassignment');
@@ -168,7 +181,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
     $renderable = new view_grader_navigation($coursemoduleid, $context, $userid);
     echo $output->render($renderable);
 
-    $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
+
     $gradecontrol->process_feedback();
 
     echo $output->footer();
