@@ -25,10 +25,10 @@ Download this plugin as a ZIP archive and install it in your Moodle *(see https:
 
 ### Webservice
 
-Create a new external web service *(See https://docs.moodle.org/403/en/Using_web_services)* and add the function "`mod_assignexternal_update_grade`" to it. This creates an endpoint for the external system to send the grade and feedback. Take note of the token generated for this service.
+Create a new external web service *(See https://docs.moodle.org/403/en/Using_web_services)* and add the function "`mod_externalassignment_update_grade`" to it. This creates an endpoint for the external system to send the grade and feedback. Take note of the token generated for this service.
 #### Definition
 - HTTP-method: `POST`
-- URL: `https://YOURMOODLE.HLQ/webservice/rest/server.php?wstoken=TOKEN&wsfunction=mod_assignexternal_update_grade`
+- URL: `https://YOURMOODLE.HLQ/webservice/rest/server.php?wstoken=TOKEN&wsfunction=mod_externalassignment_update_grade`
 - Body:
     - assignment_name: String
     - user_name: String
