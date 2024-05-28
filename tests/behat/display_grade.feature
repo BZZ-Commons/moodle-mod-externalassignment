@@ -16,9 +16,6 @@ Feature: Check that the assignment grade can be updated correctly
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
-    And the following "groups" exist:
-      | name    | course | idnumber |
-      | Group 1 | C1     | G1       |
     And the following "activity" exists:
       | activity | externalassignment          |
       | course   | C1                          |
