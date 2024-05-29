@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\local;
 
-use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for class assign
@@ -26,9 +25,9 @@ use PHPUnit\Framework\TestCase;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * /
  */
-class GradeTest extends TestCase
+class grade_test extends \advanced_testcase
 {
-    public function constructorWithFormDataCreatesGrade(): void
+    public function testConstructorWithFormData(): void
     {
         $formdata = new \stdClass();
         $formdata->gradeid = 1;
@@ -52,7 +51,7 @@ class GradeTest extends TestCase
         $this->assertEquals('Excellent work!', $grade->get_manualfeedback());
     }
 
-    public function constructorWithoutFormDataCreatesEmptyGrade(): void
+    public function testConstructorWithoutFormData(): void
     {
         $grade = new grade(null);
 
@@ -61,12 +60,40 @@ class GradeTest extends TestCase
         $this->assertNull($grade->get_userid());
         $this->assertEquals('', $grade->get_externallink());
         $this->assertEquals(0.0, $grade->get_externalgrade());
-        $this->assertNull($grade->get_externalfeedback());
+        $this->assertEquals('', $grade->get_externalfeedback());
         $this->assertEquals(0.0, $grade->get_manualgrade());
-        $this->assertNull($grade->get_manualfeedback());
+        $this->assertEquals('', $grade->get_manualfeedback());
     }
 
-    public function toStdClassReturnsGradeAsStdClass(): void
+    public function testSettersAndGetters() {
+        $grade = new grade(null);
+        $grade->set_id(7);
+        $grade->set_externalassignment(6);
+        $grade->set_userid(5);
+        $grade->set_grader(4);
+        $grade->set_externallink('http://example.com');
+        $grade->set_externalgrade(85.0);
+        $grade->set_externalfeedback('Good job!');
+        $grade->set_manualgrade(9.8);
+        $grade->set_manualfeedback('Excellent work!');
+
+        $this->assertEquals(7, $grade->get_id());
+        $this->assertEquals(6, $grade->get_externalassignment());
+        $this->assertEquals(5, $grade->get_userid());
+        $this->assertEquals(4, $grade->get_grader());
+        $this->assertEquals('http://example.com', $grade->get_externallink());
+        $this->assertEquals(85.0, $grade->get_externalgrade());
+        $this->assertEquals('Good job!', $grade->get_externalfeedback());
+        $this->assertEquals(9.8, $grade->get_manualgrade());
+        $this->assertEquals('Excellent work!', $grade->get_manualfeedback());
+
+
+    }
+    public function testLoadDb() {
+
+    }
+
+    public function testToStdClass(): void
     {
         $grade = new grade(null);
         $grade->set_id(1);

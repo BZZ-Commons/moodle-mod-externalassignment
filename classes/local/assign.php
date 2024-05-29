@@ -138,6 +138,7 @@ class assign {
      */
     private function load_data(\stdClass $data): void {
         $this->set_course($data->course);
+        $this->set_coursemodule($data->coursemodule);
         $this->set_name($data->name);
         $this->set_intro($data->intro);
         $this->set_introformat($data->introformat);

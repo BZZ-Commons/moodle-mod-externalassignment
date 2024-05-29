@@ -52,6 +52,15 @@ class grade {
         if (isset($formdata)) {
             $this->load_data($formdata);
             $this->set_externalassignment($formdata->externalassignmentid);
+        } else {
+            $this->set_id(null);
+            $this->set_externalassignment(null);
+            $this->set_userid(null);
+            $this->set_externallink('');
+            $this->set_externalgrade(0.0);
+            $this->set_externalfeedback('');
+            $this->set_manualgrade(0.0);
+            $this->set_manualfeedback('');
         }
         $this->set_grader($USER->id);
 
