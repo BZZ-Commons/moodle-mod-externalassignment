@@ -44,7 +44,7 @@ class assign_test extends \advanced_testcase {
         $formdata->externalgrademax = 100;
         $formdata->manualgrademax = 10;
         $formdata->passingpercentage = 60;
-        $formdata->needspassingrade = 1;
+        $formdata->needspassinggrade = 1;
 
         $assign = new assign($formdata);
 
@@ -150,11 +150,43 @@ class assign_test extends \advanced_testcase {
     public function testToStdClass(): void {
         $assign = new assign(null);
         $assign->set_id(1);
+        $assign->set_course(1);
+        $assign->set_coursemodule(1);
         $assign->set_name('Test Assignment');
+        $assign->set_intro('Test Assignment Description');
+        $assign->set_introformat(1);
+        $assign->set_alwaysshowdescription(true);
+        $assign->set_externalname('Test Assignment');
+        $assign->set_externallink('http://example.com');
+        $assign->set_alwaysshowlink(true);
+        $assign->set_allowsubmissionsfromdate(150000);
+        $assign->set_duedate(151000);
+        $assign->set_cutoffdate(152000);
+        $assign->set_externalgrademax(100);
+        $assign->set_manualgrademax(10);
+        $assign->set_passingpercentage(60);
+        $assign->set_needspassinggrade(1);
+
 
         $stdclass = $assign->to_stdclass();
 
         $this->assertEquals(1, $stdclass->id);
+        $this->assertEquals(1, $stdclass->course);
+        $this->assertEquals(1, $stdclass->coursemodule);
         $this->assertEquals('Test Assignment', $stdclass->name);
+        $this->assertEquals('Test Assignment Description', $stdclass->intro);
+        $this->assertEquals(1, $stdclass->introformat);
+        $this->assertTrue($stdclass->alwaysshowdescription);
+        $this->assertEquals('Test Assignment', $stdclass->externalname);
+        $this->assertEquals('http://example.com', $stdclass->externallink);
+        $this->assertTrue($stdclass->alwaysshowlink);
+        $this->assertEquals(150000, $stdclass->allowsubmissionsfromdate);
+        $this->assertEquals(151000, $stdclass->duedate);
+        $this->assertEquals(152000, $stdclass->cutoffdate);
+        $this->assertEquals(100, $stdclass->externalgrademax);
+        $this->assertEquals(10, $stdclass->manualgrademax);
+        $this->assertEquals(60, $stdclass->passingpercentage);
+        $this->assertEquals(1, $stdclass->needspassinggrade);
+
     }
 }

@@ -161,10 +161,10 @@ class assign_control {
 
         $event->id = $DB->get_field('event',
             'id',
-            array(
+            [
                 'instance' => $this->get_instance()->id,
                 'eventtype' => 'due',
-            )
+            ]
         );
 
         if ($event->id) {   // Does the event already exists?

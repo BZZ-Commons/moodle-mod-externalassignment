@@ -152,6 +152,7 @@ class assign {
         $this->set_externalgrademax($data->externalgrademax);
         $this->set_manualgrademax($data->manualgrademax);
         $this->set_passingpercentage($data->passingpercentage);
+
         if (isset($data->needspassinggrade)) {
             $this->set_needspassinggrade($data->needspassinggrade);
         } else {

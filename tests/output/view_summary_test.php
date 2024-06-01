@@ -13,32 +13,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+namespace mod_externalassignment\output;
+
+use cm_info;
 
 /**
- * redirect from gradebook
+ * Controller for the external assignment
  *
  * @package   mod_externalassignment
  * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class view_summary_test {
+    private $view_summary;
+    public function __construct() {
+        $this->view_summary = new view_summary(1, new \context_module::instance_by_id(1));
+    }
+    public function test_constructor() {
+        $context = new \context_module::instance_by_id(1);
+        $view_summary = new view_summary(1, $context);
+        $this->assertNotNull($view_summary->get_coursemoduleid());
+        $this->assertNotNull($view_summary->get_context());
+    }
 
-require_once('../../config.php');
-global $DB;
-
-$id = required_param('id', PARAM_INT);
-$coursemodule = get_coursemodule_from_id('externalassignment', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', ['id' => $coursemodule->course], '*', MUST_EXIST);
-$assignment = $DB->get_record('externalassignment', ['id' => $coursemodule->instance], '*', MUST_EXIST);
-
-require_login($course, false, $coursemodule);
-$modulecontext = context_module::instance($coursemodule->id);
-
-// Re-direct the user.
-if (has_capability('mod/assign:manage', $modulecontext)) {
-    $url = new moodle_url('reports.php', ['courseid' => $coursemodule->course,
-        'id' => $assignment->id]);
-} else {
-    $url = new moodle_url('view.php', ['id' => $id]);
+    public function export_for_template_test() {
+        $this->view_summary->export_for_template(new \renderer_base());
+    }
 }
-redirect($url);

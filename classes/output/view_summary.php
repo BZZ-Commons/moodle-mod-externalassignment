@@ -36,7 +36,7 @@ class view_summary implements renderable, templatable {
     /** @var context the context of the course module for this assign instance
      *               (or just the course if we are creating a new one)
      */
-    private $context;
+    private context $context;
 
     /**
      * default constructor
@@ -81,6 +81,38 @@ class view_summary implements renderable, templatable {
         $data->timeremaining = $due;
 
         return $data;
+    }
+
+    /**
+     * Gets the coursemoduleid
+     * @return int
+     */
+    public function get_coursemoduleid(): int {
+        return $this->coursemoduleid;
+    }
+
+    /**
+     * Sets the coursemoduleid
+     * @param int $coursemoduleid
+     */
+    public function set_coursemoduleid(int $coursemoduleid): void {
+        $this->coursemoduleid = $coursemoduleid;
+    }
+
+    /**
+     * Gets the context
+     * @return context
+     */
+    public function get_context(): context {
+        return $this->context;
+    }
+
+    /**
+     * Sets the context
+     * @param context $context
+     */
+    public function set_context(context $context): void {
+        $this->context = $context;
     }
 
 }

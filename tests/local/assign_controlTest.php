@@ -27,10 +27,18 @@ use PHPUnit\Framework\TestCase;
  * /
  */
 class assign_controlTest extends TestCase {
+    /** @var \context_module context */
     private $context;
+    /** @var $coursemodule */
     private $coursemodule;
+    /** @var $course */
     private $course;
 
+    /**
+     * Set up the test
+     * @return void
+     * @throws \coding_exception
+     */
     public function test__construct() {
         $assigncontrol = new assign_control($this->context, $this->coursemodule, $this->course);
         $this->assertNotNull($assigncontrol->get_context());
