@@ -15,7 +15,7 @@ This plugin is being developed for my own classes and is still in testing. I try
 ## Installation and configuration
 ### Prerequisite
 #### External username
-To match the grades to the correct user, the username in the external system (i.e. Classroom, ...) must be set in the Moodle user profile. To add an additional field to the user profile see https://docs.moodle.org/402/en/User_profile_fields.
+To match the grades to the correct user, the username in the external system (i.e. Classroom, ...) must be set in the Moodle user profile. To add an additional field to the user profile see https://docs.moodle.org/403/en/User_profile_fields.
 
 This screenshot shows our setup:
 ![Custom field for user profile](https://it.bzz.ch/wikiV2/_media/howto/git/grading/classroom_moodle_userprofile.png)
