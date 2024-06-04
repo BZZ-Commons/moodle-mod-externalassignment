@@ -50,7 +50,6 @@ class assign_test extends \advanced_testcase {
 
         $this->assertEquals(5, $assign->get_id());
         $this->assertEquals(4, $assign->get_course());
-        $this->assertEquals(0, $assign->get_coursemodule());
         $this->assertEquals('Test Assignment', $assign->get_name());
         $this->assertEquals('Test Assignment Description', $assign->get_intro());
         $this->assertEquals(1, $assign->get_introformat());
@@ -88,7 +87,6 @@ class assign_test extends \advanced_testcase {
         $assign->load_db($instance->coursemodule);
         $this->assertEquals($instance->id, $assign->get_id());
         $this->assertEquals($instance->course, $assign->get_course());
-        $this->assertEquals($instance->coursemodule, $assign->get_coursemodule());
         $this->assertEquals($instance->name, $assign->get_name());
         $this->assertEquals($instance->intro, $assign->get_intro());
         $this->assertEquals($instance->introformat, $assign->get_introformat());
@@ -109,7 +107,6 @@ class assign_test extends \advanced_testcase {
         $assign = new assign(null);
         $assign->set_id(5);
         $assign->set_course(4);
-        $assign->set_coursemodule(3);
         $assign->set_name('Test Assignment');
         $assign->set_intro('Test Assignment Description');
         $assign->set_introformat(1);
@@ -128,7 +125,6 @@ class assign_test extends \advanced_testcase {
 
         $this->assertEquals(5, $assign->get_id());
         $this->assertEquals(4, $assign->get_course());
-        $this->assertEquals(3, $assign->get_coursemodule());
         $this->assertEquals('Test Assignment', $assign->get_name());
         $this->assertEquals('Test Assignment Description', $assign->get_intro());
         $this->assertEquals(1, $assign->get_introformat());
@@ -151,7 +147,6 @@ class assign_test extends \advanced_testcase {
         $assign = new assign(null);
         $assign->set_id(1);
         $assign->set_course(1);
-        $assign->set_coursemodule(1);
         $assign->set_name('Test Assignment');
         $assign->set_intro('Test Assignment Description');
         $assign->set_introformat(1);
@@ -172,7 +167,6 @@ class assign_test extends \advanced_testcase {
 
         $this->assertEquals(1, $stdclass->id);
         $this->assertEquals(1, $stdclass->course);
-        $this->assertEquals(1, $stdclass->coursemodule);
         $this->assertEquals('Test Assignment', $stdclass->name);
         $this->assertEquals('Test Assignment Description', $stdclass->intro);
         $this->assertEquals(1, $stdclass->introformat);

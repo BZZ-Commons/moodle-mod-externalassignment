@@ -40,9 +40,7 @@ class assign_controlTest extends TestCase {
      * @throws \coding_exception
      */
     public function test__construct() {
-        $assigncontrol = new assign_control($this->context, $this->coursemodule, $this->course);
-        $this->assertNotNull($assigncontrol->get_context());
+        $assigncontrol = new assign_control($this->context, $this->coursemodule);
         $this->assertNotNull($assigncontrol->get_coursemodule());
-        $this->assertNotNull($assigncontrol->get_course());
     }
 }

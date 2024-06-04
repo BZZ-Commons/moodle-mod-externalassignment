@@ -28,8 +28,7 @@ class assign {
     private ?int $id;
     /** @var int|null the id of the course this assignment belongs to */
     private ?int $course;
-    /** @var int|null the coursemodule of this assignment */
-    private ?int $coursemodule;
+
     /** @var string the name of the assignment */
     private string $name;
     /** @var string the description of the assignment */
@@ -69,7 +68,6 @@ class assign {
         if (isset($formdata)) {
             $this->load_data($formdata);
             $this->set_id((int)$formdata->instance);
-            $this->set_coursemodule('0');
             $this->set_timemodified(time());
         } else {
             $this->set_id(null);
@@ -112,7 +110,7 @@ class assign {
     public function load_db_external(string $assignmentname, int $userid): void {
         global $DB;
         $query =
-            'SELECT ae.id, ae.course, ae.coursemodule, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname' .
+            'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname' .
             ' FROM {user_enrolments} ue' .
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
@@ -127,7 +125,6 @@ class assign {
         if (!empty($data)) {
             $this->set_id($data->id);
             $this->set_course($data->course);
-            $this->set_coursemodule($data->coursemodule);
             $this->set_externalgrademax($data->externalgrademax);
             $this->set_duedate($data->duedate);
             $this->set_cutoffdate($data->cutoffdate);
@@ -143,7 +140,6 @@ class assign {
      */
     private function load_data(\stdClass $data): void {
         $this->set_course($data->course);
-        $this->set_coursemodule($data->coursemodule);
         $this->set_name($data->name);
         $this->set_intro($data->intro);
         $this->set_introformat($data->introformat);
@@ -210,22 +206,6 @@ class assign {
      */
     public function set_course(?int $course): void {
         $this->course = $course;
-    }
-
-    /**
-     * Gets the coursemodule
-     * @return int|null
-     */
-    public function get_coursemodule(): ?int {
-        return $this->coursemodule;
-    }
-
-    /**
-     * Sets the coursemodule
-     * @param int|null $coursemodule
-     */
-    public function set_coursemodule(?int $coursemodule): void {
-        $this->coursemodule = $coursemodule;
     }
 
     /**

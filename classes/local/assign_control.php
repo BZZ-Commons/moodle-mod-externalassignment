@@ -32,7 +32,10 @@ class assign_control {
     private ?cm_info $coursemodule;
 
     /** @var \stdClass the course this assign instance belongs to */
-    private $course;
+    private \stdClass $course;
+
+    /** @var int the course module id */
+    private int $coursemoduleid;
 
     /**
      * Default constructor
@@ -54,8 +57,9 @@ class assign_control {
     public function add_instance(\stdClass $formdata, int $coursemoduleid) {
         global $DB;
         $assign = new assign($formdata);
-        $assign->set_coursemodule($coursemoduleid);
+
         $returnid = $DB->insert_record('externalassignment', $assign->to_stdclass());
+        $this->set_coursemoduleid($coursemoduleid);
         $this->set_instance($DB->get_record('externalassignment', ['id' => $returnid], '*', MUST_EXIST));
         // Cache the course record.
         $this->set_course($DB->get_record('course', ['id' => $formdata->course], '*', MUST_EXIST));
@@ -74,7 +78,7 @@ class assign_control {
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
         $assign = new assign($formdata);
-        $assign->set_coursemodule($coursemoduleid);
+        $this->set_coursemoduleid($coursemoduleid);
         $result = $DB->update_record('externalassignment', $assign->to_stdclass());
         $this->set_instance($DB->get_record('externalassignment', ['id' => $assign->get_id()], '*', MUST_EXIST));
         $this->set_course($DB->get_record('course', ['id' => $formdata->course], '*', MUST_EXIST));
@@ -91,6 +95,7 @@ class assign_control {
      */
     public function delete_instance(int $id): void {
         global $DB;
+        $this->set_coursemoduleid($id);
         $eventid = $DB->get_field('event',
             'id',
             [
@@ -146,7 +151,7 @@ class assign_control {
         $event->description = format_module_intro(
             'externalassignment',
             $this->get_instance(),
-            $this->get_instance()->coursemodule,
+            $this->get_coursemoduleid(),
             false
         );
         $event->format = FORMAT_HTML;
@@ -212,6 +217,23 @@ class assign_control {
     public function set_coursemodule(?cm_info $coursemodule): void {
         $this->coursemodule = $coursemodule;
     }
+
+    /**
+     * Gets the coursemoduleid
+     * @return int
+     */
+    public function get_coursemoduleid(): int {
+        return $this->coursemoduleid;
+    }
+
+    /**
+     * Sets the coursemoduleid
+     * @param int $coursemoduleid
+     */
+    public function set_coursemoduleid(int $coursemoduleid): void {
+        $this->coursemoduleid = $coursemoduleid;
+    }
+
 
     /**
      * Gets the course

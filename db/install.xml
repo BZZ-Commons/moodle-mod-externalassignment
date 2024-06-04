@@ -8,7 +8,6 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="coursemodule" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the instance of the assignment. Displayed at the top of each page."/>
                 <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The description of the assignment. This field is used by feature MOD_INTRO."/>
                 <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The format of the description field of the assignment. This field is used by feature MOD_INTRO."/>
