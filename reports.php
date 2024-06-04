@@ -42,4 +42,4 @@ require_login($course, true, $coursemodule);
 $coursecontext = context_course::instance($courseid);
 $modulecontext = context_module::instance($coursemodule->id);
 
-require_capability('mod/assignment:view', $modulecontext);
+require_capability('mod/externalassignment:view', $modulecontext);

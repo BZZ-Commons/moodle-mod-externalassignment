@@ -39,7 +39,7 @@ $coursemoduleid = required_param('id', PARAM_INT);
 list ($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'externalassignment');
 require_login($course, true, $coursemodule);
 $context = context_module::instance($coursemodule->id);
-require_capability('mod/assign:view', $context);
+require_capability('mod/externalassignment:view', $context);
 
 $urlparams = [
     'id' => $coursemoduleid,
@@ -124,7 +124,7 @@ function show_details($context, $coursemoduleid): void {
  */
 function show_grading($context, $coursemoduleid): void {
     global $PAGE;
-    require_capability('mod/assign:reviewgrades', $context);
+    require_capability('mod/externalassignment:reviewgrades', $context);
 
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
     $assignmentname = $context->get_context_name(false, true);
@@ -153,7 +153,7 @@ function show_grading($context, $coursemoduleid): void {
  */
 function show_grader($context, $coursemoduleid, $userid): void {
     global $PAGE;
-    require_capability('mod/assign:reviewgrades', $context);
+    require_capability('mod/externalassignment:reviewgrades', $context);
 
     $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
     if ($userid == null) {

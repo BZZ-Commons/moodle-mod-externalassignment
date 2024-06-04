@@ -23,6 +23,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_externalassignment_activity_structure_step extends restore_activity_structure_step {
+    /**
+     * Define the structure of the externalassignment element
+     */
     protected function define_structure() {
 
         $paths = [];

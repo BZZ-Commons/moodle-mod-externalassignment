@@ -24,7 +24,7 @@
  */
 
 require_once('../../config.php');
-global $DB;
+global $DB, $OUTPUT, $PAGE;
 
 // The `id` parameter is the course id.
 $id = required_param('id', PARAM_INT);
@@ -34,9 +34,20 @@ $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 // Require that the user is logged into the course.
 require_course_login($course);
+$PAGE->set_pagelayout('incourse');
+$PAGE->set_url('/mod/externalassignment/index.php', array('id' => $course->id));
+$PAGE->set_title($course->shortname.': '. get_string('modulenameplural', 'externalassignment'));
+$PAGE->set_heading($course->fullname);
+$PAGE->navbar->add(get_string('modulenameplural', 'externalassignment'));
+echo $OUTPUT->header();
 
+$table = new html_table();
+$table->head = [get_string('name', 'externalassignment')];
 $modinfo = get_fast_modinfo($course);
 
 foreach ($modinfo->get_instances_of('[modinfo]') as $instanceid => $cm) {
-    // TODO Display information about your activity.
+    $link = '<a href="view.php?id=' . $instanceid .'">'.format_string($cm->name, true).'</a>';
+    $table->data[] = [$link];
 }
+echo html_writer::table($table);
+echo $OUTPUT->footer();

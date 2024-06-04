@@ -67,7 +67,7 @@ class read_students extends external_api {
         );
         $context = context_course::instance($courseid);
         self::validate_context($context);
-        require_capability('mod/assign:reviewgrades', $context);
+        require_capability('mod/externalassignment:reviewgrades', $context);
         $users = get_enrolled_users($context, 'mod/assign:submit');
         $students = [];
         foreach ($users as $user) {

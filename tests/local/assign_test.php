@@ -26,7 +26,10 @@ namespace mod_externalassignment\local;
  * /
  */
 class assign_test extends \advanced_testcase {
-    public function testConstructorWithFormData(): void {
+    /**
+     * Test constructor with formdata simulation the add/edit form
+     */
+    public function test_constructor_with_formdata(): void {
         $formdata = new \stdClass();
         $formdata->instance = 5;
         $formdata->course = 4;
@@ -67,16 +70,20 @@ class assign_test extends \advanced_testcase {
 
     }
 
-    public function testConstructorWithoutFormData(): void {
+    /**
+     * Test constructor without formdata
+     */
+    public function test_constructor_without_formdata(): void {
         $assign = new assign(null);
         $this->assertNull($assign->get_id());
     }
 
     /**
+     * Test loaddata
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function testLoadData(): void {
+    public function test_loaddata(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         $course = $this->getDataGenerator()->create_course();
@@ -103,7 +110,12 @@ class assign_test extends \advanced_testcase {
         $this->assertEquals($instance->needspassinggrade, $assign->get_needspassinggrade());
     }
 
-    public function testSettersGetters(): void {
+    /**
+     * Test the setters and getters
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_setters_getters(): void {
         $assign = new assign(null);
         $assign->set_id(5);
         $assign->set_course(4);
@@ -122,7 +134,6 @@ class assign_test extends \advanced_testcase {
         $assign->set_passingpercentage(60);
         $assign->set_needspassinggrade(1);
 
-
         $this->assertEquals(5, $assign->get_id());
         $this->assertEquals(4, $assign->get_course());
         $this->assertEquals('Test Assignment', $assign->get_name());
@@ -139,11 +150,13 @@ class assign_test extends \advanced_testcase {
         $this->assertEquals(10, $assign->get_manualgrademax());
         $this->assertEquals(60, $assign->get_passingpercentage());
         $this->assertEquals(1, $assign->get_needspassinggrade());
-
     }
 
 
-    public function testToStdClass(): void {
+    /**
+     * Test the casting to a stdclass
+     */
+    public function test_to_stdclass(): void {
         $assign = new assign(null);
         $assign->set_id(1);
         $assign->set_course(1);
@@ -161,7 +174,6 @@ class assign_test extends \advanced_testcase {
         $assign->set_manualgrademax(10);
         $assign->set_passingpercentage(60);
         $assign->set_needspassinggrade(1);
-
 
         $stdclass = $assign->to_stdclass();
 
@@ -181,6 +193,5 @@ class assign_test extends \advanced_testcase {
         $this->assertEquals(10, $stdclass->manualgrademax);
         $this->assertEquals(60, $stdclass->passingpercentage);
         $this->assertEquals(1, $stdclass->needspassinggrade);
-
     }
 }

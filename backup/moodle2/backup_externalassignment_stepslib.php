@@ -86,7 +86,7 @@ class backup_externalassignment_activity_structure_step extends backup_activity_
         $grade->annotate_ids('user', 'userid');
         $override->annotate_ids('user', 'userid');
 
-        // Define file annotations
+        // Define file annotations.
         $assignment->annotate_files('mod_externalassignment', 'intro', null);
 
         // Return the root element, wrapped into standard activity structure.

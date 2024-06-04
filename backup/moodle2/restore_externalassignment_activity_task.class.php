@@ -74,14 +74,26 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      * of {@link restore_log_rule} objects
      */
     public static function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
-        $rules[] = new restore_log_rule('externalassignment', 'add', 'view.php?id={course_module}', '{externalassignment}');
-        $rules[] = new restore_log_rule('externalassignment', 'update', 'view.php?id={course_module}', '{externalassignment}');
-        $rules[] = new restore_log_rule('externalassignment', 'view', 'view.php?id={course_module}', '{externalassignment}');
-        $rules[] = new restore_log_rule('externalassignment', 'choose', 'view.php?id={course_module}', '{externalassignment}');
-        $rules[] = new restore_log_rule('externalassignment', 'choose again', 'view.php?id={course_module}', '{externalassignment}');
-        $rules[] = new restore_log_rule('externalassignment', 'report', 'report.php?id={course_module}', '{externalassignment}');
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'add', 'view.php?id={course_module}', '{externalassignment}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'update', 'view.php?id={course_module}', '{externalassignment}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'view', 'view.php?id={course_module}', '{externalassignment}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'choose', 'view.php?id={course_module}', '{externalassignment}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'choose again', 'view.php?id={course_module}', '{externalassignment}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment', 'report', 'report.php?id={course_module}', '{externalassignment}'
+        );
 
         return $rules;
     }
@@ -97,7 +109,7 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
     public static function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         // Fix old wrong uses (missing extension).
         $rules[] = new restore_log_rule(

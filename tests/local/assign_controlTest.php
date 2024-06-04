@@ -24,7 +24,6 @@ use PHPUnit\Framework\TestCase;
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
 class assign_controlTest extends TestCase {
     /** @var \context_module context */

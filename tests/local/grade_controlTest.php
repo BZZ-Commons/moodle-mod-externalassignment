@@ -20,6 +20,10 @@ use PHPUnit\Framework\TestCase;
 /**
  * Unit tests for class grade_control
  * @group mod_externalassignment
+ * @package mod_externalassignment
+ * @category test
+ * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grade_controlTest extends TestCase {
     public function test__construct() {

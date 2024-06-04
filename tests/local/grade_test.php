@@ -27,8 +27,10 @@ namespace mod_externalassignment\local;
  */
 class grade_test extends \advanced_testcase
 {
-    public function testConstructorWithFormData(): void
-    {
+    /**
+     * Test constructor with formdata simulation the add/edit form
+     */
+    public function test_constructor_with_formdata(): void    {
         $formdata = new \stdClass();
         $formdata->gradeid = 1;
         $formdata->externalassignmentid = 1;
@@ -51,8 +53,10 @@ class grade_test extends \advanced_testcase
         $this->assertEquals('Excellent work!', $grade->get_manualfeedback());
     }
 
-    public function testConstructorWithoutFormData(): void
-    {
+    /**
+     * Test constructor without formdata
+     */
+    public function test_constructor_without_formdata(): void    {
         $grade = new grade(null);
 
         $this->assertNull($grade->get_id());
@@ -65,7 +69,10 @@ class grade_test extends \advanced_testcase
         $this->assertEquals('', $grade->get_manualfeedback());
     }
 
-    public function testSettersAndGetters() {
+    /**
+     * Test setters and getters
+     */
+    public function test_setters_getters() {
         $grade = new grade(null);
         $grade->set_id(7);
         $grade->set_externalassignment(6);
@@ -101,8 +108,10 @@ class grade_test extends \advanced_testcase
     }
     */
 
-    public function testToStdClass(): void
-    {
+    /**
+     * Test casting to stdclass
+     */
+    public function test_to_stdclass(): void    {
         $grade = new grade(null);
         $grade->set_id(1);
         $grade->set_externalassignment(1);
