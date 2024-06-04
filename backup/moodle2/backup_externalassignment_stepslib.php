@@ -22,15 +22,15 @@
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class backup_externalassignment_activity_structure_step extends backup_activity_structure_step {
 
+    /**
+     * Define the structure of the externalassignment element
+     */
     protected function define_structure() {
+        $userinfo = $this->get_setting_value('userinfo'); // To know if we are including userinfo.
 
-        // To know if we are including userinfo
-        $userinfo = $this->get_setting_value('userinfo');
-
-        // Define each element separated
+        // Define each element separated.
         $assignment = new backup_nested_element(
             'externalassignment',
             ['id'],
@@ -59,39 +59,37 @@ class backup_externalassignment_activity_structure_step extends backup_activity_
             ]
         );
 
-        // Build the tree
+        // Build the tree.
         $assignment->add_child($grades);
         $grades->add_child($grade);
         $assignment->add_child($overrides);
         $overrides->add_child($override);
 
-        // Define sources
+        // Define sources.
         $assignment->set_source_table('externalassignment', ['id' => backup::VAR_ACTIVITYID]);
         if ($userinfo) {
-            $grade->set_source_sql('
-                SELECT * 
-                  FROM {externalassignment_grades} 
-                 WHERE externalassignment = ?
-             ',
+            $grade->set_source_sql(
+                'SELECT * ' .
+                    '  FROM {externalassignment_grades} ' .
+                    ' WHERE externalassignment = ?',
                 [backup::VAR_PARENTID],
             );
 
-            $override->set_source_sql('
-                SELECT * 
-                  FROM {externalassignment_overrides} 
-                 WHERE externalassignment = ?
-             ',
+            $override->set_source_sql(
+                'SELECT * '.
+                '  FROM {externalassignment_overrides} '.
+                ' WHERE externalassignment = ?',
                 [backup::VAR_PARENTID],
             );
         }
-        // Define id annotations
+        // Define id annotations.
         $grade->annotate_ids('user', 'userid');
         $override->annotate_ids('user', 'userid');
 
         // Define file annotations
         $assignment->annotate_files('mod_externalassignment', 'intro', null);
 
-        // Return the root element, wrapped into standard activity structure
+        // Return the root element, wrapped into standard activity structure.
         return $this->prepare_activity_structure($assignment);
     }
 }

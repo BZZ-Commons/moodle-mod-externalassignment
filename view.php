@@ -161,7 +161,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
         $urlparams = [
             'id' => $coursemoduleid,
             'action' => 'grader',
-            'userid' => $userid
+            'userid' => $userid,
         ];
 
         $url = new moodle_url('/mod/externalassignment/view.php', $urlparams);
@@ -180,10 +180,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
 
     $renderable = new view_grader_navigation($coursemoduleid, $context, $userid);
     echo $output->render($renderable);
-
-
     $gradecontrol->process_feedback();
-
     echo $output->footer();
 }
 

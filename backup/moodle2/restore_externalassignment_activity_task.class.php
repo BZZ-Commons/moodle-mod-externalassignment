@@ -13,6 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+defined('MOODLE_INTERNAL') || die();
+// Because it must exist.
+require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/restore_externalassignment_stepslib.php');
+
 
 /**
  * Define all the restore steps that will be used by the restore_externalassignment_activity_task
@@ -21,21 +25,19 @@
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/restore_externalassignment_stepslib.php'); // Because it exists (must)
 class restore_externalassignment_activity_task extends restore_activity_task {
 
     /**
-     * Define (add) particular settings this activity can have
+     * Define (add) particular settings this activity can have, none at this time
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
     }
 
     /**
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // externalassignment only has one structure step
+        // Activity externalassignment only has one structure step.
         $this->add_step(
             new restore_externalassignment_activity_structure_step(
                 'externalassignment_structure', 'externalassignment.xml'
@@ -47,7 +49,7 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      * Define the decoding rules for links belonging
      * to the activity to be executed by the link decoder
      */
-    static public function define_decode_rules() {
+    public static function define_decode_rules() {
         $rules = [];
 
         $rules[] = new restore_decode_rule('EXTERNALASSIGNMENTVIEWBYID', '/mod/externalassignment/view.php?id=$1', 'course_module');
@@ -57,8 +59,11 @@ class restore_externalassignment_activity_task extends restore_activity_task {
 
     }
 
+    /**
+     * Define structure of the restored externalassignment
+     */
     protected function define_course_plugin_structure() {
-        $paths = array();
+        $paths = [];
         $this->step->log('Yay, restore!', backup::LOG_DEBUG);
         return $paths;
     }
@@ -68,7 +73,7 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      * externalassignment logs. It must return one array
      * of {@link restore_log_rule} objects
      */
-    static public function define_restore_log_rules() {
+    public static function define_restore_log_rules() {
         $rules = array();
 
         $rules[] = new restore_log_rule('externalassignment', 'add', 'view.php?id={course_module}', '{externalassignment}');
@@ -91,13 +96,25 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      * by the restore final task, but are defined here at
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
-    static public function define_restore_log_rules_for_course() {
+    public static function define_restore_log_rules_for_course() {
         $rules = array();
 
-        // Fix old wrong uses (missing extension)
-        $rules[] = new restore_log_rule('externalassignment', 'view all', 'index?id={course}', null,
-            null, null, 'index.php?id={course}');
-        $rules[] = new restore_log_rule('externalassignment', 'view all', 'index.php?id={course}', null);
+        // Fix old wrong uses (missing extension).
+        $rules[] = new restore_log_rule(
+            'externalassignment',
+            'view all',
+            'index?id={course}',
+            null,
+            null,
+            null,
+            'index.php?id={course}'
+        );
+        $rules[] = new restore_log_rule(
+            'externalassignment',
+            'view all',
+            'index.php?id={course}',
+            null
+        );
 
         return $rules;
     }

@@ -41,10 +41,15 @@ class restore_externalassignment_activity_structure_step extends restore_activit
             );
         }
 
-        // Return the paths wrapped into standard activity structure
+        // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
     }
 
+    /**
+     * Process externalassignment element
+     *
+     * @param array $data
+     */
     protected function process_externalassignment($data) {
         global $DB;
 
@@ -58,10 +63,15 @@ class restore_externalassignment_activity_structure_step extends restore_activit
 
         $newitemid = $DB->insert_record('externalassignment', $data);
 
-        // immediately after inserting "activity" record, call this
+        // Immediately after inserting "activity" record, call this!
         $this->apply_activity_instance($newitemid);
     }
 
+    /**
+     * Process externalassignment grades element
+     *
+     * @param array $data
+     */
     protected function process_externalassignment_grades($data) {
         global $DB;
 
@@ -74,6 +84,11 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $this->set_mapping('externalassignment_grades', $oldid, $newitemid);
     }
 
+    /**
+     * Process externalassignment overrides element
+     *
+     * @param array $data
+     */
     protected function process_externalassignment_overrides($data) {
         global $DB;
 
@@ -86,6 +101,9 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $this->set_mapping('externalassignment_overrides', $oldid, $newitemid);
     }
 
+    /**
+     * After execute the step, add related files
+     */
     protected function after_execute() {
         // Add choice related files, no need to match by itemname (just internally handled context)
         $this->add_related_files('mod_externalassignment', 'intro', null);

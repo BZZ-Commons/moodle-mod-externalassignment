@@ -13,6 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/backup_externalassignment_stepslib.php');
 
 /**
  * externalassignment backup task that provides all the settings and steps to perform one
@@ -23,31 +26,37 @@
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-global $CFG;
-require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/backup_externalassignment_stepslib.php');
 class backup_externalassignment_activity_task extends backup_activity_task {
+    /**
+     * No specific settings for this activity
+     */
     protected function define_my_settings() {
-        // No settings
     }
 
+    /**
+     * Define the backup steps
+     */
     protected function define_my_steps() {
-        // External assignment only has one structure step
-        $this->add_step(new backup_externalassignment_activity_structure_step('externalassignment_structure', 'externalassignment.xml'));
+        $this->add_step(new backup_externalassignment_activity_structure_step(
+            'externalassignment_structure',
+            'externalassignment.xml'
+        ));
     }
 
-    static public function encode_content_links($content) {
+    /**
+     * Encode all links in the contents of the activity
+     */
+    public static function encode_content_links($content) {
         global $CFG;
-        $base = preg_quote($CFG->wwwroot,"/");
+        $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of choices
-        $search="/(".$base."\/mod\/externalassignment\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@CHOICEINDEX*$2@$', $content);
+        // Link to the list of choices.
+        $search = "/(" . $base . "\/mod\/externalassignment\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@CHOICEINDEX*$2@$', $content);
 
-        // Link to choice view by moduleid
-        $search="/(".$base."\/mod\/externalassignment\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@CHOICEVIEWBYID*$2@$', $content);
+        // Link to choice view by moduleid.
+        $search = "/(" . $base . "\/mod\/externalassignment\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@CHOICEVIEWBYID*$2@$', $content);
         return $content;
     }
 }
