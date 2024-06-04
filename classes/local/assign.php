@@ -84,7 +84,12 @@ class assign {
      */
     public function load_db(int $coursemoduleid): void {
         global $DB;
-        $data = $DB->get_record('externalassignment', ['coursemodule' => $coursemoduleid]);
+        $query = 'SELECT cm.instance, ae.* ' .
+            'FROM {course_modules} cm ' .
+            'JOIN {externalassignment} ae ON (cm.instance = ae.id) ' .
+            'WHERE cm.id=:coursemoduleid';
+        $data = $DB->get_record_sql($query, ['coursemoduleid' => $coursemoduleid]);
+
         if (!empty($data)) {
             $this->set_id($data->id);
             $this->load_data($data);

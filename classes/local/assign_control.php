@@ -48,12 +48,13 @@ class assign_control {
      * Add this instance to the database.
      *
      * @param \stdClass $formdata The data submitted from the form
+     * @param int $coursemoduleid The course module id
      * @return mixed false if an error occurs or the int id of the new instance
      */
-    public function add_instance(\stdClass $formdata) {
+    public function add_instance(\stdClass $formdata, int $coursemoduleid) {
         global $DB;
         $assign = new assign($formdata);
-        $assign->set_coursemodule($formdata->coursemodule);
+        $assign->set_coursemodule($coursemoduleid);
         $returnid = $DB->insert_record('externalassignment', $assign->to_stdclass());
         $this->set_instance($DB->get_record('externalassignment', ['id' => $returnid], '*', MUST_EXIST));
         // Cache the course record.

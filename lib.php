@@ -40,7 +40,7 @@ use mod_externalassignment\local\grade;
 function externalassignment_add_instance(\stdClass $instancedata, mod_externalassignment_mod_form $mform = null) {
     $instance = context_module::instance($instancedata->coursemodule);
     $assigncontrol = new assign_control($instance, null);
-    return $assigncontrol->add_instance($instancedata, $instance->instanceid);
+    return $assigncontrol->add_instance($instancedata, $instancedata->coursemodule);
 }
 
 /**
@@ -163,11 +163,12 @@ function externalassignment_supports($feature) {
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
             return true;
-        case FEATURE_BACKUP_MOODLE2:
-            return true;
+
         case FEATURE_SHOW_DESCRIPTION:
             return true;
          */
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
         case FEATURE_GRADE_HAS_GRADE:
             return true;
         case FEATURE_COMPLETION_HAS_RULES:
