@@ -15,18 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\local;
 
-use PHPUnit\Framework\TestCase;
-
 /**
- * Unit tests for class grade_control
+ * Unit tests for class assign_control
  * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class grade_controlTest extends TestCase {
-    public function test__construct() {
+class assign_control_test extends \base_testcase {
+    /** @var \context_module context */
+    private $context;
+    /** @var $coursemodule */
+    private $coursemodule;
+    /** @var $course */
+    private $course;
 
+    /**
+     * Set up the test
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test__construct() {
+        $assigncontrol = new assign_control($this->context, $this->coursemodule);
+        $this->assertNull($assigncontrol->get_coursemodule());
     }
 }

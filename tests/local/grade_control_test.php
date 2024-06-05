@@ -18,28 +18,15 @@ namespace mod_externalassignment\local;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Unit tests for class assign_control
+ * Unit tests for class grade_control
  * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assign_controlTest extends TestCase {
-    /** @var \context_module context */
-    private $context;
-    /** @var $coursemodule */
-    private $coursemodule;
-    /** @var $course */
-    private $course;
-
-    /**
-     * Set up the test
-     * @return void
-     * @throws \coding_exception
-     */
+class grade_control_test extends \base_testcase {
     public function test__construct() {
-        $assigncontrol = new assign_control($this->context, $this->coursemodule);
-        $this->assertNotNull($assigncontrol->get_coursemodule());
+
     }
 }

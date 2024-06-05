@@ -25,12 +25,13 @@ namespace mod_externalassignment\local;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * /
  */
-class grade_test extends \advanced_testcase
-{
+class grade_test extends \advanced_testcase {
     /**
      * Test constructor with formdata simulation the add/edit form
+     * @covers \grade::__construct
+     * @covers \grade::load_data
      */
-    public function test_constructor_with_formdata(): void    {
+    public function test_constructor_with_formdata(): void {
         $formdata = new \stdClass();
         $formdata->gradeid = 1;
         $formdata->externalassignmentid = 1;
@@ -55,8 +56,9 @@ class grade_test extends \advanced_testcase
 
     /**
      * Test constructor without formdata
+     * @covers \grade::__construct
      */
-    public function test_constructor_without_formdata(): void    {
+    public function test_constructor_without_formdata(): void {
         $grade = new grade(null);
 
         $this->assertNull($grade->get_id());
@@ -71,6 +73,23 @@ class grade_test extends \advanced_testcase
 
     /**
      * Test setters and getters
+     * @covers \grade::set_id
+     * @covers \grade::get_id
+     * @covers \grade::set_externalassignment
+     * @covers \grade::get_externalassignment
+     * @covers \grade::set_userid
+     * @covers \grade::get_userid
+     * @covers \grade::set_externallink
+     * @covers \grade::get_externallink
+     * @covers \grade::set_externalgrade
+     * @covers \grade::get_externalgrade
+     * @covers \grade::set_externalfeedback
+     * @covers \grade::get_externalfeedback
+     * @covers \grade::set_manualgrade
+     * @covers \grade::get_manualgrade
+     * @covers \grade::set_manualfeedback
+     * @covers \grade::get_manualfeedback
+     *
      */
     public function test_setters_getters() {
         $grade = new grade(null);
@@ -93,8 +112,6 @@ class grade_test extends \advanced_testcase
         $this->assertEquals('Good job!', $grade->get_externalfeedback());
         $this->assertEquals(9.8, $grade->get_manualgrade());
         $this->assertEquals('Excellent work!', $grade->get_manualfeedback());
-
-
     }
     /*  TODO
     public function testLoadDb() {
@@ -110,8 +127,9 @@ class grade_test extends \advanced_testcase
 
     /**
      * Test casting to stdclass
+     * @covers \grade::to_stdclass
      */
-    public function test_to_stdclass(): void    {
+    public function test_to_stdclass(): void {
         $grade = new grade(null);
         $grade->set_id(1);
         $grade->set_externalassignment(1);

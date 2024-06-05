@@ -25,10 +25,10 @@ use cm_info;
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class view_summary_test {
-    private $view_summary;
+class view_summary_test extends \base_testcase {
+    private $viewsummary;
     public function __construct() {
-        //$this->view_summary = new view_summary(1, new \context_module::instance_by_id(1));
+       // $this->viewsummary = new view_summary(1, new \context_module::instance_by_id(1));
     }
     public function test_constructor() {
         /*

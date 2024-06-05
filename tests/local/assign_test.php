@@ -28,6 +28,8 @@ namespace mod_externalassignment\local;
 class assign_test extends \advanced_testcase {
     /**
      * Test constructor with formdata simulation the add/edit form
+     * @covers \assign::__construct
+     * @covers \assign::load_data
      */
     public function test_constructor_with_formdata(): void {
         $formdata = new \stdClass();
@@ -72,6 +74,7 @@ class assign_test extends \advanced_testcase {
 
     /**
      * Test constructor without formdata
+     * @covers \assign::__construct
      */
     public function test_constructor_without_formdata(): void {
         $assign = new assign(null);
@@ -80,6 +83,7 @@ class assign_test extends \advanced_testcase {
 
     /**
      * Test loaddata
+     * @covers \assign::load_db
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -88,7 +92,7 @@ class assign_test extends \advanced_testcase {
         $this->setAdminUser();
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
-        $instance = $generator->create_instance(array('course' => $course->id));
+        $instance = $generator->create_instance(['course' => $course->id]);
 
         $assign = new assign(null);
         $assign->load_db($instance->coursemodule);
@@ -112,6 +116,39 @@ class assign_test extends \advanced_testcase {
 
     /**
      * Test the setters and getters
+     * @covers \assign::set_id
+     * @covers \assign::get_id
+     * @covers \assign::set_course
+     * @covers \assign::get_course
+     * @covers \assign::set_name
+     * @covers \assign::get_name
+     * @covers \assign::set_intro
+     * @covers \assign::get_intro
+     * @covers \assign::set_introformat
+     * @covers \assign::get_introformat
+     * @covers \assign::set_alwaysshowdescription
+     * @covers \assign::is_alwaysshowdescription
+     * @covers \assign::set_externalname
+     * @covers \assign::get_externalname
+     * @covers \assign::set_externallink
+     * @covers \assign::get_externallink
+     * @covers \assign::set_alwaysshowlink
+     * @covers \assign::is_alwaysshowlink
+     * @covers \assign::set_allowsubmissionsfromdate
+     * @covers \assign::get_allowsubmissionsfromdate
+     * @covers \assign::set_duedate
+     * @covers \assign::get_duedate
+     * @covers \assign::set_cutoffdate
+     * @covers \assign::get_cutoffdate
+     * @covers \assign::set_externalgrademax
+     * @covers \assign::get_externalgrademax
+     * @covers \assign::set_manualgrademax
+     * @covers \assign::get_manualgrademax
+     * @covers \assign::set_passingpercentage
+     * @covers \assign::get_passingpercentage
+     * @covers \assign::set_needspassinggrade
+     * @covers \assign::get_needspassinggrade
+     * @covers \assign::is_needspassinggrade
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -155,6 +192,7 @@ class assign_test extends \advanced_testcase {
 
     /**
      * Test the casting to a stdclass
+     * @covers \assign::to_stdclass
      */
     public function test_to_stdclass(): void {
         $assign = new assign(null);

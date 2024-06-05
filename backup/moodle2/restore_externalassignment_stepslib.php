@@ -108,7 +108,7 @@ class restore_externalassignment_activity_structure_step extends restore_activit
      * After execute the step, add related files
      */
     protected function after_execute() {
-        // Add choice related files, no need to match by itemname (just internally handled context)
+        // Add related files, no need to match by itemname (just internally handled context).
         $this->add_related_files('mod_externalassignment', 'intro', null);
     }
 }
