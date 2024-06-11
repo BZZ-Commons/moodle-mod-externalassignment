@@ -165,7 +165,6 @@ class update_grade extends external_api {
      */
     private static function customfieldid_username(): int {
         global $DB;
-
         $customfield = $DB->get_record(
             'user_info_field',
             ['shortname' => get_config('mod_externalassignment', 'external_username')],
@@ -238,12 +237,12 @@ class update_grade extends external_api {
      * @throws dml_exception
      */
     private static function update_grades(assign $assignment, int $userid, array $params): void {
-        global $DB;
+        global $CFG, $DB;
         $grade = new grade(null);
         $grade->load_db($assignment->get_id(), $userid);
-        $grade->set_externalassignment($assignment->get_id());
         $grade->set_userid($userid);
-        $grade->set_externalgrade($params['points']);
+        $points = $params['points'] * $assignment->get_externalgrademax() / $params['max'];
+        $grade->set_externalgrade($points);
         $feedback = urldecode($params['feedback']);
         $grade->set_externalfeedback(format_text($feedback, FORMAT_MARKDOWN));
         $grade->set_externallink($params['externallink']);
@@ -256,7 +255,17 @@ class update_grade extends external_api {
         $gradevalues = new \stdClass();
         $gradevalues->userid = $userid;
         $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
-        externalassignment_grade_item_update($assignment->to_stdclass(), $gradevalues);
+
+        require_once $CFG->dirroot . '/lib/gradelib.php';
+        grade_update(
+            'mod/externalassignment',
+            $assignment->get_course(),
+            'mod',
+            'externalassignment',
+            $assignment->get_id(),
+            0,
+            $gradevalues);
+
     }
 
     /**

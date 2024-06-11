@@ -48,7 +48,15 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
-
+    'mod/externalassignment:viewgrades' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+        ],
+    ],
     'mod/externalassignment:grade' => [
         'riskbitmask' => RISK_XSS,
 
@@ -70,15 +78,25 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/grade:manage',
     ],
-
-    'mod/externalassignment:viewgrades' => [
-        'captype' => 'read',
+    'mod/externalassignment:reviewgrades' => array(
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => [
+        'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/grade:manage'
+    ),
+    'mod/externalassignment:grantextension' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
             'teacher' => CAP_ALLOW,
-        ],
-    ],
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'gradereport/grader:view'
+    ),
+
 
 ];
