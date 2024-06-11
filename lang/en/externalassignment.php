@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'external assignment';
 
+$string['addinstance'] = 'Add instance';
 $string['allowsubmissionsfromdate'] = 'Allow submissions from';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
 $string['alwaysshowdescription'] = 'Always show description';
@@ -84,6 +85,7 @@ $string['grantextension'] = 'Grant extension';
 
 $string['isdue'] = 'is due';
 
+$string['managegrades'] = 'Manage grades';
 $string['mandatory'] = 'Mandatory';
 $string['manual'] = 'Manual';
 $string['manualfeedback'] = 'Manual feedback';
