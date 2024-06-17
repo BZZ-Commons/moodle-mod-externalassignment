@@ -61,7 +61,7 @@ class view_student implements renderable, templatable {
     public function export_for_template(renderer_base $output): \stdClass {
         global $USER;
         $assignment = new assign(null);
-        $assignment->load_db($this->coursemoduleid);
+        $assignment->load_db($this->coursemoduleid, $USER->id);
         $grade = new grade(null);
         $grade->load_db($assignment->get_id(), $USER->id);
 

@@ -87,29 +87,21 @@ class update_grade extends external_api {
         if (!empty($userid)) {
             $assignment = self::read_assignment($assignmentname, $userid);
             if (empty($assignment->get_id())) {
-                echo 'WARNING: no assignment ' . $params['assignment_name'] . ' found';
+                echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 return self::generate_warning(
                     'error',
                     'no_assignment',
                     'No assignment with name "' . $params['assignment_name'] . '" found. Contact your teacher.'
                 );
-                // TODO MDL-2: Error and status 404.
-                /* } else if ($assignment->get_cutoffdate() < time()) {    FIXME
-                echo 'WARNING: the assignment is overdue, points/feedback not updated';
-                return self::generate_warning(
-                    'info',
-                    'overdue',
-                    'The assignment is overdue, points/feedback not updated'
-                ); */
             } else {
                 self::update_grades($assignment, $userid, $params);
             }
         } else {
-            echo 'WARNING: no username ' . $params['user_name'] . ' found';
+            echo 'ERROR: no username ' . $params['user_name'] . ' found';
             return self::generate_warning(
                 'error',
                 'no_user',
-                'No user found with username "' . $params['user_name'] . '" Update your Moodle profile.'
+                'No Moodle user found with username "' . $params['user_name'] . '" Update your Moodle profile.'
             );
         }
 
@@ -256,7 +248,7 @@ class update_grade extends external_api {
         $gradevalues->userid = $userid;
         $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
 
-        require_once $CFG->dirroot . '/lib/gradelib.php';
+        require_once($CFG->dirroot . '/lib/gradelib.php');
         grade_update(
             'mod/externalassignment',
             $assignment->get_course(),
@@ -264,7 +256,8 @@ class update_grade extends external_api {
             'externalassignment',
             $assignment->get_id(),
             0,
-            $gradevalues);
+            $gradevalues
+        );
 
     }
 

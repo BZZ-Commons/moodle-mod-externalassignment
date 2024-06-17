@@ -25,7 +25,7 @@ namespace mod_externalassignment\local;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * /
  */
-class assign_test extends \advanced_testcase {
+final class assign_test extends \advanced_testcase {
     /**
      * Test constructor with formdata simulation the add/edit form
      * @covers \assign::__construct

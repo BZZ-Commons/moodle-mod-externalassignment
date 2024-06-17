@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\local;
 
-namespace mod_externalassignment\local;
-
 use core\context;
 use mod_externalassignment\form\grader_form;
+use mod_externalassignment\form\override_form;
 
 /**
  * Represents the model of an external assignment
@@ -259,6 +258,81 @@ class grade_control {
         }
     }
 
+    /**
+     * process the override form
+     * @param array $userids
+     * @return void
+     * @throws \dml_exception
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function process_override(array $userids): void {
+        global $CFG;
+
+        $data = new \stdClass();
+        $assignment = new assign(null);
+        $assignment->load_db($this->coursemoduleid);
+        $data->id = $this->coursemoduleid;
+        $data->assignmentid = $assignment->get_id();
+        $data->courseid = $this->courseid;
+        $data->allowsubmissionsfromdate = $assignment->get_allowsubmissionsfromdate();
+        $data->duedate = $assignment->get_duedate();
+        $data->cutoffdate = $assignment->get_duedate();
+        $data->users = $this->read_coursemodule_students($userids);
+
+        // Form processing and displaying is done here.
+        $url = new \moodle_url('/mod/externalassignment/view.php', ['action' => 'override']);
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/form/override_form.php');
+        $mform = new override_form($url->out(false), $assignment, $data);
+        if ($mform->is_cancelled()) {
+            debugging('Cancelled');  // TODO reset the form.
+        } else if ($formdata = $mform->get_data()) {
+            foreach ($formdata->uid as $userid) {
+                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');  // TODO: Find out why autoloadind does not work here.
+                $override = new override();
+                $override->set_externalassignment($formdata->id);
+                $override->set_userid($userid);
+                $override->set_allowsubmissionsfromdate($formdata->allowsubmissionsfromdate);
+                $override->set_duedate($formdata->duedate);
+                $override->set_cutoffdate($formdata->cutoffdate);
+                $this->override_update($override);
+            }
+            $url = new \moodle_url(
+                '/mod/externalassignment/view.php',
+                [
+                    'id' => $formdata->id,
+                    'action' => 'grading',
+                ]
+            );
+            redirect($url);
+
+        } else {
+            $mform->set_data($data);
+            $mform->display();
+        }
+    }
+
+    /**
+     * inserts or updates a user override
+     * @param override $override
+     * @return void
+     * @throws dml_exception
+     */
+    private function override_update(override $override): void {
+        global $DB;
+        if ($record = $DB->get_record(
+            'externalassignment_overrides',
+            [
+                'externalassignment' => $override->get_externalassignment(),
+                'userid' => $override->get_userid(),
+            ]
+        )) {
+            $override->set_id($record->id);
+            $DB->update_record('externalassignment_overrides', $override->to_stdclass());
+        } else {
+            $DB->insert_record('externalassignment_overrides', $override->to_stdclass());
+        }
+    }
 
     /**
      * get the status of the students assignment

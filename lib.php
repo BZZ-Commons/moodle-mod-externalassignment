@@ -37,7 +37,7 @@ use mod_externalassignment\local\grade;
  * @param mod_externalassignment_mod_form|null $mform
  * @return int The instance id of the new assignment
  */
-function externalassignment_add_instance(\stdClass $instancedata, mod_externalassignment_mod_form $mform = null) {
+function externalassignment_add_instance(\stdClass $instancedata, ?mod_externalassignment_mod_form $mform = null) {
     $instance = context_module::instance($instancedata->coursemodule);
     $assigncontrol = new assign_control($instance, null);
     return $assigncontrol->add_instance($instancedata, $instancedata->coursemodule);
@@ -158,15 +158,6 @@ function externalassignment_cm_info_dynamic(cm_info $coursemodule) {
  */
 function externalassignment_supports($feature) {
     switch ($feature) {
-        /*  TODO
-        case FEATURE_MOD_INTRO:
-            return true;
-        case FEATURE_COMPLETION_TRACKS_VIEWS:
-            return true;
-
-        case FEATURE_SHOW_DESCRIPTION:
-            return true;
-         */
         case FEATURE_BACKUP_MOODLE2:
             return true;
         case FEATURE_GRADE_HAS_GRADE:

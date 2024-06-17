@@ -78,25 +78,25 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/grade:manage',
     ],
-    'mod/externalassignment:reviewgrades' => array(
+    'mod/externalassignment:reviewgrades' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/grade:manage'
-    ),
-    'mod/externalassignment:grantextension' => array(
+            'manager' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'moodle/grade:manage',
+    ],
+    'mod/externalassignment:grantextension' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'gradereport/grader:view'
-    ),
+            'manager' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'gradereport/grader:view',
+    ],
 
 
 ];

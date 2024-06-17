@@ -26,8 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'external assignment';
-
 $string['addinstance'] = 'Add instance';
 $string['allowsubmissionsfromdate'] = 'Allow submissions from';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
@@ -40,27 +38,22 @@ $string['assignmentname'] = 'Assignment name';
 $string['availability'] = 'Availability';
 
 $string['changeuser'] = 'Change user';
-$string['completiongradesgroup'] = ' FIXME ';
-$string['completiongradesgroup_help'] = ' FIXME ';
-$string['completionpassgrade'] = 'Passing grade needed';
 $string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
-$string['cutoffdatevalidation'] = 'Cut-off date cannot be earlier than the due date.';
 $string['cutoffdatefromdatevalidation'] = 'Cut-off date cannot be earlier than the allow submissions from date.';
+$string['cutoffdatevalidation'] = 'Cut-off date cannot be earlier than the due date.';
 
-$string['done'] = 'done';
 $string['description'] = 'Description';
+$string['done'] = 'done';
 $string['duedate'] = 'Due date';
 $string['duedate_help'] = 'TODO duedate_help';
 $string['duedateaftersubmissionvalidation'] = 'Due date must be after the allow submissions from date.';
 $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submissions from date.';
 
-$string['extenddate'] = 'TODO extenddate';
-$string['extenddate_help'] = 'TODO extenddate_help';
 $string['external'] = 'External';
-$string['externalgrade'] = 'External grade';
 $string['externalfeedback'] = 'Feedback from external system';
+$string['externalgrade'] = 'External grade';
 $string['externalgrademax'] = 'External grade max.';
 $string['externalgrademax_help'] = 'Maximum grade from external assignment';
 $string['externalgrading'] = 'Grading from external system';
@@ -77,7 +70,6 @@ $string['finalgrade'] = 'Final grade';
 $string['grade'] = 'Grade';
 $string['gradecomponent'] = 'Grading component';
 $string['graded'] = 'Graded';
-$string['grades'] = 'Grades';
 $string['grading'] = 'Grading';
 $string['gradingoverview'] = 'Grading overview';
 $string['gradingstatus'] = 'Grading status';
@@ -85,11 +77,9 @@ $string['grantextension'] = 'Grant extension';
 
 $string['isdue'] = 'is due';
 
-$string['managegrades'] = 'Manage grades';
 $string['mandatory'] = 'Mandatory';
 $string['manual'] = 'Manual';
 $string['manualfeedback'] = 'Manual feedback';
-$string['manualgrade'] = 'Manual grade';
 $string['manualgrademax'] = 'Manual grade max.';
 $string['manualgrademax_help'] = 'Maximum grade from manual grading';
 $string['manualgrading'] = 'Manual grading';
@@ -100,7 +90,6 @@ $string['modulenameplural'] = 'External assignments';
 $string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
-
 $string['override'] = 'Override';
 
 $string['passinggrade'] = 'Points needed to pass';
@@ -109,18 +98,17 @@ $string['passingpercentage_help'] = 'What percentage of the maximum grade (exter
 $string['pending'] = 'pending';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
+$string['pluginname'] = 'external assignment';
 $string['previoususer'] = 'Previous user';
 
-$string['scores'] = 'Scores';
-$string['scorereached'] = 'Points earned';
 $string['scoremaximum'] = 'Maximum points';
+$string['scorereached'] = 'Points earned';
 $string['seefeedback'] = 'See feedback';
 $string['selectedusers'] = 'Selected users';
+$string['studentlink'] = 'Link to your assignment';
 $string['submissionsdue'] = 'Due:';
 $string['submissionsopen'] = 'Opens:';
 $string['submissionsopened'] = 'Opened:';
-$string['submissionstatus'] = 'Submission status';
-$string['studentlink'] = 'Link to your assignment';
 
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';

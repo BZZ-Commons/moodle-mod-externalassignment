@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class grade_control_test extends \base_testcase {
+final class grade_control_test extends \base_testcase {
     public function test__construct() {
 
     }

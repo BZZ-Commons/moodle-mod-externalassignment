@@ -74,8 +74,8 @@ if ($urlparams['action'] == '') {
  * @param $context
  * @param $coursemoduleid
  * @return void
- * @throws coding_exception
- * @throws dml_exception
+ * @throws \coding_exception
+ * @throws \dml_exception
  */
 function show_details($context, $coursemoduleid): void {
     global $DB, $PAGE, $USER;
@@ -119,8 +119,8 @@ function show_details($context, $coursemoduleid): void {
  * @param $context
  * @param $coursemoduleid
  * @return void
- * @throws coding_exception
- * @throws required_capability_exception
+ * @throws \coding_exception
+ * @throws \required_capability_exception
  */
 function show_grading($context, $coursemoduleid): void {
     global $PAGE;
@@ -146,10 +146,10 @@ function show_grading($context, $coursemoduleid): void {
  * @param $coursemoduleid
  * @param $userid
  * @return void
- * @throws coding_exception
- * @throws required_capability_exception
- * @throws dml_exception
- * @throws moodle_exception
+ * @throws \coding_exception
+ * @throws \required_capability_exception
+ * @throws \dml_exception
+ * @throws \moodle_exception
  */
 function show_grader($context, $coursemoduleid, $userid): void {
     global $PAGE;
@@ -196,5 +196,22 @@ function show_grader($context, $coursemoduleid, $userid): void {
  * @throws moodle_exception
  */
 function show_override($context, int $coursemoduleid, array $userids): void {
-    // TODO MDL-2 show the override form.
+    global $CFG;
+    global $PAGE;
+
+    require_capability('mod/externalassignment:reviewgrades', $context);
+    $courseshortname = $context->get_course_context()->get_context_name(false, true);
+    $assignmentname = $context->get_context_name(false, true);
+    $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('override', 'externalassignment');
+    $PAGE->set_title($title);
+    $PAGE->set_heading('My modules page heading');
+    $PAGE->set_pagelayout('base');
+    $PAGE->add_body_class('externalassignment-grading');
+    $output = $PAGE->get_renderer('mod_externalassignment');
+    echo $output->header();
+
+    $gradecontrol = new grade_control($coursemoduleid, $context);
+    $gradecontrol->process_override($userids);
+
+    echo $output->footer();
 }
