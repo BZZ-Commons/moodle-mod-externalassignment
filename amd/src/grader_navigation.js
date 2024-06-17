@@ -34,13 +34,13 @@ export const init = () => {
             return true;
         })
         .catch((error) => {
-            window.alert('Oops!' + error);
+            window.log('Oops!' + error);
         });
 
 };
 
 /**
- * loads all students for the current course
+ * Loads all students for the current course
  * @returns {Promise<void>}
  */
 const loadAllStudents = async() => {
@@ -82,7 +82,7 @@ function addStudents(student, dropdown, datalist, currentStudentId) {
 }
 
 /**
- * toggles show/noshow for the userlist
+ * Toggles show/noshow for the userlist
  */
 function toggleUserlist() {
     let userlist = document.getElementById('user_autocomplete_suggestions');
@@ -95,7 +95,7 @@ function toggleUserlist() {
 }
 
 /**
- * filter the userlist
+ * Filter the userlist
  */
 function filterUserlist() {
     const filter = document.getElementById('user_autocomplete_input').value.toUpperCase();
@@ -113,7 +113,7 @@ function filterUserlist() {
 }
 
 /**
- * gets the list item that was clicked
+ * Gets the list item that was clicked
  * @param {Object} event  the event
  */
 function selectUser(event) {
@@ -131,7 +131,7 @@ function selectUser(event) {
 }
 
 /**
- * navigates to the next or previous user
+ * Navigates to the next or previous user
  * @param {Object} event
  */
 function navigateUser(event) {

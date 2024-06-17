@@ -285,10 +285,11 @@ class grade_control {
         require_once($CFG->dirroot . '/mod/externalassignment/classes/form/override_form.php');
         $mform = new override_form($url->out(false), $assignment, $data);
         if ($mform->is_cancelled()) {
-            debugging('Cancelled');  // TODO reset the form.
+            debugging('Cancelled');  // FIXME reset the form.
         } else if ($formdata = $mform->get_data()) {
             foreach ($formdata->uid as $userid) {
-                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');  // TODO: Find out why autoloadind does not work here.
+                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
+                // FIXME: Find out why autoloadind does not work here.
                 $override = new override();
                 $override->set_externalassignment($formdata->id);
                 $override->set_userid($userid);

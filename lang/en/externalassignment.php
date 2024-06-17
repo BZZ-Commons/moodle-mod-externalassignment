@@ -98,7 +98,6 @@ $string['passingpercentage_help'] = 'What percentage of the maximum grade (exter
 $string['pending'] = 'pending';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
-$string['pluginname'] = 'external assignment';
 $string['previoususer'] = 'Previous user';
 
 $string['scoremaximum'] = 'Maximum points';

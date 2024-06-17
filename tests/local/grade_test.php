@@ -113,17 +113,6 @@ final class grade_test extends \advanced_testcase {
         $this->assertEquals(9.8, $grade->get_manualgrade());
         $this->assertEquals('Excellent work!', $grade->get_manualfeedback());
     }
-    /*  TODO
-    public function testLoadDb() {
-        $this->resetAfterTest(true);
-        $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course();
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
-        $instance = $generator->create_instance(array('course' => $course->id));
-
-
-    }
-    */
 
     /**
      * Test casting to stdclass

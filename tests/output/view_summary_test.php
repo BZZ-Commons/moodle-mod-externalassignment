@@ -15,8 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\output;
 
-use cm_info;
-
 /**
  * Controller for the external assignment
  *
@@ -26,20 +24,23 @@ use cm_info;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class view_summary_test extends \base_testcase {
+    /** @var view_summary */
     private $viewsummary;
+
+    /**
+     * Set up the test
+     */
     public function __construct() {
-       // $this->viewsummary = new view_summary(1, new \context_module::instance_by_id(1));
-    }
-    public function test_constructor() {
-        /*
-        $context = new \context_module::instance_by_id(1);
-        $view_summary = new view_summary(1, $context);
-        $this->assertNotNull($view_summary->get_coursemoduleid());
-        $this->assertNotNull($view_summary->get_context());
-        */
     }
 
+    public function test_constructor() {
+
+    }
+
+    /**
+     * Test the export_for_template method
+     */
     public function export_for_template_test() {
-        // $this->view_summary->export_for_template(new \renderer_base());
+
     }
 }
