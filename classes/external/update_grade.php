@@ -239,6 +239,7 @@ class update_grade extends external_api {
         $grade->set_externalfeedback(format_text($feedback, FORMAT_MARKDOWN));
         $grade->set_externallink($params['externallink']);
         if (empty($grade->get_id())) {
+            $grade->set_externalassignment($assignment->get_id());
             $DB->insert_record('externalassignment_grades', $grade->to_stdclass());
         } else {
             $DB->update_record('externalassignment_grades', $grade->to_stdclass());
