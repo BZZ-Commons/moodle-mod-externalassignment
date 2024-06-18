@@ -20,7 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once("$CFG->dirroot/lib/externallib.php");
 
-use core\check\performance\debugging;
 use dml_exception;
 use external_api;
 use external_function_parameters;
@@ -84,15 +83,28 @@ class update_grade extends external_api {
         );
         $externalusername = self::customfieldid_username();
         $userid = self::get_user_id($params['user_name'], $externalusername);
+
         if (!empty($userid)) {
             $assignment = self::read_assignment($assignmentname, $userid);
+            $currentts = time();
+            echo "currentts=$currentts";
+            echo "cutoffdate=" . $assignment->get_cutoffdate();
             if (empty($assignment->get_id())) {
                 echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 return self::generate_warning(
                     'error',
                     'no_assignment',
-                    'No assignment with name "' . $params['assignment_name'] . '" found. Contact your teacher.'
+                    'No matching assignment found. Contact your teacher.\n' .
+                    '  * assignmentname "' . $params['assignment_name'] . '"\n' .
+                    '  * username "' . $params['user_name'] . '"'
                 );
+            } else if ($assignment->get_cutoffdate() != null && $assignment->get_cutoffdate() < time()) {  // assignment is overdue
+                    echo 'WARNING: the assignment is overdue, points/feedback not updated';
+                    return self::generate_warning(
+                        'warning',
+                        'overdue',
+                        'The assignment is overdue, points/feedback not updated'
+                    );
             } else {
                 self::update_grades($assignment, $userid, $params);
             }
@@ -101,7 +113,7 @@ class update_grade extends external_api {
             return self::generate_warning(
                 'error',
                 'no_user',
-                'No Moodle user found with username "' . $params['user_name'] . '" Update your Moodle profile.'
+                'No Moodle user found with username "' . $params['user_name'] . '": Update your Moodle profile.'
             );
         }
 
