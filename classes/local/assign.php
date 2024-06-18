@@ -93,9 +93,6 @@ class assign {
             $this->set_id($data->id);
             $this->load_data($data);
             $this->set_timemodified($data->timemodified);
-            if (!empty($userid)) {
-                $this->load_override($coursemoduleid, $userid);
-            }
         }
     }
 
@@ -128,7 +125,6 @@ class assign {
             $this->set_duedate($data->duedate);
             $this->set_cutoffdate($data->cutoffdate);
             $this->set_externalname($data->externalname);
-            $this->load_override($this->get_id(), $userid);
         }
     }
 
@@ -158,29 +154,6 @@ class assign {
         } else {
             $this->set_needspassinggrade(0);
         }
-    }
-
-    /**
-     * loads the user overrides for this assignment
-     * @param int $coursemodule
-     * @param int $userid
-     * @return void
-     * @throws \dml_exception
-     */
-    private function load_override(int $coursemodule, int $userid): void {
-        $override = new override();
-        $override->load_db($coursemodule, $userid);
-
-        if (!empty($override->get_allowsubmissionsfromdate())) {
-            $this->set_allowsubmissionsfromdate($override->get_allowsubmissionsfromdate());
-        }
-        if (!empty($override->get_duedate())) {
-            $this->set_duedate($override->get_duedate());
-        }
-        if (!empty($override->get_cutoffdate())) {
-            $this->set_cutoffdate($override->get_cutoffdate());
-        }
-
     }
 
     /**
