@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace mod_externalassignment\local;
-
+use mod_externalassignment\local\override;
 /**
  * Represents the model of an external assignment
  *
@@ -168,6 +168,8 @@ class assign {
      * @throws \dml_exception
      */
     private function load_override(int $coursemodule, int $userid): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
         $override = new override();
         $override->load_db($coursemodule, $userid);
 

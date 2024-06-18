@@ -165,9 +165,11 @@ class assign_control {
         $event->visible = true;
         $event->timeduration = 0;
 
-        $event->id = $DB->get_field('event',
+        $event->id = $DB->get_field(
+            'event',
             'id',
             [
+                'modulename' => 'externalassignment',
                 'instance' => $this->get_instance()->id,
                 'eventtype' => 'due',
             ]

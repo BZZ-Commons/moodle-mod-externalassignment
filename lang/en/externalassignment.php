@@ -38,6 +38,8 @@ $string['assignmentname'] = 'Assignment name';
 $string['availability'] = 'Availability';
 
 $string['changeuser'] = 'Change user';
+$string['completiongradesgroup'] = 'Completion grades group';
+$string['completiongradesgroup_help'] = 'The group that will receive the completion grades';
 $string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
