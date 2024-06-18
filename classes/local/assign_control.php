@@ -79,7 +79,8 @@ class assign_control {
         global $DB;
         $assign = new assign($formdata);
         $this->set_coursemoduleid($coursemoduleid);
-        $result = $DB->update_record('externalassignment', $assign->to_stdclass());
+        $data = $assign->to_stdclass();
+        $result = $DB->update_record('externalassignment', $data);
         $this->set_instance($DB->get_record('externalassignment', ['id' => $assign->get_id()], '*', MUST_EXIST));
         $this->set_course($DB->get_record('course', ['id' => $formdata->course], '*', MUST_EXIST));
         $this->grade_item_update();
@@ -168,6 +169,7 @@ class assign_control {
         $event->id = $DB->get_field('event',
             'id',
             [
+                'modulename' => 'externalassignment',
                 'instance' => $this->get_instance()->id,
                 'eventtype' => 'due',
             ]

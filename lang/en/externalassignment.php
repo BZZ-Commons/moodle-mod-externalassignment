@@ -40,6 +40,7 @@ $string['availability'] = 'Availability';
 $string['changeuser'] = 'Change user';
 $string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['completiongradesgroup'] = 'Completion grades group';
+$string['completiongradesgroup_help'] = 'TODO Completion grades group';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
 $string['cutoffdatefromdatevalidation'] = 'Cut-off date cannot be earlier than the allow submissions from date.';
