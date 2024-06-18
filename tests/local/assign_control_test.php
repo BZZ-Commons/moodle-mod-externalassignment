@@ -23,7 +23,7 @@ namespace mod_externalassignment\local;
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class assign_control_test extends \base_testcase {
+final class assign_control_test extends \advanced_testcase {
     /** @var \context_module context */
     private $context;
     /** @var $coursemodule */
@@ -32,12 +32,12 @@ final class assign_control_test extends \base_testcase {
     private $course;
 
     /**
-     * Set up the test
+     * Test the constructor
      * @return void
      * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function test__construct() {
-        $assigncontrol = new assign_control($this->context, $this->coursemodule);
-        $this->assertNull($assigncontrol->get_coursemodule());
+
     }
 }

@@ -192,9 +192,8 @@ class assign {
     public function to_stdclass(): \stdClass {
         $result = new \stdClass();
         foreach ($this as $property => $value) {
-            if ($value != null) {
-                $result->$property = $value;
-            }
+
+            $result->$property = $value;
         }
         return $result;
 
