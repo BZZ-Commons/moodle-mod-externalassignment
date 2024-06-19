@@ -1,5 +1,5 @@
 @mod @mod_assign
-Feature: Check that the assignment grade can be updated correctly
+Feature: Check that the externalassignment grade can be updated correctly
   In order to ensure that the grade is shown correctly in the grading table
   As a teacher
   I need to grade a student and ensure the grade is shown correctly

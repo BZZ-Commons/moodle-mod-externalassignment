@@ -97,16 +97,6 @@ class grader_form extends moodleform {
         $mform->addElement('editor', 'manualfeedback', get_string('feedback'));
         $mform->setType('manualfeedback', PARAM_RAW);
 
-        // For development only!
-        $mform->addElement('header', 'development', 'Infos');
-        $mform->addElement('static', 'courseidx', 'CourseId', $this->_customdata->courseid);
-        $mform->addElement('static', 'externalassignmentidx', 'externalassignmentid', $this->_customdata->externalassignment);
-        $mform->addElement('static', 'idx', 'Id', $this->_customdata->id);
-        $mform->addElement('static', 'useridx', 'UserId', $this->_customdata->userid);
-        $mform->addElement('static', 'gradeidx', 'GradeId', $this->_customdata->gradeid);
-        $mform->addElement('static', 'graderx', 'Grader', $this->_customdata->gradeid);
-        // For development only!
-
         $mform->addElement('hidden', 'externalassignmentid', $this->_customdata->externalassignment);
         $mform->setType('externalassignmentid', PARAM_INT);
         $mform->addElement('hidden', 'courseid', $this->_customdata->courseid);
@@ -155,7 +145,7 @@ class grader_form extends moodleform {
      * @return array  error messages
      */
     public function validation($data, $files): array {
-        $errors = parent::validation($data, $files);  // TODO MDL-1 validate grade external/manual.
+        $errors = parent::validation($data, $files);  // TODO Validate grade external/manual.
         return $errors;
     }
 }

@@ -86,7 +86,6 @@ class update_grade extends external_api {
 
         if (!empty($userid)) {
             $assignment = self::read_assignment($assignmentname, $userid);
-            $currentts = time();
             if (empty($assignment->get_id())) {
                 echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 return self::generate_warning(

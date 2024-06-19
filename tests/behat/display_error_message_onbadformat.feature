@@ -1,5 +1,5 @@
 @mod @mod_externalassignment
-Feature: Check that the assignment grade can not be input in a wrong format.
+Feature: Check that the externalassignment grades can not be input in a wrong format.
   In order to ensure that the grade is entered in the right format
   As a teacher
   I need to grade a student and ensure that the grade should be correctly entered

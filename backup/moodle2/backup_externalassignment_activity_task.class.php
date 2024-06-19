@@ -45,6 +45,7 @@ class backup_externalassignment_activity_task extends backup_activity_task {
 
     /**
      * Encode all links in the contents of the activity
+     * @param string $content  the content to encode
      */
     public static function encode_content_links($content) {
         global $CFG;

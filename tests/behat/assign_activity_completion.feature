@@ -1,5 +1,5 @@
 @mod @mod_externalassignment @core_completion
-Feature: View activity completion in the assignment activity
+Feature: View activity completion in the externalassignment activity
   In order to have visibility of assignment completion requirements
   As a student
   I need to be able to view my assignment completion progress
@@ -85,7 +85,6 @@ Feature: View activity completion in the assignment activity
     And I log out
     And I am on the "Automatic completion" "externalassignment activity" page logged in as student1
     Then the "Receive a passing grade" completion condition of "Automatic completion" is displayed as "todo"
-
 
   @javascript
   Scenario: View passed automatic completion items as a student

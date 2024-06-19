@@ -38,9 +38,9 @@ $string['assignmentname'] = 'Assignment name';
 $string['availability'] = 'Availability';
 
 $string['changeuser'] = 'Change user';
-$string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['completiongradesgroup'] = 'Completion grades group';
 $string['completiongradesgroup_help'] = 'TODO Completion grades group';
+$string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
 $string['cutoffdatefromdatevalidation'] = 'Cut-off date cannot be earlier than the allow submissions from date.';
@@ -92,6 +92,7 @@ $string['modulenameplural'] = 'External assignments';
 $string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
+
 $string['override'] = 'Override';
 
 $string['passinggrade'] = 'Points needed to pass';
@@ -110,9 +111,9 @@ $string['studentlink'] = 'Link to your assignment';
 $string['submissionsdue'] = 'Due:';
 $string['submissionsopen'] = 'Opens:';
 $string['submissionsopened'] = 'Opened:';
+$string['submissionstatus'] = 'Submission status';
 
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';
 $string['totalgrade'] = 'Total points';
-
 $string['view'] = 'View';

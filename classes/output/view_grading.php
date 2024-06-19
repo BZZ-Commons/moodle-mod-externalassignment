@@ -39,8 +39,8 @@ class view_grading implements renderable, templatable {
 
     /**
      * default constructor
-     * @param $coursemoduleid
-     * @param $context
+     * @param int $coursemoduleid
+     * @param context $context
      */
     public function __construct(int $coursemoduleid, context $context) {
         $this->coursemoduleid = $coursemoduleid;

@@ -30,55 +30,55 @@ class renderer extends plugin_renderer_base {
     /**
      * Defer to template for view_grading.
      *
-     * @param $page the page to render
+     * @param view_grading $page the page to render
      * @return string html for the page
      * @throws \moodle_exception
      */
-    public function render_view_grading($page): string {
+    public function render_view_grading(view_grading $page): string {
         $data = $page->export_for_template($this);
         return parent::render_from_template('externalassignment/view_grading', $data);
     }
 
     /**
      * Defer to template for view_grader_navigation.
-     * @param $page the page to render
+     * @param view_grader_navigation $page the page to render
      * @return string html for the page
      * @throws \moodle_exception
      */
-    public function render_view_grader_navigation($page): string {
+    public function render_view_grader_navigation(view_grader_navigation $page): string {
         $data = $page->export_for_template($this);
         return parent::render_from_template('externalassignment/view_grader_navigation', $data);
     }
 
     /**
      * Defer to template for view_link.
-     * @param $page the page to render
+     * @param view_link $page the page to render
      * @return string html for the page
      * @throws \moodle_exception
      */
-    public function render_view_link($page): string {
+    public function render_view_link(view_link $page): string {
         $data = $page->export_for_template($this);
         return parent::render_from_template('externalassignment/view_link', $data);
     }
 
     /**
      * Defer to template for view_summary.
-     * @param $page the page to render
+     * @param view_summary $page the page to render
      * @return string html for the page
      * @throws \moodle_exception
      */
-    public function render_view_summary($page): string {
+    public function render_view_summary(view_summary $page): string {
         $data = $page->export_for_template($this);
         return parent::render_from_template('externalassignment/view_summary', $data);
     }
 
     /**
      * Defer to template for view_student.
-     * @param $page the page to render
+     * @param view_student $page the page to render
      * @return string html for the page
      * @throws \moodle_exception
      */
-    public function render_view_student($page): string {
+    public function render_view_student(view_student $page): string {
         $data = $page->export_for_template($this);
         return parent::render_from_template('externalassignment/view_student', $data);
     }
