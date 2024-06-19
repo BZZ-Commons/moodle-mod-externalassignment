@@ -58,7 +58,7 @@ class update_grade extends external_api {
      * @param $max  float the maximum points from tests
      * @param $externallink  string the url of the students repo
      * @param $feedback  string the feedback as json-structure
-     * @return array
+     * @return array info, warning or error messages
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
@@ -86,7 +86,6 @@ class update_grade extends external_api {
 
         if (!empty($userid)) {
             $assignment = self::read_assignment($assignmentname, $userid);
-            $currentts = time();
             if (empty($assignment->get_id())) {
                 echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 return self::generate_warning(
@@ -225,9 +224,9 @@ class update_grade extends external_api {
 
     /**
      * updates the grade for a programming assignment
-     * @param assign $assignmentid
-     * @param int $userid
-     * @param array $params
+     * @param assign $assignment  the assignment the grades belong to
+     * @param int $userid the id of the user
+     * @param array $params the parameters from the POST request
      * @return void
      * @throws dml_exception
      */

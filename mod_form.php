@@ -101,8 +101,8 @@ class mod_externalassignment_mod_form extends moodleform_mod {
 
     /**
      * Validates the data in the form
-     * @param $data
-     * @param $files
+     * @param array $data  The data entered in the form that needs to be validate
+     * @param array $files The files uploaded in the form
      * @return array
      * @throws coding_exception
      */
@@ -172,8 +172,8 @@ class mod_externalassignment_mod_form extends moodleform_mod {
     }
 
     /**
-     * checks if custom completion conditions are enabeld
-     * @param $data
+     * checks if custom completion conditions are enabled
+     * @param array $data  The data entered in the form
      * @return bool
      */
     public function completion_rule_enabled($data) {

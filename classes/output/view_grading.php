@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace mod_externalassignment\output;
 
 use core\context;
@@ -39,8 +40,8 @@ class view_grading implements renderable, templatable {
 
     /**
      * default constructor
-     * @param $coursemoduleid
-     * @param $context
+     * @param int $coursemoduleid
+     * @param context $context
      */
     public function __construct(int $coursemoduleid, context $context) {
         $this->coursemoduleid = $coursemoduleid;

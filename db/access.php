@@ -97,6 +97,4 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'gradereport/grader:view',
     ],
-
-
 ];
