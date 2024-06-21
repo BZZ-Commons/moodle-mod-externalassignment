@@ -177,7 +177,6 @@ function externalassignment_supports($feature) {
  * @param $modinstance
  * @param $grades
  * @return int
- * @throws moodle_exception
  */
 function externalassignment_grade_item_update($modinstance, $grades=null): int {
     return grade_update(

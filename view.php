@@ -48,7 +48,6 @@ $urlparams = [
     'userids' => optional_param_array('uid', [], PARAM_INT),
 ];
 
-
 $url = new moodle_url(
     '/mod/assign/view.php',
     [

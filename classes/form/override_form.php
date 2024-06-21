@@ -33,17 +33,12 @@ require_once("$CFG->libdir/formslib.php");
 class override_form extends moodleform {
     /** @var assign the external assignment */
     protected assign $assign;
-    /**
-     * definition of the grader form
-     * @return void
-     * @throws coding_exception
-     */
 
     /**
      * override_form constructor.
-     * @param $submiturl the url to submit the form
-     * @param $assign the assignment object
-     * @param $customdata the data entered in the form
+     * @param $submiturl string the url to submit the form
+     * @param $assign assign the assignment object
+     * @param $customdata mixed the data entered in the form
      */
     public function __construct($submiturl, $assign, $customdata = null) {
         $this->assign = $assign;

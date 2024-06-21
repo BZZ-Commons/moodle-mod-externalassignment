@@ -168,7 +168,6 @@ class assign {
             $result->$property = $value;
         }
         return $result;
-
     }
 
     /**

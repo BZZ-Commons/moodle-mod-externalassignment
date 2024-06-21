@@ -41,7 +41,7 @@ class assign_control {
     /**
      * Default constructor
      * @param $coursemodulecontext
-     * @param $coursemodule
+     * @param $coursemodule cm_info|null  The course module
      * @throws \coding_exception
      */
     public function __construct($coursemodulecontext, $coursemodule) {

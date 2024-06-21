@@ -51,9 +51,10 @@ class update_grade extends external_api {
     }
 
     /**
-     * Update grades from an external system
-     * @param $assignmentname  String the name of the external assignment
-     * @param $username  String the external username
+     * Update grades and feedback from an external system
+     *
+     * @param $assignmentname  string the name of the external assignment
+     * @param $username  string the external username
      * @param $points float the number of points
      * @param $max  float the maximum points from tests
      * @param $externallink  string the url of the students repo
@@ -223,7 +224,8 @@ class update_grade extends external_api {
     }
 
     /**
-     * updates the grade for a programming assignment
+     * updates the grade and the feedback for the external assignment
+     *
      * @param assign $assignment  the assignment the grades belong to
      * @param int $userid the id of the user
      * @param array $params the parameters from the POST request
@@ -267,8 +269,8 @@ class update_grade extends external_api {
     /**
      * reads the grade using the assignment-name and userid
      *
-     * @param int $userid
-     * @param int $coursemoduleid
+     * @param int $coursemoduleid the id of the coursemodule for this external assignment
+     * @param int $userid  the userid of the student
      * @return object|null
      * @throws dml_exception
      */

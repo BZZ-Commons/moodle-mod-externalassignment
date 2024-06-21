@@ -16,7 +16,6 @@
 
 namespace mod_externalassignment\local;
 
-
 /**
  * Unit tests for class assign
  * @group mod_externalassignment
@@ -92,7 +91,7 @@ final class grade_test extends \advanced_testcase {
      * @covers \grade::get_manualfeedback
      *
      */
-    public function test_setters_getters() {
+    public function test_setters_getters(): void {
         $grade = new grade(null);
         $grade->set_id(7);
         $grade->set_externalassignment(6);

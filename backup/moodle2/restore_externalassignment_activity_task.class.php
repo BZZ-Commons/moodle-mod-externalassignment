@@ -18,7 +18,6 @@ defined('MOODLE_INTERNAL') || die();
 // Because it must exist.
 require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/restore_externalassignment_stepslib.php');
 
-
 /**
  * Define all the restore steps that will be used by the restore_externalassignment_activity_task
  * @package   mod_externalassignment

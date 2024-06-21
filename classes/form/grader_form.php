@@ -141,8 +141,8 @@ class grader_form extends moodleform {
 
     /**
      * validates the formdata
-     * @param $data array
-     * @param $files array
+     * @param $data array  the formdata to validate
+     * @param $files array  the files to validate (none at the moment)
      * @return array  error messages
      */
     public function validation($data, $files): array {

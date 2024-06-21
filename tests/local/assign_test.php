@@ -16,7 +16,6 @@
 
 namespace mod_externalassignment\local;
 
-
 /**
  * Unit tests for class assign
  * @group mod_externalassignment
