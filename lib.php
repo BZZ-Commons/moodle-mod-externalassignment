@@ -277,7 +277,7 @@ function mod_externalassignment_core_calendar_provide_event_action(
 ) {
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['externalassignment'][$event->instance];
     return $factory->create_instance(
-        get_string('view', 'externalassigment'),
+        'view', // get_string('view', 'externalassigment'),
         new \moodle_url('/mod/externalassignment/view.php', ['id' => $cm->id]),
         1,
         true

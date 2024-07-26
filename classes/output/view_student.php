@@ -79,6 +79,7 @@ class view_student implements renderable, templatable {
 
         $data->externalgrade = $grade->get_externalgrade();
         $data->externalgrademax = $assignment->get_externalgrademax();
+        $data->externalpercentage = $grade->get_externalgrade() / $assignment->get_externalgrademax() * 100;
         $data->manualgrade = $grade->get_manualgrade();
         $data->manualgrademax = $assignment->get_manualgrademax();
         $data->hasmanualgrade = $data->manualgrademax > 0;
