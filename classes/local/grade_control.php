@@ -149,9 +149,9 @@ class grade_control {
             $grade->lastname = $user->lastname;
             if (array_key_exists($userid, $grades)) {
                 $gradedata = $grades[$userid];
-                $grade->externalgrade = $gradedata->externalgrade;
-                $grade->manualgrade = $gradedata->manualgrade;
-                $grade->gradefinal = $gradedata->externalgrade + $gradedata->manualgrade;
+                $grade->externalgrade = number_format($gradedata->externalgrade,2);
+                $grade->manualgrade = number_format($gradedata->manualgrade,2);
+                $grade->gradefinal = number_format($gradedata->externalgrade + $gradedata->manualgrade,2);
                 $grade->status = $this->get_status($grade);
             } else {
                 $grade->status = $this->get_status(null);

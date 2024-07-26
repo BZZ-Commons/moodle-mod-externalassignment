@@ -99,6 +99,7 @@ $string['passinggrade'] = 'Points needed to pass';
 $string['passingpercentage'] = 'Percentage to pass';
 $string['passingpercentage_help'] = 'What percentage of the maximum grade (external + manual) must be achieved to pass';
 $string['pending'] = 'pending';
+$string['percentage'] = 'Percentage';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
