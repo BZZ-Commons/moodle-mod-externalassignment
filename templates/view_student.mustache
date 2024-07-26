@@ -27,7 +27,7 @@
 
     Context variables required for this template:
     * externallink, timeremaining, modified, totalgrade, totalgrademax, externalgrade, externalgrademax,
-      manualgrade, manualgrademax, hasmanualgrade, externalfeedback, manualfeedback
+      externalpercentage, manualgrade, manualgrademax, hasmanualgrade, externalfeedback, manualfeedback
 
     Example context (json):
     {
@@ -70,7 +70,7 @@
     </thead>
     <tbody>
     <tr>
-      <td class="cell c0">{{#str}}externalgrading, externalassignment{{/str}}</td>
+      <td class="cell c0">{{#str}}externalgrading, externalassignment{{/str}} ({{externalpercentage}}%)</td>
       <td class="cell c1 text-right">{{externalgrade}}</td>
       <td class="cell c2 text-right lastcol">{{externalgrademax}}</td>
     </tr>
