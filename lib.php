@@ -160,8 +160,8 @@ function externalassignment_supports($feature) {
     switch ($feature) {
         case FEATURE_BACKUP_MOODLE2:
             return true;
-        case FEATURE_GRADE_HAS_GRADE:
-            return true;
+        /*case FEATURE_GRADE_HAS_GRADE:
+            return true;*/
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_MOD_PURPOSE:
@@ -200,6 +200,8 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
  * @throws moodle_exception
  */
 function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
+    global $DB;
+    $cm = get_coursemodule_from_instance('externalassignment', $modinstance->id, 0, false, MUST_EXIST);
     $grade = new grade(null);
     $grade->load_db($modinstance->id, $userid);
     $gradevalues = new \stdClass;
@@ -212,12 +214,7 @@ function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=t
         get_string('seefeedback', 'externalassignment') . '</a>';
     $gradevalues->feedbackformat = 1;
 
-    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
-    $completion = new \completion_info($course);
-    if ($completion->is_enabled($coursemodule)) {
-        $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
-    }
-    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
+    list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
     $completion = new \completion_info($course);
     if ($completion->is_enabled($coursemodule)) {
         $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
