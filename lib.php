@@ -201,7 +201,7 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
  */
 function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
     $grade = new grade(null);
-    $grade->load_db($modinstance, $userid);
+    $grade->load_db($modinstance->id, $userid);
     $gradevalues = new \stdClass;
     $gradevalues->userid = $userid;
     $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());

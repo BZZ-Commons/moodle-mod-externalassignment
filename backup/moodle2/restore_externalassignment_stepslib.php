@@ -76,6 +76,8 @@ class restore_externalassignment_activity_structure_step extends restore_activit
      * @param array $data
      */
     protected function process_externalassignment_grades($data) {
+        /*
+
         global $DB;
 
         $data = (object)$data;
@@ -85,6 +87,7 @@ class restore_externalassignment_activity_structure_step extends restore_activit
 
         $newitemid = $DB->insert_record('externalassignment_grades', $data);
         $this->set_mapping('externalassignment_grades', $oldid, $newitemid);
+        */
     }
 
     /**
