@@ -60,6 +60,20 @@ class restore_externalassignment_activity_task extends restore_activity_task {
     }
 
     /**
+     * Define the contents in the activity that must be
+     * processed by the link decoder.
+     *
+     * @return array
+     */
+    static public function define_decode_contents() {
+        $contents = array();
+
+        $contents[] = new restore_decode_content('externalassignment', array('intro'), 'externalassignment');
+
+        return $contents;
+    }
+
+    /**
      * Define structure of the restored externalassignment
      */
     protected function define_course_plugin_structure() {
