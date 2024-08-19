@@ -82,12 +82,22 @@ class view_student implements renderable, templatable {
         $data->externalpercentage = number_format($grade->get_externalgrade() / $assignment->get_externalgrademax() * 100,2);
         $data->manualgrade = number_format($grade->get_manualgrade(),2);
         $data->manualgrademax = number_format($assignment->get_manualgrademax(),2);
-        $data->manualpercentage = number_format($grade->get_manualgrade() / $assignment->get_manualgrademax() * 100,2);
+        if ($assignment->get_manualgrademax() == 0) {
+            $data->manualpercentage = number_format(0, 2);
+        } else {
+            $data->manualpercentage = number_format($grade->get_manualgrade() / $assignment->get_manualgrademax() * 100,2);
+        }
         $data->hasmanualgrade = $data->manualgrademax > 0;
         $data->totalgrade = number_format($data->externalgrade + $data->manualgrade,2);
         $data->totalgrademax = number_format($data->externalgrademax + $data->manualgrademax,2);
-        $data->totalpercentage = number_format($data->totalgrade / $data->totalgrademax * 100,2);
-        $data->passinggrade = number_format($data->totalgrademax * $assignment->get_passingpercentage() / 100,2);
+        if ($data->totalgrademax == 0) {
+            $data->totalpercentage = number_format(0, 2);
+            $data->passinggrade = number_format(0,2);
+        } else {
+            $data->totalpercentage = number_format($data->totalgrade / $data->totalgrademax * 100,2);
+            $data->passinggrade = number_format($data->totalgrademax * $assignment->get_passingpercentage() / 100,2);
+        }
+
         $data->passingpercentage = number_format($assignment->get_passingpercentage(),2);
         $data->externalfeedback = format_text($grade->get_externalfeedback(), FORMAT_MARKDOWN);
         $data->manualfeedback = $grade->get_manualfeedback();
