@@ -264,6 +264,13 @@ class update_grade extends external_api {
             $gradevalues
         );
 
+        $cm = get_coursemodule_from_instance('externalassignment', $assignment->get_id(), 0, false, MUST_EXIST);
+        list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
+        $completion = new \completion_info($course);
+        if ($completion->is_enabled($coursemodule)) {
+            $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+        }
+
     }
 
     /**
