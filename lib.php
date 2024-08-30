@@ -64,7 +64,7 @@ function externalassignment_update_instance(\stdClass $data, $form) {
  * @throws dml_exception
  * @throws coding_exception
  */
-function externalassignment_delete_instance($id): bool {
+function externalassignment_delete_instance(int $id): bool {
     $cm = get_coursemodule_from_instance('externalassignment', $id, 0, false, MUST_EXIST);
 
     $context = context_module::instance($cm->id);

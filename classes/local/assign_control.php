@@ -101,12 +101,14 @@ class assign_control {
         $eventid = $DB->get_field('event',
             'id',
             [
-                'instance' => $this->get_coursemodule()->id,
+                'instance' => $this->get_coursemoduleid(),
                 'eventtype' => 'due',
             ]
         );
-        $calendarevent = \calendar_event::load($eventid);
-        $calendarevent->delete();
+        if ($eventid != FALSE) {
+            $calendarevent = \calendar_event::load($eventid);
+            $calendarevent->delete();
+        }
         $DB->delete_records('externalassignment_overrides', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment_grades', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment', ['id' => $id]);
