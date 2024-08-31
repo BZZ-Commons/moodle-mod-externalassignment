@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-namespace mod_externalassignment\local;
 
+namespace mod_externalassignment\local;
 
 /**
  * Unit tests for class assign
@@ -91,7 +91,7 @@ final class grade_test extends \advanced_testcase {
      * @covers \grade::get_manualfeedback
      *
      */
-    public function test_setters_getters() {
+    public function test_setters_getters(): void {
         $grade = new grade(null);
         $grade->set_id(7);
         $grade->set_externalassignment(6);

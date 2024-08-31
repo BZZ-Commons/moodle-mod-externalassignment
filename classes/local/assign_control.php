@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace mod_externalassignment\local;
 
 use cm_info;
@@ -40,7 +41,7 @@ class assign_control {
     /**
      * Default constructor
      * @param $coursemodulecontext
-     * @param $coursemodule
+     * @param $coursemodule cm_info|null  The course module
      * @throws \coding_exception
      */
     public function __construct($coursemodulecontext, $coursemodule) {
@@ -100,12 +101,14 @@ class assign_control {
         $eventid = $DB->get_field('event',
             'id',
             [
-                'instance' => $this->get_coursemodule()->id,
+                'instance' => $this->get_coursemoduleid(),
                 'eventtype' => 'due',
             ]
         );
-        $calendarevent = \calendar_event::load($eventid);
-        $calendarevent->delete();
+        if ($eventid != FALSE) {
+            $calendarevent = \calendar_event::load($eventid);
+            $calendarevent->delete();
+        }
         $DB->delete_records('externalassignment_overrides', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment_grades', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment', ['id' => $id]);

@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_assign/grading_navigation_user_selector
+    @template mod_externalassignment/grading_navigation_user_selector
 
     The template HTML for the user selector in the top right corner.
 
@@ -43,8 +43,8 @@
 </span>
 <div class="d-md-inline-block mr-md-2 position-relative">
     <input type="text" id="user_autocomplete_input" class="form-control"
-           list="user_autocomplete_suggestions" placeholder="{{#str}} changeuser, mod_externalassignment {{/str}}" role="combobox"
-           aria-expanded="false" autocomplete="off" autocorrect="off" autocapitalize="none" aria-autocomplete="list"
+           list="user_autocomplete_suggestions" placeholder="{{#str}} changeuser, mod_externalassignment {{/str}}"
+           aria-expanded="false" autocomplete="off" spellcheck="false" autocapitalize="none" aria-autocomplete="list"
            aria-owns="user_autocomplete_suggestions user_autocomplete_selection"
            data-fieldtype="autocomplete" style="min-width: 11ch;" data-initial-value=""
            aria-activedescendant="user_autocomplete_selection">

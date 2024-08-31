@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/backup_externalassignment_stepslib.php');
@@ -45,6 +46,7 @@ class backup_externalassignment_activity_task extends backup_activity_task {
 
     /**
      * Encode all links in the contents of the activity
+     * @param string $content  the content to encode
      */
     public static function encode_content_links($content) {
         global $CFG;

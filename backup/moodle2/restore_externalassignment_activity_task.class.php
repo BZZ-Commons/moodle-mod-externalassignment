@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 defined('MOODLE_INTERNAL') || die();
 // Because it must exist.
 require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/restore_externalassignment_stepslib.php');
-
 
 /**
  * Define all the restore steps that will be used by the restore_externalassignment_activity_task
@@ -57,6 +57,20 @@ class restore_externalassignment_activity_task extends restore_activity_task {
 
         return $rules;
 
+    }
+
+    /**
+     * Define the contents in the activity that must be
+     * processed by the link decoder.
+     *
+     * @return array
+     */
+    static public function define_decode_contents() {
+        $contents = array();
+
+        $contents[] = new restore_decode_content('externalassignment', array('intro'), 'externalassignment');
+
+        return $contents;
     }
 
     /**

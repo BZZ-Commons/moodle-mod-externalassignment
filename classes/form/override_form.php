@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace mod_externalassignment\form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -32,17 +33,12 @@ require_once("$CFG->libdir/formslib.php");
 class override_form extends moodleform {
     /** @var assign the external assignment */
     protected assign $assign;
-    /**
-     * definition of the grader form
-     * @return void
-     * @throws coding_exception
-     */
 
     /**
      * override_form constructor.
-     * @param $submiturl
-     * @param $assign
-     * @param $customdata
+     * @param $submiturl string the url to submit the form
+     * @param $assign assign the assignment object
+     * @param $customdata mixed the data entered in the form
      */
     public function __construct($submiturl, $assign, $customdata = null) {
         $this->assign = $assign;

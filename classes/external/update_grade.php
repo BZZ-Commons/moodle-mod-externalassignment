@@ -51,14 +51,15 @@ class update_grade extends external_api {
     }
 
     /**
-     * Update grades from an external system
-     * @param $assignmentname  String the name of the external assignment
-     * @param $username  String the external username
+     * Update grades and feedback from an external system
+     *
+     * @param $assignmentname  string the name of the external assignment
+     * @param $username  string the external username
      * @param $points float the number of points
      * @param $max  float the maximum points from tests
      * @param $externallink  string the url of the students repo
      * @param $feedback  string the feedback as json-structure
-     * @return array
+     * @return array info, warning or error messages
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
@@ -86,7 +87,6 @@ class update_grade extends external_api {
 
         if (!empty($userid)) {
             $assignment = self::read_assignment($assignmentname, $userid);
-            $currentts = time();
             if (empty($assignment->get_id())) {
                 echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 return self::generate_warning(
@@ -224,10 +224,11 @@ class update_grade extends external_api {
     }
 
     /**
-     * updates the grade for a programming assignment
-     * @param assign $assignmentid
-     * @param int $userid
-     * @param array $params
+     * updates the grade and the feedback for the external assignment
+     *
+     * @param assign $assignment  the assignment the grades belong to
+     * @param int $userid the id of the user
+     * @param array $params the parameters from the POST request
      * @return void
      * @throws dml_exception
      */
@@ -263,13 +264,20 @@ class update_grade extends external_api {
             $gradevalues
         );
 
+        $cm = get_coursemodule_from_instance('externalassignment', $assignment->get_id(), 0, false, MUST_EXIST);
+        list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
+        $completion = new \completion_info($course);
+        if ($completion->is_enabled($coursemodule)) {
+            $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+        }
+
     }
 
     /**
      * reads the grade using the assignment-name and userid
      *
-     * @param int $userid
-     * @param int $coursemoduleid
+     * @param int $coursemoduleid the id of the coursemodule for this external assignment
+     * @param int $userid  the userid of the student
      * @return object|null
      * @throws dml_exception
      */

@@ -35,7 +35,7 @@ Feature: Check that the starting and due dates are display correctly and will wo
     When I am on the "Future due date" Activity page logged in as student1
     Then I should see "Time remaining"
 
-    @javascript
-    Scenario: Do not see the remaining time of the activity as a student
+  @javascript
+  Scenario: Do not see the remaining time of the activity as a student
     When I am on the "Due date past" Activity page logged in as student1
     Then I should see "Assignment is due"

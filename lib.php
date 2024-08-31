@@ -64,7 +64,7 @@ function externalassignment_update_instance(\stdClass $data, $form) {
  * @throws dml_exception
  * @throws coding_exception
  */
-function externalassignment_delete_instance($id): bool {
+function externalassignment_delete_instance(int $id): bool {
     $cm = get_coursemodule_from_instance('externalassignment', $id, 0, false, MUST_EXIST);
 
     $context = context_module::instance($cm->id);
@@ -160,8 +160,8 @@ function externalassignment_supports($feature) {
     switch ($feature) {
         case FEATURE_BACKUP_MOODLE2:
             return true;
-        case FEATURE_GRADE_HAS_GRADE:
-            return true;
+        /*case FEATURE_GRADE_HAS_GRADE:
+            return true;*/
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_MOD_PURPOSE:
@@ -177,7 +177,6 @@ function externalassignment_supports($feature) {
  * @param $modinstance
  * @param $grades
  * @return int
- * @throws moodle_exception
  */
 function externalassignment_grade_item_update($modinstance, $grades=null): int {
     return grade_update(
@@ -201,8 +200,10 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
  * @throws moodle_exception
  */
 function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
+    global $DB;
+    $cm = get_coursemodule_from_instance('externalassignment', $modinstance->id, 0, false, MUST_EXIST);
     $grade = new grade(null);
-    $grade->load_db($modinstance, $userid);
+    $grade->load_db($modinstance->id, $userid);
     $gradevalues = new \stdClass;
     $gradevalues->userid = $userid;
     $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
@@ -213,12 +214,7 @@ function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=t
         get_string('seefeedback', 'externalassignment') . '</a>';
     $gradevalues->feedbackformat = 1;
 
-    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
-    $completion = new \completion_info($course);
-    if ($completion->is_enabled($coursemodule)) {
-        $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
-    }
-    list ($course, $coursemodule) = get_course_and_cm_from_cmid($modinstance->id, 'externalassignment');
+    list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
     $completion = new \completion_info($course);
     if ($completion->is_enabled($coursemodule)) {
         $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
@@ -278,7 +274,7 @@ function mod_externalassignment_core_calendar_provide_event_action(
 ) {
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['externalassignment'][$event->instance];
     return $factory->create_instance(
-        get_string('view', 'externalassigment'),
+        'view', // get_string('view', 'externalassigment'),
         new \moodle_url('/mod/externalassignment/view.php', ['id' => $cm->id]),
         1,
         true

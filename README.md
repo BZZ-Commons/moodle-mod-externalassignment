@@ -20,14 +20,6 @@ To assign grades to the correct user, the username in the external system (i.e. 
 This screenshot shows our setup:
 ![User profile custom field](https://it.bzz.ch/wikiV2/_media/howto/git/grading/classroom_moodle_userprofile.png)
 
-## Installation and Configuration
-### Prerequisite
-#### External username
-In order to assign grades to the correct user, the username in the external system (i.e. classroom, ...) must be set in the Moodle user profile. To add an additional field to your user profile, see https://docs.moodle.org/403/en/User_profile_fields.
-
-This screenshot shows our setup:
-![User profile custom field](https://it.bzz.ch/wikiV2/_media/howto/git/grading/classroom_moodle_userprofile.png)
-
 ### Installation
 Download this plugin as a ZIP archive and install it into your Moodle *(see https://docs.moodle.org/403/en/Installing_plugins#Installing_a_plugin)*. During installation you will be asked to enter the nickname of the custom field for the external username you created above. In my setup this is "`github_username`".
 
