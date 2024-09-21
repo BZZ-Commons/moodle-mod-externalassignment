@@ -96,6 +96,13 @@ class update_grade extends external_api {
                     '  * assignmentname "' . $params['assignment_name'] . '"\n' .
                     '  * username "' . $params['user_name'] . '"'
                 );
+            } else if ($assignment->get_cutoffdate() !=0 && $assignment->get_cutoffdate() < time()) {
+                echo 'WARNING: the assignment is overdue, points/feedback not updated';
+                return self::generate_warning(
+                    'warning',
+                    'overdue',
+                    'The assignment is overdue, points/feedback not updated'
+                );
             } else {
                 self::update_grades($assignment, $userid, $params);
             }

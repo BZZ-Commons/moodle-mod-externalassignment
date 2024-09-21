@@ -64,7 +64,7 @@ class override_form extends moodleform {
 
         foreach ($this->_customdata->users as $userid => $user) {
             $mform->addElement('hidden', 'uid[' . $count . ']', $userid);
-            $mform->addElement('static', 'fullname' . $count, '', $user->firstname . ' ' . $user->lastname);
+            $mform->addElement('static', 'fullname' . $count, '', $user->get_firstname() . ' ' . $user->get_lastname());
             $count++;
         }
 

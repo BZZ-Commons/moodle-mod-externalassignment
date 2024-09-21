@@ -42,11 +42,13 @@ class grade_control {
 
     /** @var assign $assign the externalassignment instance this grade belongs to */
     private assign $assign;
-    /** @var array A key used to identify userlists created by this object. */
-    private array $userlist;
 
-    /** @var int The key to identify the user */
-    private $userid;
+    /** @var array A key used to identify userlists created by this object. *
+     * private array $userlist;
+     *
+     * /** @var int The key to identify the user
+     */
+    private int $userid;
 
     /**
      * default constructor
@@ -59,107 +61,9 @@ class grade_control {
         $this->set_coursemoduleid($coursemoduleid);
         $this->set_courseid($context->get_course_context()->instanceid);
         $this->set_context($context);
-        $this->set_assign(new assign(null));
-        $this->get_assign()->load_db($coursemoduleid);
-        $this->set_userlist($this->read_coursemodule_students());
+        $this->set_assign(new assign(null, $this->get_context()));
+        $this->get_assign()->load_db($coursemoduleid, $userid);
         $this->set_userid($userid);
-    }
-
-    /**
-     * counts the students for the assignment
-     * @return int
-     */
-    public function count_coursemodule_students(): int {
-        $users = $this->get_userlist();
-        return count($users);
-    }
-
-    /**
-     * counts the number of grades
-     * @return int
-     * @throws \dml_exception
-     */
-    public function count_grades(): int {
-        $grades = $this->read_grades();
-        return count($grades);
-    }
-
-    /**
-     * reads the students for the coursemodule filtered by userid(s)
-     * @param mixed $filter
-     * @return array of students
-     */
-    public function read_coursemodule_students(mixed $filter = null): array {
-        if ($filter != null && !is_array($filter)) {
-            $filter = [$filter];
-        }
-        $userlist = [];
-        $users = get_enrolled_users(
-            $this->get_context(),
-            'mod/assign:submit',
-            0,
-            'u.id, u.firstname, u.lastname, u.email'
-        );
-        foreach ($users as $user) {
-            $exists = true;
-            if ($filter != null) {
-                $exists = in_array($user->id, $filter);
-
-            }
-            if ($exists) {
-                $userlist[$user->id] = $user;
-            }
-        }
-        return $userlist;
-    }
-
-    /**
-     * reads all grades for the current coursemodule
-     * @return array list of grades
-     * @throws \dml_exception
-     */
-    private function read_grades(): array {
-        global $DB;
-        $grades = $DB->get_records_list(
-            'externalassignment_grades',
-            'externalassignment',
-            [$this->get_assign()->get_id()]
-        );
-        $gradelist = [];
-        foreach ($grades as $grade) {
-            $gradelist[$grade->userid] = $grade;
-        }
-        return $gradelist;
-    }
-
-    /**
-     * creates a list of all users and grades
-     * @return array list of users and grades/feedback
-     * @throws \dml_exception
-     */
-    public function list_grades(): array {
-        $grades = $this->read_grades();
-        $gradelist = [];
-        foreach ($this->userlist as $userid => $user) {
-            $grade = new \stdClass();
-            $grade->courseid = $this->get_courseid();
-            $grade->coursemoduleid = $this->get_coursemoduleid();
-            $grade->userid = $userid;
-            $grade->firstname = $user->firstname;
-            $grade->lastname = $user->lastname;
-            if (array_key_exists($userid, $grades)) {
-                $gradedata = $grades[$userid];
-                $grade->externalgrade = number_format($gradedata->externalgrade,2);
-                $grade->manualgrade = number_format($gradedata->manualgrade,2);
-                $grade->gradefinal = number_format($gradedata->externalgrade + $gradedata->manualgrade,2);
-                $grade->status = $this->get_status($grade);
-            } else {
-                $grade->status = $this->get_status(null);
-            }
-            $gradelist[] = $grade;
-        }
-
-        return $gradelist;
     }
 
     /**
@@ -171,26 +75,28 @@ class grade_control {
      */
     public function process_feedback(): void {
         global $CFG;
-        $users = $this->read_coursemodule_students([$this->userid]);
-        $user = reset($users);
+        $students = $this->get_assign()->get_students();
+        $student = $students[$this->userid];
         $data = new \stdClass();
 
-        $assignment = new assign(null);
-        $assignment->load_db($this->coursemoduleid);
         $data->id = $this->coursemoduleid;
         $data->userid = $this->userid;
-        $data->assignmentid = $assignment->get_id();
+        $data->assignmentid = $this->get_assign()->get_id();
         $data->courseid = $this->courseid;
-        $data->firstname = $user->firstname;
-        $data->lastname = $user->lastname;
-        $data->externalgrademax = $assignment->get_externalgrademax();
-        $data->manualgrademax = $assignment->get_manualgrademax();
-        $data->gradeid = -1;
-        $data->externalassignment = $assignment->get_id();
+        $data->firstname = $student->get_firstname();
+        $data->lastname = $student->get_lastname();
+        $data->externalgrademax = $this->get_assign()->get_externalgrademax();
+        $data->manualgrademax = $this->get_assign()->get_manualgrademax();
+        $data->gradeid = - 1;
+        $data->externalassignment = $this->get_assign()->get_id();
         $data->status = get_string('pending', 'externalassignment');
 
+        $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
+        $data->duedate = $this->get_assign()->get_duedate();
+        $data->cutoffdate = $this->get_assign()->get_cutoffdate();
+
         // Time remaining.
-        $timeremaining = $assignment->get_duedate() - time();
+        $timeremaining = $data->duedate - time();
         $due = '';
         if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
@@ -214,48 +120,51 @@ class grade_control {
         // Form processing and displaying is done here.
         if ($mform->is_cancelled()) {
             debugging('Cancelled');  // TODO MDL-1 reset the form.
-        } else if ($formdata = $mform->get_data()) {
-            global $DB;
-            $grade = new grade($formdata);
-            if ($grade->get_id() == -1) {
-                $grade->set_id($DB->insert_record('externalassignment_grades', $grade->to_stdclass()));
-            } else {
-                $result = $DB->update_record('externalassignment_grades', $grade->to_stdclass());
-            }
-
-            $gradevalues = new \stdClass();
-            $gradevalues->userid = $this->get_userid();
-            $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
-            externalassignment_grade_item_update($this->get_assign()->to_stdclass(), $gradevalues);
-
-            redirect(
-                new \moodle_url('view.php',
-                    [
-                        'id' => $this->coursemoduleid,
-                        'action' => 'grader',
-                        'userid' => $this->userid,
-                    ]
-                )
-            );
         } else {
-            $grades = $this->read_grades();
+            if ($formdata = $mform->get_data()) {
+                global $DB;
+                $grade = new grade($formdata);
+                if ($grade->get_id() == - 1) {
+                    $grade->set_id($DB->insert_record('externalassignment_grades', $grade->to_stdclass()));
+                } else {
+                    $result = $DB->update_record('externalassignment_grades', $grade->to_stdclass());
+                }
 
-            if (array_key_exists($this->get_userid(), $grades)) {
-                $gradedata = $grades[$this->get_userid()];
-                $data->gradeid = $gradedata->id;
-                $data->externalassignment = $gradedata->externalassignment;
-                $data->status = $this->get_status($gradedata);
-                $data->externalgrade = $gradedata->externalgrade;
-                $data->externalfeedback['text'] = $gradedata->externalfeedback;
-                $data->externalfeedback['format'] = 1;
-                $data->manualgrade = $gradedata->manualgrade;
-                $data->manualfeedback['text'] = $gradedata->manualfeedback;
-                $data->manualfeedback['format'] = 1;
-                $data->gradefinal = $gradedata->externalgrade + $gradedata->manualgrade;
+                $gradevalues = new \stdClass();
+                $gradevalues->userid = $this->get_userid();
+                $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
+                externalassignment_grade_item_update($this->get_assign()->to_stdclass(), $gradevalues);
 
+                redirect(
+                    new \moodle_url('view.php',
+                        [
+                            'id' => $this->coursemoduleid,
+                            'action' => 'grader',
+                            'userid' => $this->userid,
+                        ]
+                    )
+                );
+            } else {  // display the form
+                if (array_key_exists($this->get_userid(), $this->get_assign()->get_students())) {
+                    $student = $this->get_assign()->get_students()[$this->get_userid()];
+                    if (!empty($student->get_grade())) {
+                        $grade = $student->get_grade();
+                        $data->gradeid = $grade->get_id();
+                        $data->externalassignment = $grade->get_externalassignment();
+                        $data->status = $student->get_status();
+                        $data->externalgrade = $grade->get_externalgrade();
+                        $data->externalfeedback['text'] = $grade->get_externalfeedback();
+                        $data->externalfeedback['format'] = 1;
+                        $data->manualgrade = $grade->get_manualgrade();
+                        $data->manualfeedback['text'] = $grade->get_manualfeedback();
+                        $data->manualfeedback['format'] = 1;
+                        $data->gradefinal = $grade->get_externalgrade() + $grade->get_manualgrade();
+
+                    }
+                }
+                $mform->set_data($data);
+                $mform->display();
             }
-            $mform->set_data($data);
-            $mform->display();
         }
     }
 
@@ -271,46 +180,52 @@ class grade_control {
         global $CFG;
 
         $data = new \stdClass();
-        $assignment = new assign(null);
-        $assignment->load_db($this->coursemoduleid);
         $data->id = $this->coursemoduleid;
-        $data->assignmentid = $assignment->get_id();
+        $data->assignmentid = $this->get_assign()->get_id();
         $data->courseid = $this->courseid;
-        $data->allowsubmissionsfromdate = $assignment->get_allowsubmissionsfromdate();
-        $data->duedate = $assignment->get_duedate();
-        $data->cutoffdate = $assignment->get_duedate();
-        $data->users = $this->read_coursemodule_students($userids);
+        $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
+        $data->duedate = $this->get_assign()->get_duedate();
+        $data->cutoffdate = $this->get_assign()->get_duedate();
+        $data->users = [];
+        foreach ($userids as $userid) {
+            if (array_key_exists($userid, $this->get_assign()->get_students())) {
+                $student = $this->get_assign()->get_students()[$userid];
+                $data->users[] = $student;
+            }
+        }
 
         // Form processing and displaying is done here.
         $url = new \moodle_url('/mod/externalassignment/view.php', ['action' => 'override']);
         require_once($CFG->dirroot . '/mod/externalassignment/classes/form/override_form.php');
-        $mform = new override_form($url->out(false), $assignment, $data);
+        $mform = new override_form($url->out(false), $this->get_assign(), $data);
         if ($mform->is_cancelled()) {
             debugging('Cancelled');  // FIXME reset the form.
-        } else if ($formdata = $mform->get_data()) {
-            foreach ($formdata->uid as $userid) {
-                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
-                // FIXME: Find out why autoloadind does not work here.
-                $override = new override();
-                $override->set_externalassignment($formdata->id);
-                $override->set_userid($userid);
-                $override->set_allowsubmissionsfromdate($formdata->allowsubmissionsfromdate);
-                $override->set_duedate($formdata->duedate);
-                $override->set_cutoffdate($formdata->cutoffdate);
-                $this->override_update($override);
-            }
-            $url = new \moodle_url(
-                '/mod/externalassignment/view.php',
-                [
-                    'id' => $formdata->id,
-                    'action' => 'grading',
-                ]
-            );
-            redirect($url);
-
         } else {
-            $mform->set_data($data);
-            $mform->display();
+            if ($formdata = $mform->get_data()) {
+                foreach ($formdata->uid as $userid) {
+                    require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
+                    // FIXME: Find out why autoloadind does not work here.
+                    $override = new override();
+                    $override->set_externalassignment($formdata->id);
+                    $override->set_userid($userid);
+                    $override->set_allowsubmissionsfromdate($formdata->allowsubmissionsfromdate);
+                    $override->set_duedate($formdata->duedate);
+                    $override->set_cutoffdate($formdata->cutoffdate);
+                    $this->override_update($override);
+                }
+                $url = new \moodle_url(
+                    '/mod/externalassignment/view.php',
+                    [
+                        'id' => $formdata->id,
+                        'action' => 'grading',
+                    ]
+                );
+                redirect($url);
+
+            } else {
+                $mform->set_data($data);
+                $mform->display();
+            }
         }
     }
 
@@ -336,23 +251,6 @@ class grade_control {
         }
     }
 
-    /**
-     * get the status of the students assignment
-     * @param $grade
-     * @return string
-     */
-    private function get_status($grade): string {
-        $status = get_string('pending', 'externalassignment');;
-        if ($grade && $this->get_assign()->get_needspassinggrade() != 0) {
-            $maximumgrade = $this->get_assign()->get_externalgrademax() + $this->get_assign()->get_manualgrademax();
-            $totalgrade = $grade->externalgrade + $grade->manualgrade;
-            $passinggrade = $maximumgrade * $this->get_assign()->get_passingpercentage() / 100;
-            if ($totalgrade >= $passinggrade) {
-                $status = get_string('done', 'externalassignment');
-            }
-        }
-        return $status;
-    }
 
     /**
      * Gets the coursemoduleid

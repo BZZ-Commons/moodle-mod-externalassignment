@@ -40,7 +40,7 @@ class view_link implements renderable, templatable {
      */
     public function __construct(int $coursemoduleid) {
         global $CFG;
-        $assignment = new assign(null);
+        $assignment = new assign(null, null);
         $assignment->load_db($coursemoduleid);
         $this->externallink = $assignment->get_externallink();
     }

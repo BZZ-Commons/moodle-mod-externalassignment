@@ -26,7 +26,8 @@ require_once("$CFG->libdir/formslib.php");
  * definition and validation of the grading form
  *
  * @package   mod_externalassignment
- * @copyright 2023 Marcel Suter <marcel@ghwalin.ch>
+ * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
+ * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grader_form extends moodleform {

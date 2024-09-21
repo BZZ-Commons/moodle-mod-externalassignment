@@ -60,18 +60,18 @@ class view_summary implements renderable, templatable {
     public function export_for_template(renderer_base $output): \stdClass {
         global $CFG;
 
-        $assignment = new assign(null);
+        $assignment = new assign(null, $this->get_context());
         $assignment->load_db($this->coursemoduleid);
 
-        $gradecontrol = new grade_control($this->coursemoduleid, $this->context);
+        //$gradecontrol = new grade_control($this->coursemoduleid, $this->context);
 
         $data = new \stdClass();
         $data->link_grading = "view.php?id=$this->coursemoduleid&action=grading";
         $data->link_grader = "view.php?id=$this->coursemoduleid&action=grader";
         $data->externalgrademax = $assignment->get_externalgrademax();
         $data->manualgrademax = $assignment->get_manualgrademax();
-        $data->student_count = $gradecontrol->count_coursemodule_students();
-        $data->graded_count = $gradecontrol->count_grades();
+        $data->student_count = $assignment->count_students();
+        $data->graded_count = $assignment->count_grades();
 
         $timeremaining = $assignment->get_duedate() - time();
         if ($timeremaining <= 0) {
