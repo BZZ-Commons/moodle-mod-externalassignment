@@ -83,36 +83,48 @@ class update_grade extends external_api {
             ]
         );
         $externalusername = self::customfieldid_username();
-        $userid = self::get_user_id($params['user_name'], $externalusername);
+        $results = [];
+        $users = explode(',',$params['user_name']);
+        echo 'users: ' . print_r($users, true);
+        foreach ($users as $user) {
+            $userid = self::get_user_id($user, $externalusername);
 
-        if (!empty($userid)) {
-            $assignment = self::read_assignment($assignmentname, $userid);
-            if (empty($assignment->get_id())) {
-                echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
-                return self::generate_warning(
-                    'error',
-                    'no_assignment',
-                    'No matching assignment found. Contact your teacher.\n' .
-                    '  * assignmentname "' . $params['assignment_name'] . '"\n' .
-                    '  * username "' . $params['user_name'] . '"'
-                );
+            if (!empty($userid)) {
+                $assignment = self::read_assignment($assignmentname, $userid);
+                if (empty($assignment->get_id())) {
+                    echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
+                    $results = self::generate_warning(
+                        $results,
+                        'error',
+                        'no_assignment',
+                        'No matching assignment found. Contact your teacher.\n' .
+                        '  * assignmentname "' . $params['assignment_name'] . '"\n' .
+                        '  * username "' . $user . '"'
+                    );
+                } else {
+                    self::update_grades($assignment, $userid, $params);
+                }
             } else {
-                self::update_grades($assignment, $userid, $params);
+                echo 'ERROR: no username ' . $user . ' found';
+                $results = self::generate_warning(
+                    $results,
+                    'error',
+                    'no_user',
+                    'No Moodle user found with username "' . $user . '": Update your Moodle profile.'
+                );
             }
-        } else {
-            echo 'ERROR: no username ' . $params['user_name'] . ' found';
-            return self::generate_warning(
-                'error',
-                'no_user',
-                'No Moodle user found with username "' . $params['user_name'] . '": Update your Moodle profile.'
+        }
+
+        if (empty($results)) {
+            $results = self::generate_warning(
+                $results,
+                'info',
+                'success',
+                'Update successful'
             );
         }
 
-        return self::generate_warning(
-            'info',
-            'success',
-            'Update successful'
-        );
+        return self::compact_results($results);
     }
 
     /**
@@ -215,14 +227,45 @@ class update_grade extends external_api {
      * @param string $message
      * @return string[]
      */
-    private static function generate_warning(string $type, string $name, string $message): array {
-        return [
+    private static function generate_warning(
+        array $results,
+        string $type,
+        string $name,
+        string $message
+    ): array {
+
+        $results[] = [
             'type' => $type,
             'name' => $name,
             'message' => $message,
         ];
+        return $results;
     }
 
+    /**
+     * Compacts the results into a single array
+     * @param array $results
+     * @return array
+     */
+    private static function compact_results(array $results): array {
+        $return = [
+            'type' => 'info',
+            'name' => '',
+            'message' => '',
+        ];
+        foreach ($results as $result) {
+            if ($result['type'] === 'error') {
+                $return['type'] = 'error';
+            }
+            if ($result['type'] === 'warning' && $result['type'] !== 'error') {
+                $return['type'] = 'warning';
+            }
+
+            $return['name'] .= $result['name'] . '\n';
+            $return['message'] .= $result['message'] . '\n';
+        }
+        return $return;
+    }
     /**
      * updates the grade and the feedback for the external assignment
      *
