@@ -85,6 +85,11 @@ class update_grade extends external_api {
 
         // get the userid by the external username
         $externalusername = self::customfieldid_username();
+        $results = [];
+        $users = explode(',',$params['user_name']);
+        echo 'users: ' . print_r($users, true);
+        foreach ($users as $user) {
+            $userid = self::get_user_id($user, $externalusername);
         $userid = self::get_user_id($params['user_name'], $externalusername);
         if (empty($userid)) {
             echo 'ERROR: no username ' . $params['user_name'] . ' found';
@@ -131,6 +136,9 @@ class update_grade extends external_api {
             'success',
             'Update successful'
         );
+    }
+
+        return self::compact_results($results);
     }
 
     /**
@@ -233,14 +241,45 @@ class update_grade extends external_api {
      * @param string $message
      * @return string[]
      */
-    private static function generate_warning(string $type, string $name, string $message): array {
-        return [
+    private static function generate_warning(
+        array $results,
+        string $type,
+        string $name,
+        string $message
+    ): array {
+
+        $results[] = [
             'type' => $type,
             'name' => $name,
             'message' => $message,
         ];
+        return $results;
     }
 
+    /**
+     * Compacts the results into a single array
+     * @param array $results
+     * @return array
+     */
+    private static function compact_results(array $results): array {
+        $return = [
+            'type' => 'info',
+            'name' => '',
+            'message' => '',
+        ];
+        foreach ($results as $result) {
+            if ($result['type'] === 'error') {
+                $return['type'] = 'error';
+            }
+            if ($result['type'] === 'warning' && $result['type'] !== 'error') {
+                $return['type'] = 'warning';
+            }
+
+            $return['name'] .= $result['name'] . '\n';
+            $return['message'] .= $result['message'] . '\n';
+        }
+        return $return;
+    }
     /**
      * updates the grade and the feedback for the external assignment
      *
