@@ -119,12 +119,15 @@ class assign {
      * @throws \dml_exception
      */
     public function load_db_external(string $assignmentname, int $userid): void {
-        global $DB;
+        global $DB, $CFG;
+
         $query =
-            'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname' .
+            'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname,
+                    cm.id as coursemoduleid' .
             ' FROM {user_enrolments} ue' .
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
+            ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
             ' WHERE ae.externalname=:assignmentname AND ue.userid=:userid';
         $data = $DB->get_record_sql(
             $query,
@@ -134,13 +137,15 @@ class assign {
             ]
         );
         if (!empty($data)) {
+            require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
             $this->set_id($data->id);
             $this->set_course($data->course);
             $this->set_externalgrademax($data->externalgrademax);
             $this->set_duedate($data->duedate);
             $this->set_cutoffdate($data->cutoffdate);
             $this->set_externalname($data->externalname);
-            $this->load_overrides($this->get_id(), $userid);
+            $this->students[$userid] = new student($this, null);
+            $this->load_overrides($data->coursemoduleid, $userid);
         }
     }
 
@@ -219,7 +224,6 @@ class assign {
         }
         $data = $DB->get_records('externalassignment_grades', $conditions);
         foreach ($data as $record) {
-            debugging(var_export($data, true));
             $grade = new grade($record);
             $this->students[$record->userid]->set_grade($grade);
         }
@@ -279,6 +283,7 @@ class assign {
         if (!empty($userid)) {
             $conditions['userid'] = $userid;
         }
+
         $data = $DB->get_records(
             'externalassignment_overrides',
             $conditions

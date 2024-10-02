@@ -53,6 +53,7 @@ $string['duedate_help'] = 'TODO duedate_help';
 $string['duedateaftersubmissionvalidation'] = 'Due date must be after the allow submissions from date.';
 $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submissions from date.';
 
+$string['extensiongranted'] = ' / Extension granted: ';
 $string['external'] = 'External';
 $string['externalfeedback'] = 'Feedback from external system';
 $string['externalgrade'] = 'External grade';
@@ -92,9 +93,12 @@ $string['modulenameplural'] = 'External assignments';
 $string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
+$string['notsubmitted'] = 'not submitted';
 
+$string['overdue'] = 'overdue';
 $string['override'] = 'Override';
 
+$string['passed'] = 'passed';
 $string['passinggrade'] = 'Points needed to pass';
 $string['passingpercentage'] = 'Percentage to pass';
 $string['passingpercentage_help'] = 'What percentage of the maximum grade (external + manual) must be achieved to pass';

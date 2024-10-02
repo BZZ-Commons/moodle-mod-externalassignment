@@ -57,13 +57,15 @@ class student {
      */
     public function __construct(assign $assign, ?\stdClass $student) {
         $this->set_assign($assign);
-        $this->set_userid($student->id);
-        $this->set_username($student->username);
-        $this->set_firstname($student->firstname);
-        $this->set_lastname($student->lastname);
-        $this->set_email($student->email);
         $this->set_grade(null);
         $this->set_override(null);
+        if ($student !== null) {
+            $this->set_userid($student->id);
+            $this->set_username($student->username);
+            $this->set_firstname($student->firstname);
+            $this->set_lastname($student->lastname);
+            $this->set_email($student->email);
+        }
     }
 
     /**
@@ -90,7 +92,7 @@ class student {
 
     public function get_status(): string {
         if (empty($this->get_grade())) {
-            return 'not submitted';
+            return get_string('notsubmitted', 'externalassignment');
         }
         # calculate the maximum and the passing grade
         $maximumgrade = $this->get_assign()->get_externalgrademax() + $this->get_assign()->get_manualgrademax();
@@ -100,21 +102,27 @@ class student {
         }
 
         if ($this->get_grade()->get_finalgrade() >= $passinggrade) {
-            return 'passed';
+            return get_string('passed', 'externalassignment');
         }
 
         # check if there is no override for the due date
+        $due_override = 0;
         if (empty($this->get_override()) or $this->get_override()->get_duedate() == 0) {
             $duedate = $this->get_assign()->get_duedate();
         } else {
             $duedate = $this->get_override()->get_duedate();
+            $due_override = $duedate;
         }
-
-
+        # check if the assignment is overdue
         if ($duedate > 0 and time() > $duedate) {
-            return 'overdue';
+            return get_string('overdue', 'externalassignment');
+        } elseif ($due_override > 0) {
+            $dateformat = get_string('strftimedatetimeshort', 'langconfig');
+            return get_string('pending', 'externalassignment') .
+                get_string('extensiongranted', 'externalassignment')  .
+                userdate($due_override, $dateformat);
         }
-        return 'pending';
+        return get_string('pending', 'externalassignment');
     }
 
     /**

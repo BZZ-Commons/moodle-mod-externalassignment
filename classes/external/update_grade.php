@@ -82,31 +82,11 @@ class update_grade extends external_api {
                 'feedback' => $feedback,
             ]
         );
+
+        // get the userid by the external username
         $externalusername = self::customfieldid_username();
         $userid = self::get_user_id($params['user_name'], $externalusername);
-
-        if (!empty($userid)) {
-            $assignment = self::read_assignment($assignmentname, $userid);
-            if (empty($assignment->get_id())) {
-                echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
-                return self::generate_warning(
-                    'error',
-                    'no_assignment',
-                    'No matching assignment found. Contact your teacher.\n' .
-                    '  * assignmentname "' . $params['assignment_name'] . '"\n' .
-                    '  * username "' . $params['user_name'] . '"'
-                );
-            } else if ($assignment->get_cutoffdate() !=0 && $assignment->get_cutoffdate() < time()) {
-                echo 'WARNING: the assignment is overdue, points/feedback not updated';
-                return self::generate_warning(
-                    'warning',
-                    'overdue',
-                    'The assignment is overdue, points/feedback not updated'
-                );
-            } else {
-                self::update_grades($assignment, $userid, $params);
-            }
-        } else {
+        if (empty($userid)) {
             echo 'ERROR: no username ' . $params['user_name'] . ' found';
             return self::generate_warning(
                 'error',
@@ -115,6 +95,37 @@ class update_grade extends external_api {
             );
         }
 
+        // get the assignment with the specified name
+        $assignment = self::read_assignment($assignmentname, $userid);
+        if (empty($assignment->get_id())) {
+            echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
+            return self::generate_warning(
+                'error',
+                'no_assignment',
+                'No matching assignment found. Contact your teacher.\n' .
+                '  * assignmentname "' . $params['assignment_name'] . '"\n' .
+                '  * username "' . $params['user_name'] . '"'
+            );
+        }
+
+        // check if the assignment is overdue
+        $override = $assignment->get_students()[$userid]->get_override();
+        if (empty($override) || $override == 0) {
+            $cutoffdate = $assignment->get_cutoffdate();
+        } else {
+            $cutoffdate = $override->get_cutoffdate();
+        }
+        if ($cutoffdate !=0 && $cutoffdate < time()) {
+            echo 'WARNING: the assignment is overdue, points/feedback not updated';
+            return self::generate_warning(
+                'warning',
+                'overdue',
+                'The assignment is overdue, points/feedback not updated'
+            );
+        }
+
+        // update the grade
+        self::update_grades($assignment, $userid, $params);
         return self::generate_warning(
             'info',
             'success',
