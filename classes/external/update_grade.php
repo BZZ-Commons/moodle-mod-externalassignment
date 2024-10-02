@@ -90,53 +90,60 @@ class update_grade extends external_api {
         echo 'users: ' . print_r($users, true);
         foreach ($users as $user) {
             $userid = self::get_user_id($user, $externalusername);
-        $userid = self::get_user_id($params['user_name'], $externalusername);
-        if (empty($userid)) {
-            echo 'ERROR: no username ' . $params['user_name'] . ' found';
-            return self::generate_warning(
-                'error',
-                'no_user',
-                'No Moodle user found with username "' . $params['user_name'] . '": Update your Moodle profile.'
+
+            if (empty($userid)) {
+                echo 'ERROR: no username ' . $params['user_name'] . ' found';
+                $results = self::generate_warning(
+                    $results,
+                    'error',
+                    'no_user',
+                    'No Moodle user found with username "' . $user . '": Update your Moodle profile.'
+                );
+                break;
+            }
+
+            // get the assignment with the specified name
+            $assignment = self::read_assignment($assignmentname, $userid);
+            if (empty($assignment->get_id())) {
+                echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
+                $results = self::generate_warning(
+                    $results,
+                    'error',
+                    'no_assignment',
+                    'No matching assignment found. Contact your teacher.\n' .
+                    '  * assignmentname "' . $params['assignment_name'] . '"\n' .
+                    '  * username "' . $user . '"'
+                );
+                break;
+            }
+
+            // check if the assignment is overdue
+            $override = $assignment->get_students()[$userid]->get_override();
+            if (empty($override) || $override == 0) {
+                $cutoffdate = $assignment->get_cutoffdate();
+            } else {
+                $cutoffdate = $override->get_cutoffdate();
+            }
+            if ($cutoffdate !=0 && $cutoffdate < time()) {
+                echo 'WARNING: the assignment is overdue, points/feedback not updated';
+                $results = self::generate_warning(
+                    $results,
+                    'warning',
+                    'overdue',
+                    'The assignment is overdue, points/feedback not updated'
+                );
+                break;
+            }
+
+            // update the grade
+            self::update_grades($assignment, $userid, $params);
+            $results = self::generate_warning(
+                $results,
+                'info',
+                'success',
+                'Update successful'
             );
         }
-
-        // get the assignment with the specified name
-        $assignment = self::read_assignment($assignmentname, $userid);
-        if (empty($assignment->get_id())) {
-            echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
-            return self::generate_warning(
-                'error',
-                'no_assignment',
-                'No matching assignment found. Contact your teacher.\n' .
-                '  * assignmentname "' . $params['assignment_name'] . '"\n' .
-                '  * username "' . $params['user_name'] . '"'
-            );
-        }
-
-        // check if the assignment is overdue
-        $override = $assignment->get_students()[$userid]->get_override();
-        if (empty($override) || $override == 0) {
-            $cutoffdate = $assignment->get_cutoffdate();
-        } else {
-            $cutoffdate = $override->get_cutoffdate();
-        }
-        if ($cutoffdate !=0 && $cutoffdate < time()) {
-            echo 'WARNING: the assignment is overdue, points/feedback not updated';
-            return self::generate_warning(
-                'warning',
-                'overdue',
-                'The assignment is overdue, points/feedback not updated'
-            );
-        }
-
-        // update the grade
-        self::update_grades($assignment, $userid, $params);
-        return self::generate_warning(
-            'info',
-            'success',
-            'Update successful'
-        );
-    }
 
         return self::compact_results($results);
     }
