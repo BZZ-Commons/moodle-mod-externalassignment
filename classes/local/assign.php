@@ -29,7 +29,6 @@ class assign {
     private ?int $id;
     /** @var int|null the id of the course this assignment belongs to */
     private ?int $course;
-
     /** @var string the name of the assignment */
     private string $name;
     /** @var string the description of the assignment */

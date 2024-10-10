@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade;
 use mod_externalassignment\local\grade_control;
 use mod_externalassignment\output\view_grader_navigation;
@@ -77,37 +78,39 @@ if ($urlparams['action'] == '') {
  * @throws \dml_exception
  */
 function show_details($context, $coursemoduleid): void {
-    global $DB, $PAGE, $USER;
+    global $PAGE, $USER;
 
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
     $assignmentname = $context->get_context_name(false, true);
+    $assignment = new assign(null);
+    $assignment->load_db($coursemoduleid);
     $title = $courseshortname . ': ' . $assignmentname;
     $PAGE->set_title($title);
     $PAGE->set_heading('TODO My modules page heading');
     $PAGE->set_pagelayout('standard');
 
+    if (!$assignment->is_alwaysshowdescription() ||
+        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() >= time())) {
+        $assignment->set_intro('');
+    }
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
 
-    $renderable = new view_link($coursemoduleid);
-    echo $output->render($renderable);
+    if ($assignment->is_alwaysshowlink() ||
+        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() <= time())) {
+        $renderable = new view_link($coursemoduleid, $assignment);
+        echo $output->render($renderable);
+    }
 
+    // check if the user is a teacher
     if (has_capability('mod/assign:reviewgrades', $context)) {
         $renderable = new view_summary($coursemoduleid, $context);
         echo $output->render($renderable);
     } else {
-        $gradedata = $DB->get_record(
-            'externalassignment_grades',
-            ['externalassignment' => $coursemoduleid, 'userid' => $USER->id],
-            '*'
-        );
-        if ($gradedata) {
-            $grade = new grade($gradedata);
-        } else {
-            $grade = new grade(null);
-        }
+        $grade = new grade(null);
+        $grade->load_db($assignment->get_id(), $USER->id);
 
-        $renderable = new view_student($coursemoduleid, $context);
+        $renderable = new view_student($coursemoduleid, $context, $assignment, $grade);
         echo $output->render($renderable);
     }
     echo $output->footer();

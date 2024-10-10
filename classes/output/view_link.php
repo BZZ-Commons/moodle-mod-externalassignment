@@ -31,18 +31,15 @@ use templatable;
  */
 class view_link implements renderable, templatable {
     /** @var string $externallink the link to the external assignment */
-    private string $externallink;
+    private assign $assignment;
 
     /**
      * default constructor
      * @param int $coursemoduleid
      * @throws \dml_exception
      */
-    public function __construct(int $coursemoduleid) {
-        global $CFG;
-        $assignment = new assign(null);
-        $assignment->load_db($coursemoduleid);
-        $this->externallink = $assignment->get_externallink();
+    public function __construct(int $coursemoduleid, assign $assignment) {
+        $this->assignment = $assignment;
     }
 
     /**
@@ -52,7 +49,7 @@ class view_link implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output): \stdClass {
         $data = new \stdClass();
-        $data->externallink = $this->externallink;
+        $data->externallink = $this->assignment->get_externallink();
         return $data;
     }
 }
