@@ -71,7 +71,7 @@ class read_students extends external_api {
         require_capability('mod/externalassignment:reviewgrades', $context);
         $users = get_enrolled_users(
             $context,
-            'mod/assign:submit',
+            'mod/externalassignment:submit',
             '',
             'u.*',
             null,

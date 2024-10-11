@@ -188,7 +188,7 @@ class assign {
         // FIXME: Find out why autoloading does not work here.
         $users = get_enrolled_users(
             $this->get_context(),
-            'mod/assign:submit',
+            'mod/externalassignment:submit',
             '',
             'u.*',
             null,

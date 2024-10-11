@@ -55,6 +55,16 @@ $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submis
 
 $string['extensiongranted'] = ' / Extension granted: ';
 $string['external'] = 'External';
+$string['externalassignment:addinstance'] = 'Add a new external assignment';
+$string['externalassignment:grade'] = 'Grade external assignment';
+$string['externalassignment:grantextension'] = 'Grant extension for external assignment';
+$string['externalassignment:manage'] = 'Manage external assignment';
+$string['externalassignment:managegrades'] = 'Manage grades for external assignment';
+$string['externalassignment:override'] = 'Override external assignment';
+$string['externalassignment:reviewgrades'] = 'Review grades for external assignment';
+$string['externalassignment:submit'] = 'Submit external assignment';
+$string['externalassignment:view'] = 'View external assignment';
+$string['externalassignment:viewgrades'] = 'View grades for external assignment';
 $string['externalfeedback'] = 'Feedback from external system';
 $string['externalgrade'] = 'External grade';
 $string['externalgrademax'] = 'External grade max.';
@@ -121,4 +131,5 @@ $string['submissionstatus'] = 'Submission status';
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';
 $string['totalgrade'] = 'Total points';
+
 $string['view'] = 'View';

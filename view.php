@@ -92,7 +92,7 @@ function show_details($context, $coursemoduleid): void {
     $renderable = new view_link($coursemoduleid);
     echo $output->render($renderable);
 
-    if (has_capability('mod/assign:reviewgrades', $context)) {
+    if (has_capability('mod/externalassignment:reviewgrades', $context)) {
         $renderable = new view_summary($coursemoduleid, $context);
         echo $output->render($renderable);
     } else {
