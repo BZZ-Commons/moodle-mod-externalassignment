@@ -37,7 +37,6 @@ $capabilities = [
     ],
 
     'mod/externalassignment:view' => [
-
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [
@@ -46,6 +45,13 @@ $capabilities = [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
+        ],
+    ],
+    'mod/externalassignment:submit' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'student' => CAP_ALLOW,
         ],
     ],
     'mod/externalassignment:viewgrades' => [
