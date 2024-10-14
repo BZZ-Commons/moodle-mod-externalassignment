@@ -181,7 +181,7 @@ class grade_control {
 
         $data = new \stdClass();
         $data->id = $this->coursemoduleid;
-        $data->assignmentid = $this->get_assign()->get_id();
+        $data->externalassignment = $this->get_assign()->get_id();
         $data->courseid = $this->courseid;
         $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
         $data->duedate = $this->get_assign()->get_duedate();
@@ -204,9 +204,9 @@ class grade_control {
             if ($formdata = $mform->get_data()) {
                 foreach ($formdata->uid as $userid) {
                     require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
-                    // FIXME: Find out why autoloadind does not work here.
+                    // FIXME: Find out why autoloading does not work here.
                     $override = new override();
-                    $override->set_externalassignment($formdata->id);
+                    $override->set_externalassignment($formdata->externalassignment);
                     $override->set_userid($userid);
                     $override->set_allowsubmissionsfromdate($formdata->allowsubmissionsfromdate);
                     $override->set_duedate($formdata->duedate);

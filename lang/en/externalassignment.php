@@ -117,6 +117,16 @@ $string['percentage'] = 'Percentage';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
+$string['privacy:metadata:userid'] = 'The user ID identifying the student';
+$string['privacy:metadata:grader'] = 'The user ID identifying the grader';
+$string['privacy:metadata:externallink'] = 'The link to assignment in the external system';
+$string['privacy:metadata:externalgrade'] = 'The grade from the external system';
+$string['privacy:metadata:externalfeedback'] = 'The feedback from the external system';
+$string['privacy:metadata:manualgrade'] = 'The manual grade from the teacher';
+$string['privacy:metadata:manualfeedback'] = 'The manual feedback from the teacher';
+$string['privacy:metadata:allowsubmissionsfromdate'] = 'The overridden allow submissions from date';
+$string['privacy:metadata:duedate'] = 'The overridden due date';
+$string['privacy:metadata:cutoffdate'] = 'The overridden cut-off date';
 
 $string['scoremaximum'] = 'Maximum points';
 $string['scorereached'] = 'Points earned';

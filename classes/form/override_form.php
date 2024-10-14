@@ -63,8 +63,14 @@ class override_form extends moodleform {
         $count = 0;
 
         foreach ($this->_customdata->users as $userid => $user) {
-            $mform->addElement('hidden', 'uid[' . $count . ']', $userid);
-            $mform->addElement('static', 'fullname' . $count, '', $user->get_firstname() . ' ' . $user->get_lastname());
+            $element = $mform->addElement('hidden', "uid[$count]", $user->get_userid());
+            $element->setType(PARAM_INT);
+            $mform->addElement(
+                'static',
+                'fullname' . $count,
+                '',
+                $user->get_firstname() . ' ' . $user->get_lastname()
+            );
             $count++;
         }
 
@@ -75,16 +81,43 @@ class override_form extends moodleform {
             get_string('allowsubmissionsfromdate', 'externalassignment'),
             $options
         );
-        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'externalassignment');
+        $mform->addHelpButton(
+            'allowsubmissionsfromdate',
+            'allowsubmissionsfromdate',
+            'externalassignment'
+        );
 
-        $mform->addElement('date_time_selector', 'duedate', get_string('duedate', 'externalassignment'), $options);
+        $mform->addElement(
+            'date_time_selector',
+            'duedate',
+            get_string('duedate', 'externalassignment'),
+            $options
+        );
         $mform->addHelpButton('duedate', 'duedate', 'externalassignment');
 
-        $mform->addElement('date_time_selector', 'cutoffdate', get_string('cutoffdate', 'externalassignment'), $options);
+        $mform->addElement(
+            'date_time_selector',
+            'cutoffdate',
+            get_string('cutoffdate', 'externalassignment'),
+            $options
+        );
         $mform->addHelpButton('cutoffdate', 'cutoffdate', 'externalassignment');
 
-        $mform->addElement('hidden', 'id', $this->_customdata->id);
+        $mform->addElement(
+            'text',
+            'id',
+            'course_module_id',
+            $this->_customdata->id
+        );
         $mform->setType('id', PARAM_INT);
+
+        $mform->addElement(
+            'text',
+            'externalassignment',
+            'extassign_id',
+            $this->_customdata->externalassignment
+        );
+        $mform->setType('externalassignment', PARAM_INT);
 
         $this->add_action_buttons();
         $this->set_data($this->_customdata);

@@ -105,7 +105,7 @@ class assign {
             if (!empty($this->get_context())) {
                 $this->load_students();
                 $this->load_grades($this->get_id(), $userid);
-                $this->load_overrides($coursemoduleid, $userid);
+                $this->load_overrides($this->get_id(), $userid);
             }
 
         }
@@ -289,7 +289,7 @@ class assign {
             $conditions
         );
         require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
-        // FIXME: Find out why autoloadind does not work here.
+        // FIXME: Find out why autoloading does not work here.
         foreach ($data as $record) {
             $override = new override($record);
             $this->students[$record->userid]->set_override($override);
