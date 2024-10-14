@@ -53,7 +53,18 @@ $string['duedate_help'] = 'TODO duedate_help';
 $string['duedateaftersubmissionvalidation'] = 'Due date must be after the allow submissions from date.';
 $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submissions from date.';
 
+$string['extensiongranted'] = ' / Extension granted: ';
 $string['external'] = 'External';
+$string['externalassignment:addinstance'] = 'Add a new external assignment';
+$string['externalassignment:grade'] = 'Grade external assignment';
+$string['externalassignment:grantextension'] = 'Grant extension for external assignment';
+$string['externalassignment:manage'] = 'Manage external assignment';
+$string['externalassignment:managegrades'] = 'Manage grades for external assignment';
+$string['externalassignment:override'] = 'Override external assignment';
+$string['externalassignment:reviewgrades'] = 'Review grades for external assignment';
+$string['externalassignment:submit'] = 'Submit external assignment';
+$string['externalassignment:view'] = 'View external assignment';
+$string['externalassignment:viewgrades'] = 'View grades for external assignment';
 $string['externalfeedback'] = 'Feedback from external system';
 $string['externalgrade'] = 'External grade';
 $string['externalgrademax'] = 'External grade max.';
@@ -92,9 +103,12 @@ $string['modulenameplural'] = 'External assignments';
 $string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
+$string['notsubmitted'] = 'not submitted';
 
+$string['overdue'] = 'overdue';
 $string['override'] = 'Override';
 
+$string['passed'] = 'passed';
 $string['passinggrade'] = 'Points needed to pass';
 $string['passingpercentage'] = 'Percentage to pass';
 $string['passingpercentage_help'] = 'What percentage of the maximum grade (external + manual) must be achieved to pass';
@@ -103,6 +117,16 @@ $string['percentage'] = 'Percentage';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
+$string['privacy:metadata:userid'] = 'The user ID identifying the student';
+$string['privacy:metadata:grader'] = 'The user ID identifying the grader';
+$string['privacy:metadata:externallink'] = 'The link to assignment in the external system';
+$string['privacy:metadata:externalgrade'] = 'The grade from the external system';
+$string['privacy:metadata:externalfeedback'] = 'The feedback from the external system';
+$string['privacy:metadata:manualgrade'] = 'The manual grade from the teacher';
+$string['privacy:metadata:manualfeedback'] = 'The manual feedback from the teacher';
+$string['privacy:metadata:allowsubmissionsfromdate'] = 'The overridden allow submissions from date';
+$string['privacy:metadata:duedate'] = 'The overridden due date';
+$string['privacy:metadata:cutoffdate'] = 'The overridden cut-off date';
 
 $string['scoremaximum'] = 'Maximum points';
 $string['scorereached'] = 'Points earned';
@@ -117,4 +141,5 @@ $string['submissionstatus'] = 'Submission status';
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';
 $string['totalgrade'] = 'Total points';
+
 $string['view'] = 'View';

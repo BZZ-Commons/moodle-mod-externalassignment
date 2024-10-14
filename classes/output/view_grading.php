@@ -17,6 +17,7 @@
 namespace mod_externalassignment\output;
 
 use core\context;
+use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade_control;
 use renderable;
 use renderer_base;
@@ -55,9 +56,23 @@ class view_grading implements renderable, templatable {
      * @throws \dml_exception
      */
     public function export_for_template(renderer_base $output): \stdClass {
+        $assign = new assign(null, $this->context);
+        $assign->load_db($this->coursemoduleid);
+        $students = $assign->get_students();
         $data = new \stdClass();
-        $gradecontrol = new grade_control($this->coursemoduleid, $this->context);
-        $data->grades = $gradecontrol->list_grades();
+        foreach($students as $student) {
+            $gradedata = $student->to_stdclass();
+            $gradedata->coursemoduleid = $this->coursemoduleid;
+            $gradedata->courseid = $assign->get_course();
+            $gradedata->externalgrade =  number_format($gradedata->grade->externalgrade,2);
+            $gradedata->manualgrade =  number_format($gradedata->grade->manualgrade,2);
+            $gradedata->gradefinal = number_format(
+                $gradedata->grade->externalgrade + $gradedata->grade->manualgrade,
+                2
+            );
+            $list[] = $gradedata;
+        }
+        $data->students = $list;
         return $data;
     }
 }

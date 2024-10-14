@@ -17,6 +17,7 @@
 namespace mod_externalassignment\local;
 
 use cm_info;
+use core\context;
 
 /**
  * Controller for the external assignment
@@ -29,6 +30,9 @@ use cm_info;
 class assign_control {
     /** @var \stdClass the assignment record that contains the global settings for this assign instance */
     private \stdClass $instance;
+    /** @var context the context of this cousemodule */
+    private context $context;
+
     /** @var ?cm_info the course module for this assign instance */
     private ?cm_info $coursemodule;
 
@@ -45,6 +49,7 @@ class assign_control {
      * @throws \coding_exception
      */
     public function __construct($coursemodulecontext, $coursemodule) {
+        $this->set_context($coursemodulecontext);
         $this->set_coursemodule(cm_info::create($coursemodule));
     }
 
@@ -57,7 +62,7 @@ class assign_control {
      */
     public function add_instance(\stdClass $formdata, int $coursemoduleid) {
         global $DB;
-        $assign = new assign($formdata);
+        $assign = new assign($formdata, $this->get_context());
 
         $returnid = $DB->insert_record('externalassignment', $assign->to_stdclass());
         $this->set_coursemoduleid($coursemoduleid);
@@ -78,7 +83,7 @@ class assign_control {
      */
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
-        $assign = new assign($formdata);
+        $assign = new assign($formdata, $this->get_context());
         $this->set_coursemoduleid($coursemoduleid);
         $data = $assign->to_stdclass();
         $result = $DB->update_record('externalassignment', $data);
@@ -169,7 +174,8 @@ class assign_control {
         $event->visible = true;
         $event->timeduration = 0;
 
-        $event->id = $DB->get_field('event',
+        $event->id = $DB->get_field(
+            'event',
             'id',
             [
                 'modulename' => 'externalassignment',
@@ -222,6 +228,24 @@ class assign_control {
     public function set_coursemodule(?cm_info $coursemodule): void {
         $this->coursemodule = $coursemodule;
     }
+
+    /**
+     * Gets the context
+     * @return context
+     */
+    public function get_context(): context {
+        return $this->context;
+    }
+
+    /**
+     * Sets the context
+     * @param context $context
+     */
+    public function set_context(context $context): void {
+        $this->context = $context;
+    }
+
+
 
     /**
      * Gets the coursemoduleid

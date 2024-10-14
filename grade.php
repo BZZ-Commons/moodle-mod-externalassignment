@@ -35,7 +35,7 @@ require_login($course, false, $coursemodule);
 $modulecontext = context_module::instance($coursemodule->id);
 
 // Re-direct the user.
-if (has_capability('mod/assign:manage', $modulecontext)) {
+if (has_capability('mod/externalassignment:manage', $modulecontext)) {
     $url = new moodle_url('reports.php', ['courseid' => $coursemodule->course,
         'id' => $assignment->id]);
 } else {

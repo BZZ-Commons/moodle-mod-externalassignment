@@ -16,6 +16,8 @@
 
 namespace mod_externalassignment\local;
 
+use core\context;
+
 /**
  * Represents the model of an external assignment
  *
@@ -29,6 +31,8 @@ class assign {
     private ?int $id;
     /** @var int|null the id of the course this assignment belongs to */
     private ?int $course;
+    /** @var context|null the context of this cousemodule */
+    private ?context $context;
     /** @var string the name of the assignment */
     private string $name;
     /** @var string the description of the assignment */
@@ -59,12 +63,16 @@ class assign {
     private ?float $passingpercentage;
     /** @var int 1 = the user must reach the passingpercentage to complete the assignment */
     private int $needspassinggrade;
+    /** @var array the student-objects that are enrolled in this course */
+    private array $students;
 
     /**
      * Default constructor with optional formdata
      * @param \stdClass|null $formdata
+     * @param context|null $context
      */
-    public function __construct(?\stdClass $formdata) {
+    public function __construct(?\stdClass $formdata = null, ?context $context = null) {
+        $this->set_context($context);
         if (isset($formdata)) {
             $this->load_data($formdata);
             $this->set_id((int)$formdata->instance);
@@ -72,6 +80,7 @@ class assign {
         } else {
             $this->set_id(null);
         }
+        $this->set_students([]);
     }
 
     /**
@@ -93,6 +102,12 @@ class assign {
             $this->set_id($data->id);
             $this->load_data($data);
             $this->set_timemodified($data->timemodified);
+            if (!empty($this->get_context())) {
+                $this->load_students();
+                $this->load_grades($this->get_id(), $userid);
+                $this->load_overrides($this->get_id(), $userid);
+            }
+
         }
     }
 
@@ -104,12 +119,15 @@ class assign {
      * @throws \dml_exception
      */
     public function load_db_external(string $assignmentname, int $userid): void {
-        global $DB;
+        global $DB, $CFG;
+
         $query =
-            'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname' .
+            'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname,
+                    cm.id as coursemoduleid' .
             ' FROM {user_enrolments} ue' .
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
+            ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
             ' WHERE ae.externalname=:assignmentname AND ue.userid=:userid';
         $data = $DB->get_record_sql(
             $query,
@@ -119,12 +137,15 @@ class assign {
             ]
         );
         if (!empty($data)) {
+            require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
             $this->set_id($data->id);
             $this->set_course($data->course);
             $this->set_externalgrademax($data->externalgrademax);
             $this->set_duedate($data->duedate);
             $this->set_cutoffdate($data->cutoffdate);
             $this->set_externalname($data->externalname);
+            $this->students[$userid] = new student($this, null);
+            $this->load_overrides($data->coursemoduleid, $userid);
         }
     }
 
@@ -154,6 +175,126 @@ class assign {
         } else {
             $this->set_needspassinggrade(0);
         }
+    }
+
+    /**
+     * loads the students for this assignment
+     * @return void
+     * @throws \dml_exception
+     */
+    private function load_students(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
+        // FIXME: Find out why autoloading does not work here.
+        $users = get_enrolled_users(
+            $this->get_context(),
+            'mod/externalassignment:submit',
+            '',
+            'u.*',
+            null,
+            0,
+            0,
+            true
+        );
+        foreach ($users as $user) {
+            $student = new student($this, $user);
+            $this->students[$user->id] = $student;
+        }
+    }
+
+    /**
+     * counts the students for this assignment
+     * @return int
+     */
+    public function count_students(): int {
+        return count($this->students);
+    }
+
+    /**
+     * loads all the grades for this assignment
+     * @param int $coursemodule
+     * @param int|null $userid
+     * @return void
+     */
+    private function load_grades(int $coursemodule, ?int $userid): void {
+        global $DB;
+        $conditions = ['externalassignment' => $coursemodule];
+        if (!empty($userid)) {
+            $conditions['userid'] = $userid;
+        }
+        $data = $DB->get_records('externalassignment_grades', $conditions);
+        foreach ($data as $record) {
+            $grade = new grade($record);
+            $this->students[$record->userid]->set_grade($grade);
+        }
+    }
+
+    /**
+     * counts the number of graded students
+     * @return int
+     */
+    public function count_grades(): int {
+        $count = 0;
+        foreach ($this->students as $student) {
+            if ($student->get_grade() !== null) {
+                $count ++;
+            }
+        }
+        return $count;
+    }
+    /**
+     * creates a list of all users and grades
+     * @return array list of users and grades/feedback
+     * @throws \dml_exception
+     */
+    public function list_grades(): array {
+    $students = $this->get_students();
+    $gradelist = [];
+    foreach ($students as $userid => $user) {
+        $grade = new \stdClass();
+        $grade->courseid = $this->get_course();
+        $grade->coursemoduleid = $this->get_id();
+        $grade->userid = $userid;
+        $grade->firstname = $user->get_firstname();
+        $grade->lastname = $user->get_lastname();
+        if (!empty($user->get_grade())) {
+            $gradedata = $user->get_grade();
+            $grade->externalgrade = number_format($gradedata->get_externalgrade(),2);
+            $grade->manualgrade = number_format($gradedata->get_manualgrade(),2);
+            $grade->gradefinal = number_format($gradedata->get_externalgrade() + $gradedata->get_manualgrade(),2);
+            $grade->status = $user->get_status($grade);
+        } else {
+            $grade->status = $user->get_status(null);
+        }
+        $gradelist[] = $grade;
+    }
+
+    return $gradelist;
+    }
+    /**
+     * loads all the user overrides for this assignment
+     * @param int $coursemodule
+     * @param int|null $userid
+     * @return void
+     */
+    private function load_overrides(int $coursemodule, ?int $userid): void {
+        global $CFG, $DB;
+        $conditions = ['externalassignment' => $coursemodule];
+        if (!empty($userid)) {
+            $conditions['userid'] = $userid;
+        }
+
+        $data = $DB->get_records(
+            'externalassignment_overrides',
+            $conditions
+        );
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
+        // FIXME: Find out why autoloading does not work here.
+        foreach ($data as $record) {
+            $override = new override($record);
+            $this->students[$record->userid]->set_override($override);
+        }
+
     }
 
     /**
@@ -199,6 +340,22 @@ class assign {
      */
     public function set_course(?int $course): void {
         $this->course = $course;
+    }
+
+    /**
+     * Gets the context
+     * @return context|null
+     */
+    public function get_context(): ?context {
+        return $this->context;
+    }
+
+    /**
+     * Sets the context
+     * @param context|null the $context
+     */
+    public function set_context(?context $context): void {
+        $this->context = $context;
     }
 
     /**
@@ -439,5 +596,28 @@ class assign {
      */
     public function set_needspassinggrade(int $needspassinggrade): void {
         $this->needspassinggrade = $needspassinggrade;
+    }
+
+    /**
+     * @return array
+     */
+    public function get_students(): array {
+        return $this->students;
+    }
+
+    /**
+     * @param array $students
+     * @return void
+     */
+    public function set_students(array $students): void {
+        $this->students = $students;
+    }
+
+    /**
+     * @param int $userid
+     * @return \mod_externalassignment\local\student
+     */
+    public function get_student(int $userid): student {
+        return $this->students[$userid];
     }
 }

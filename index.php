@@ -42,10 +42,10 @@ $PAGE->navbar->add(get_string('modulenameplural', 'externalassignment'));
 echo $OUTPUT->header();
 
 $table = new html_table();
-$table->head = [get_string('name', 'externalassignment')];
+$table->head = [get_string('modulenameplural', 'externalassignment')];
 $modinfo = get_fast_modinfo($course);
 
-foreach ($modinfo->get_instances_of('[modinfo]') as $instanceid => $cm) {
+foreach ($modinfo->get_instances_of('externalassignment') as $instanceid => $cm) {
     $link = '<a href="view.php?id=' . $instanceid .'">'.format_string($cm->name, true).'</a>';
     $table->data[] = [$link];
 }

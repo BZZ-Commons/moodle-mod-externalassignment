@@ -138,6 +138,13 @@ class grade {
     }
 
     /**
+     * calculates the final grade
+     * @return float
+     */
+    public function get_finalgrade() {
+        return $this->externalgrade + $this->manualgrade;
+    }
+    /**
      * Gets the id
      * @return int|null
      */

@@ -24,7 +24,7 @@
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+global $CFG;
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\assign_control;
 use mod_externalassignment\local\grade;

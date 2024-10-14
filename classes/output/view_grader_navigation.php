@@ -17,6 +17,7 @@
 namespace mod_externalassignment\output;
 
 use core\context;
+use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade_control;
 use renderable;
 use renderer_base;
@@ -61,21 +62,22 @@ class view_grader_navigation implements renderable, templatable {
      * @throws \dml_exception
      */
     public function export_for_template(renderer_base $output): \stdClass {
+        $assign = new assign(null, $this->get_context());
+        $assign->load_db($this->get_coursemoduleid());
+        $users = $assign->get_students();
 
-        $gradecontrol = new grade_control($this->coursemoduleid, $this->context);
-        $users = $gradecontrol->read_coursemodule_students($this->userid);
         $user = reset($users);
 
         $data = new \stdClass();
-        $data->grades = $gradecontrol->list_grades();
+        $data->grades = $assign->list_grades();
         $data->courseid = $this->context->get_course_context()->instanceid;
-        $data->cmid = $this->coursemoduleid;
+        $data->cmid = $this->get_coursemoduleid();
         $data->name = $this->context->get_context_name();
         $data->userid = $this->get_userid();
-        $data->firstname = $user->firstname;
-        $data->lastname = $user->lastname;
-        $data->email = $user->email;
-        $data->duedate = $gradecontrol->get_assign()->get_duedate();
+        $data->firstname = $user->get_firstname();
+        $data->lastname = $user->get_lastname();
+        $data->email = $user->get_email();
+        $data->duedate = $assign->get_duedate();
         return $data;
     }
 

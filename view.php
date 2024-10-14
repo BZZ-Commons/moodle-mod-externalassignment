@@ -102,8 +102,7 @@ function show_details($context, $coursemoduleid): void {
         echo $output->render($renderable);
     }
 
-    // check if the user is a teacher
-    if (has_capability('mod/assign:reviewgrades', $context)) {
+    if (has_capability('mod/externalassignment:reviewgrades', $context)) {
         $renderable = new view_summary($coursemoduleid, $context);
         echo $output->render($renderable);
     } else {
@@ -156,10 +155,10 @@ function show_grading($context, $coursemoduleid): void {
 function show_grader($context, $coursemoduleid, $userid): void {
     global $PAGE;
     require_capability('mod/externalassignment:reviewgrades', $context);
+    $assign = new \mod_externalassignment\local\assign(null, $context);
 
-    $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
     if ($userid == null) {
-        $userid = array_key_first($gradecontrol->get_userlist());
+        $userid = array_key_first($assign->get_students());
         $urlparams = [
             'id' => $coursemoduleid,
             'action' => 'grader',
@@ -182,6 +181,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
 
     $renderable = new view_grader_navigation($coursemoduleid, $context, $userid);
     echo $output->render($renderable);
+    $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
     $gradecontrol->process_feedback();
     echo $output->footer();
 }
