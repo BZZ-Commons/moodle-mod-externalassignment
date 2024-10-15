@@ -75,8 +75,7 @@ class grade_control {
      */
     public function process_feedback(): void {
         global $CFG;
-        $students = $this->get_assign()->get_students();
-        $student = $students[$this->userid];
+        $student = $this->get_assign()->take_student($this->get_userid());
         $data = new \stdClass();
 
         $data->id = $this->coursemoduleid;
@@ -89,10 +88,12 @@ class grade_control {
         $data->manualgrademax = $this->get_assign()->get_manualgrademax();
         $data->gradeid = - 1;
         $data->externalassignment = $this->get_assign()->get_id();
-        $data->status = get_string('pending', 'externalassignment');
-
+        $data->status = $student->get_status();
         $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
         $data->duedate = $this->get_assign()->get_duedate();
+        if (!empty($student->get_override()) && $student->get_override()->get_duedate() != 0) {
+            $data->duedate = $student->get_override()->get_duedate();
+        }
         $data->cutoffdate = $this->get_assign()->get_cutoffdate();
 
         // Time remaining.
@@ -146,7 +147,7 @@ class grade_control {
                 );
             } else {  // display the form
                 if (array_key_exists($this->get_userid(), $this->get_assign()->get_students())) {
-                    $student = $this->get_assign()->get_students()[$this->get_userid()];
+                    //$student = $this->get_assign()->take_student($this->get_userid());
                     if (!empty($student->get_grade())) {
                         $grade = $student->get_grade();
                         $data->gradeid = $grade->get_id();

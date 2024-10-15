@@ -97,7 +97,6 @@ class student {
      */
     public function get_status(): string {
         # check if there is no override for the due date
-        $due_override = 0;
         $extension = '';
         if (empty($this->get_override()) or $this->get_override()->get_duedate() == 0) {
             $duedate = $this->get_assign()->get_duedate();

@@ -33,7 +33,7 @@
 }}
 
 <a href="{{config.wwwroot}}/user/view.php?id={{userid}}&amp;course={{courseid}}">
-  {{firstname}} {{lastname}} <br>
-  {{email}}<br>
-  {{#str}}duedate, externalassignment{{/str}}: {{#userdate}} {{duedate}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}
+{{firstname}} {{lastname}} <br>
+{{email}}<br>
+{{due_text}}
 </a>

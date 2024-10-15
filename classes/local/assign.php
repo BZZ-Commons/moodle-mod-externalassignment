@@ -203,6 +203,17 @@ class assign {
     }
 
     /**
+     * returns a student from the array identified by the userid
+     * @param int $userid
+     * @return void
+     */
+    public function take_student(int $userid): ?student {
+        if ($this->students[$userid] !== null) {
+            return $this->students[$userid];
+        }
+        return null;
+    }
+    /**
      * counts the students for this assignment
      * @return int
      */

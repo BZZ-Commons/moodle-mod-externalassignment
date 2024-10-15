@@ -64,9 +64,8 @@ class view_grader_navigation implements renderable, templatable {
     public function export_for_template(renderer_base $output): \stdClass {
         $assign = new assign(null, $this->get_context());
         $assign->load_db($this->get_coursemoduleid());
-        $users = $assign->get_students();
 
-        $user = reset($users);
+        $user = $assign->take_student($this->get_userid());
 
         $data = new \stdClass();
         $data->grades = $assign->list_grades();
@@ -78,6 +77,12 @@ class view_grader_navigation implements renderable, templatable {
         $data->lastname = $user->get_lastname();
         $data->email = $user->get_email();
         $data->duedate = $assign->get_duedate();
+        $data->due_text = '';
+        $dateformat = get_string('strftimedatetimeshort', 'langconfig');
+        if ($data->duedate != 0) {
+            $data->due_text = get_string('duedate', 'externalassignment') . ': ' . userdate($assign->get_duedate(), $dateformat);
+        }
+
         return $data;
     }
 
