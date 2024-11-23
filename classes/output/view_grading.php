@@ -39,14 +39,17 @@ class view_grading implements renderable, templatable {
      */
     private context $context;
 
+    /** @var string sort the sort order */
+    private String $sort;
     /**
      * default constructor
      * @param int $coursemoduleid
      * @param context $context
      */
-    public function __construct(int $coursemoduleid, context $context) {
+    public function __construct(int $coursemoduleid, context $context, String $sort) {
         $this->coursemoduleid = $coursemoduleid;
         $this->context = $context;
+        $this->sort = $sort;
     }
 
     /**
@@ -56,10 +59,12 @@ class view_grading implements renderable, templatable {
      * @throws \dml_exception
      */
     public function export_for_template(renderer_base $output): \stdClass {
+        global $PAGE;
         $assign = new assign(null, $this->context);
-        $assign->load_db($this->coursemoduleid);
+        $assign->load_db($this->coursemoduleid, $this->sort);
         $students = $assign->get_students();
         $data = new \stdClass();
+        $data->url = $PAGE->url;
         foreach($students as $student) {
             $gradedata = $student->to_stdclass();
             $gradedata->coursemoduleid = $this->coursemoduleid;

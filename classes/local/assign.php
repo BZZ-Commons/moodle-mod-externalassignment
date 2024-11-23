@@ -86,18 +86,18 @@ class assign {
     /**
      * loads the attributes of the assignment from the database
      * @param int $coursemoduleid
+     * @param string|null $sort  the sort order for the students
      * @param int|null $userid
      * @return void
      * @throws \dml_exception
      */
-    public function load_db(int $coursemoduleid, ?int $userid = null): void {
+    public function load_db(int $coursemoduleid, ?String $sort='lastname', ?int $userid = null): void {
         global $DB;
         $query = 'SELECT cm.instance, ae.* ' .
             'FROM {course_modules} cm ' .
             'JOIN {externalassignment} ae ON (cm.instance = ae.id) ' .
             'WHERE cm.id=:coursemoduleid';
         $data = $DB->get_record_sql($query, ['coursemoduleid' => $coursemoduleid]);
-
         if (!empty($data)) {
             $this->set_id($data->id);
             $this->load_data($data);
@@ -106,8 +106,9 @@ class assign {
                 $this->load_students();
                 $this->load_grades($this->get_id(), $userid);
                 $this->load_overrides($this->get_id(), $userid);
-            }
 
+                $this->sort_students($sort);
+            }
         }
     }
 
@@ -199,6 +200,38 @@ class assign {
         foreach ($users as $user) {
             $student = new student($this, $user);
             $this->students[$user->id] = $student;
+        }
+    }
+
+    /**
+     * sorts the students by lastname or firstname
+     * @param String $sort
+     * @return void
+     */
+    private function sort_students(String $sort): void {
+        if ($sort == 'lastname') {
+            uasort($this->students, function($a, $b) {
+                return strcmp($a->get_lastname(), $b->get_lastname());
+            });
+        } else if ($sort == 'firstname') {
+            uasort($this->students, function ($a, $b) {
+                return strcmp($a->get_firstname(), $b->get_firstname());
+            });
+        } else if ($sort == 'grade') {
+            uasort($this->students, function ($a, $b) {
+                if ($a->get_grade() === null) {
+                    return 1;
+                } else if ($b->get_grade() === null) {
+                    return -1;
+                } else {
+                    return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() <=
+                    $b->get_grade()->get_externalgrade() + $b->get_grade()->get_manualgrade();
+                }
+            });
+        } else if ($sort == 'status') {
+            uasort($this->students, function ($a, $b) {
+                return strcmp($a->get_status(null), $b->get_status(null));
+            });
         }
     }
 

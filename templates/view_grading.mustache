@@ -41,12 +41,20 @@
         <input id="selectAll" type="checkbox">
       </th>
       <th class="header c2" scope="col">
-        {{#str}} firstname, core {{/str}} / {{#str}} lastname, core {{/str}}
+        <a href="{{{ url }}}&sort=firstname">
+          {{#str}} firstname, core {{/str}}
+        </a>
+        /
+        <a href="{{{ url }}}&sort=lastname">
+          {{#str}} lastname, core {{/str}}
+        </a>
       </th>
       <th class="header c3" scope="col">
-        {{#str}} status, core {{/str}}
+        <a href="{{{ url }}}&sort=status">
+          {{#str}} status, core {{/str}}
+        </a>
       </th>
-      <th  class="header c4" scope="col">
+      <th class="header c4" scope="col">
         &nbsp;
       </th>
       <th class="header c5" scope="col">
@@ -56,7 +64,9 @@
         {{#str}} manual, mod_externalassignment {{/str}}
       </th>
       <th class="header c7" scope="col">
-        {{#str}} finalgrade, mod_externalassignment {{/str}}
+        <a href="{{{ url }}}&sort=grade">
+          {{#str}} finalgrade, mod_externalassignment {{/str}}
+        </a>
       </th>
     </tr>
     </thead>
@@ -68,12 +78,13 @@
         </td>
         <td>
           <a href="{{ config.wwwroot }}/user/view.php?id={{ userid }}&course={{ courseid }}">
-            {{ firstname }} {{ lastname }}
+          {{ firstname }} {{ lastname }}
           </a>
         </td>
         <td>{{ status }}</td>
         <td>
-          <a href="{{ config.wwwroot }}/mod/externalassignment/view.php?action=grader&id={{ coursemoduleid }}&userid={{ userid }}"
+          <a href="{{ config.wwwroot }}/mod/externalassignment/view.php?action=grader&id={{ coursemoduleid }}
+          &userid={{ userid }}"
           class="btn btn-primary">
           {{#str}} grade, mod_externalassignment {{/str}}
           </a>

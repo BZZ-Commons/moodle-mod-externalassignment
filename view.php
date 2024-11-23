@@ -47,6 +47,7 @@ $urlparams = [
     'action' => optional_param('action', '', PARAM_ALPHA),
     'userid' => optional_param('userid', null, PARAM_INT),
     'userids' => optional_param_array('uid', [], PARAM_INT),
+    'sort' => optional_param('sort', 'lastname', PARAM_ALPHA),
 ];
 
 $url = new moodle_url(
@@ -54,15 +55,18 @@ $url = new moodle_url(
     [
         'id' => $urlparams['id'],
         'action' => $urlparams['action'],
-        'userid' => $urlparams['userid'],
     ]
 );
+if ($urlparams['userid'] != null && $urlparams['userid'] != 0) {
+    $url->param('userid', $urlparams['userid']);
+}
+
 $PAGE->set_url($url);
 
 if ($urlparams['action'] == '') {
     show_details($context, $coursemoduleid);
 } else if ($urlparams['action'] == 'grading') {
-    show_grading($context, $coursemoduleid);
+    show_grading($context, $coursemoduleid, $urlparams['sort']);
 } else if ($urlparams['action'] == 'grader') {
     show_grader($context, $coursemoduleid, $urlparams['userid']);
 } else if ($urlparams['action'] == 'override') {
@@ -86,7 +90,7 @@ function show_details($context, $coursemoduleid): void {
     $assignment->load_db($coursemoduleid);
     $title = $courseshortname . ': ' . $assignmentname;
     $PAGE->set_title($title);
-    $PAGE->set_heading('TODO My modules page heading');
+    $PAGE->set_heading('External assignment details');
     $PAGE->set_pagelayout('standard');
 
     if (!$assignment->is_alwaysshowdescription() ||
@@ -117,13 +121,14 @@ function show_details($context, $coursemoduleid): void {
 
 /**
  * shows the grading overview
- * @param $context
- * @param $coursemoduleid
+ * @param $context context the context of the course module
+ * @param $coursemoduleid int the id of the course module
+ * @param $sort String the sort order for the students
  * @return void
  * @throws \coding_exception
  * @throws \required_capability_exception
  */
-function show_grading($context, $coursemoduleid): void {
+function show_grading(context $context, int $coursemoduleid, String $sort): void {
     global $PAGE;
     require_capability('mod/externalassignment:reviewgrades', $context);
 
@@ -131,12 +136,12 @@ function show_grading($context, $coursemoduleid): void {
     $assignmentname = $context->get_context_name(false, true);
     $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('grading', 'externalassignment');
     $PAGE->set_title($title);
-    $PAGE->set_heading('TODO Grading overview');
+    $PAGE->set_heading('Grading overview');
     $PAGE->set_pagelayout('base');
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
-    $renderable = new view_grading($coursemoduleid, $context);
+    $renderable = new view_grading($coursemoduleid, $context, $sort);
     echo $output->render($renderable);
     echo $output->footer();
 }
@@ -173,7 +178,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
     $assignmentname = $context->get_context_name(false, true);
     $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('grade', 'externalassignment');
     $PAGE->set_title($title);
-    $PAGE->set_heading('TODO Grader form');
+    $PAGE->set_heading('Grader form');
     $PAGE->set_pagelayout('base');
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
