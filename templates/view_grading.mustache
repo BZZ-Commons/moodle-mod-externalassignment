@@ -41,16 +41,16 @@
         <input id="selectAll" type="checkbox">
       </th>
       <th class="header c2" scope="col">
-        <a href="{{{ url }}}&sort=firstname">
+        <a id="sortFirstname">
           {{#str}} firstname, core {{/str}}
         </a>
         /
-        <a href="{{{ url }}}&sort=lastname">
+        <a id="sortLastname">
           {{#str}} lastname, core {{/str}}
         </a>
       </th>
       <th class="header c3" scope="col">
-        <a href="{{{ url }}}&sort=status">
+        <a id="sortStatus">
           {{#str}} status, core {{/str}}
         </a>
       </th>
@@ -64,7 +64,7 @@
         {{#str}} manual, mod_externalassignment {{/str}}
       </th>
       <th class="header c7" scope="col">
-        <a href="{{{ url }}}&sort=grade">
+        <a id="sortGrade">
           {{#str}} finalgrade, mod_externalassignment {{/str}}
         </a>
       </th>
@@ -126,5 +126,6 @@
 {{^element.frozen}}
   {{#js}}
     require(['mod_externalassignment/grading_actions'], (module) => module.init());
+    require(['mod_externalassignment/grading_sort'], (module) => module.init());
   {{/js}}
 {{/element.frozen}}

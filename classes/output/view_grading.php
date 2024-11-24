@@ -39,17 +39,28 @@ class view_grading implements renderable, templatable {
      */
     private context $context;
 
-    /** @var string sort the sort order */
+    /** @var string sort the sort field */
     private String $sort;
+
+    /** @var string tdir the sort direction */
+    private String $tdir;
     /**
      * default constructor
      * @param int $coursemoduleid
      * @param context $context
+     * @param String $sort the sort field
+     * @param String $tdir the sort direction
      */
-    public function __construct(int $coursemoduleid, context $context, String $sort) {
+    public function __construct(
+        int $coursemoduleid,
+        context $context,
+        String $sort,
+        String $tdir
+    ) {
         $this->coursemoduleid = $coursemoduleid;
         $this->context = $context;
         $this->sort = $sort;
+        $this->tdir = $tdir;
     }
 
     /**
@@ -61,7 +72,7 @@ class view_grading implements renderable, templatable {
     public function export_for_template(renderer_base $output): \stdClass {
         global $PAGE;
         $assign = new assign(null, $this->context);
-        $assign->load_db($this->coursemoduleid, $this->sort);
+        $assign->load_db($this->coursemoduleid, $this->sort, $this->tdir);
         $students = $assign->get_students();
         $data = new \stdClass();
         $data->url = $PAGE->url;

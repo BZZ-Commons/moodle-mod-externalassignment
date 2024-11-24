@@ -48,6 +48,7 @@ $urlparams = [
     'userid' => optional_param('userid', null, PARAM_INT),
     'userids' => optional_param_array('uid', [], PARAM_INT),
     'sort' => optional_param('sort', 'lastname', PARAM_ALPHA),
+    'tdir' => optional_param('tdir', 'asc', PARAM_ALPHA),
 ];
 
 $url = new moodle_url(
@@ -66,7 +67,7 @@ $PAGE->set_url($url);
 if ($urlparams['action'] == '') {
     show_details($context, $coursemoduleid);
 } else if ($urlparams['action'] == 'grading') {
-    show_grading($context, $coursemoduleid, $urlparams['sort']);
+    show_grading($context, $coursemoduleid, $urlparams['sort'], $urlparams['tdir']);
 } else if ($urlparams['action'] == 'grader') {
     show_grader($context, $coursemoduleid, $urlparams['userid']);
 } else if ($urlparams['action'] == 'override') {
@@ -124,24 +125,31 @@ function show_details($context, $coursemoduleid): void {
  * @param $context context the context of the course module
  * @param $coursemoduleid int the id of the course module
  * @param $sort String the sort order for the students
+ * @param $tdir String the direction of the sort
  * @return void
  * @throws \coding_exception
  * @throws \required_capability_exception
  */
-function show_grading(context $context, int $coursemoduleid, String $sort): void {
+function show_grading(
+    context $context,
+    int $coursemoduleid,
+    String $sort,
+    String $tdir
+): void {
     global $PAGE;
     require_capability('mod/externalassignment:reviewgrades', $context);
 
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
     $assignmentname = $context->get_context_name(false, true);
-    $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('grading', 'externalassignment');
+    $title = $courseshortname . ': ' . $assignmentname . ' - ' .
+        get_string('grading', 'externalassignment');
     $PAGE->set_title($title);
     $PAGE->set_heading('Grading overview');
     $PAGE->set_pagelayout('base');
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
-    $renderable = new view_grading($coursemoduleid, $context, $sort);
+    $renderable = new view_grading($coursemoduleid, $context, $sort, $tdir);
     echo $output->render($renderable);
     echo $output->footer();
 }

@@ -19,7 +19,7 @@
  * @module     mod_externalassignment/grading_actions
  * @copyright  2024 Marcel Suter <marcel@ghwalin.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since      4.1
+ * @since      4.3
  */
 export const init = () => {
     document.getElementById('id_submit').addEventListener('click', submitAction);

@@ -62,7 +62,7 @@ class grade_control {
         $this->set_courseid($context->get_course_context()->instanceid);
         $this->set_context($context);
         $this->set_assign(new assign(null, $this->get_context()));
-        $this->get_assign()->load_db($coursemoduleid, null ,$userid);
+        $this->get_assign()->load_db($coursemoduleid, null,null, $userid);
         $this->set_userid($userid);
     }
 
