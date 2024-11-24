@@ -49,21 +49,22 @@ function addLinks() {
         // Get the sortFields object who's key matches element.id
         let sortParam = sortParams[element.id];
         if (sortParam) {
-            element.href = url + '&sort=' + sortParam + '&tdir=asc';
-            // If currently sorted by this field in ascending order, then add descending order
+            element.href = url + '&sort=' + sortParam;
+            // Check if currently sorted by this field
             if (sortParam === sortField) {
+                //  If sorted in ascending order, then add descending order
                 if (sortOrder === 'asc') {
                     element.href += '&tdir=desc';
                     element.innerHTML += ' <i class="icon fa fa-sort-desc fa-fw" title="Descending" ' +
                         'role="img" aria-label="Descending"></i>';
 
                 } else {
+                    element.href += '&tdir=asc';
                     element.innerHTML += ' <i class="icon fa fa-sort-asc fa-fw" title="Ascending" ' +
                         'role="img" aria-label="Ascending"></i>';
                 }
-                /*
-                <i class="icon fa fa-sort-asc fa-fw " title="Ascending" role="img" aria-label="Ascending"></i>
-                 */
+            } else {
+                element.href += '&tdir=asc'; // Default to ascending order
             }
         }
     }
