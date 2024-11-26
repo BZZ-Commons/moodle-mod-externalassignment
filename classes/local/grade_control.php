@@ -62,7 +62,7 @@ class grade_control {
         $this->set_courseid($context->get_course_context()->instanceid);
         $this->set_context($context);
         $this->set_assign(new assign(null, $this->get_context()));
-        $this->get_assign()->load_db($coursemoduleid, null,null, $userid);
+        $this->get_assign()->load_db($coursemoduleid, null, null, $userid);
         $this->set_userid($userid);
     }
 
@@ -145,9 +145,9 @@ class grade_control {
                         ]
                     )
                 );
-            } else {  // display the form
+            } else {  // Display the form.
                 if (array_key_exists($this->get_userid(), $this->get_assign()->get_students())) {
-                    //$student = $this->get_assign()->take_student($this->get_userid());
+
                     if (!empty($student->get_grade())) {
                         $grade = $student->get_grade();
                         $data->gradeid = $grade->get_id();
@@ -160,7 +160,6 @@ class grade_control {
                         $data->manualfeedback['text'] = $grade->get_manualfeedback();
                         $data->manualfeedback['format'] = 1;
                         $data->gradefinal = $grade->get_externalgrade() + $grade->get_manualgrade();
-
                     }
                 }
                 $mform->set_data($data);

@@ -48,7 +48,6 @@ class student {
     /** @var ?Override the override-object for this user */
     private ?Override $override;
 
-
     /**
      * student constructor.
      *
@@ -96,22 +95,22 @@ class student {
      * @throws \coding_exception
      */
     public function get_status(): string {
-        # check if there is no override for the due date
+        // Check if there is no override for the due date.
         $extension = '';
-        if (empty($this->get_override()) or $this->get_override()->get_duedate() == 0) {
+        if (empty($this->get_override()) || $this->get_override()->get_duedate() == 0) {
             $duedate = $this->get_assign()->get_duedate();
         } else {
             $duedate = $this->get_override()->get_duedate();
-            $due_override = $duedate;
+            $dueoverride = $duedate;
             $dateformat = get_string('strftimedatetimeshort', 'langconfig');
             $extension = get_string('extensiongranted', 'externalassignment')  .
-                userdate($due_override, $dateformat);
+                userdate($dueoverride, $dateformat);
         }
 
         if (empty($this->get_grade())) {
             return get_string('notsubmitted', 'externalassignment') . $extension;
         }
-        # calculate the maximum and the passing grade
+        // Calculate the maximum and the passing grade.
         $maximumgrade = $this->get_assign()->get_externalgrademax() + $this->get_assign()->get_manualgrademax();
         $passinggrade = 0;
         if ($this->get_assign()->get_needspassinggrade() != 0) {
@@ -122,8 +121,8 @@ class student {
             return get_string('passed', 'externalassignment');
         }
 
-        # check if the assignment is overdue
-        if ($duedate > 0 and time() > $duedate) {
+        // Check if the assignment is overdue.
+        if ($duedate > 0 && time() > $duedate) {
             return get_string('overdue', 'externalassignment') . $extension;
         }
         return get_string('pending', 'externalassignment') . $extension;
@@ -256,5 +255,4 @@ class student {
     public function set_override(?Override $override): void {
         $this->override = $override;
     }
-
 }

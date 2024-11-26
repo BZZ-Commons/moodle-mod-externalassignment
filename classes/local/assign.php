@@ -220,23 +220,23 @@ class assign {
             uasort($this->students, function ($a, $b) {
                 return strcmp($a->get_lastname(), $b->get_lastname());
             });
-        } elseif ($sort == 'lastname' && $tdir == 'desc') {
+        } else if ($sort == 'lastname' && $tdir == 'desc') {
             uasort($this->students, function ($a, $b) {
                 return strcmp($b->get_lastname(), $a->get_lastname());
             });
-        } elseif ($sort == 'firstname' && $tdir == 'asc') {
+        } else if ($sort == 'firstname' && $tdir == 'asc') {
             uasort($this->students, function ($a, $b) {
                 return strcmp($a->get_firstname(), $b->get_firstname());
             });
-        } elseif ($sort == 'firstname' && $tdir == 'desc') {
+        } else if ($sort == 'firstname' && $tdir == 'desc') {
             uasort($this->students, function ($a, $b) {
                 return strcmp($b->get_firstname(), $a->get_firstname());
             });
-        } elseif ($sort == 'grade' && $tdir == 'asc') {
+        } else if ($sort == 'grade' && $tdir == 'asc') {
             uasort($this->students, function ($a, $b) {
                 if ($a->get_grade() === null) {
                     return 1;
-                } elseif ($b->get_grade() === null) {
+                } else if ($b->get_grade() === null) {
                     return - 1;
                 } else {
                     return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() <=
@@ -244,11 +244,11 @@ class assign {
                 }
 
             });
-        } elseif ($sort == 'grade' && $tdir == 'desc') {
+        } else if ($sort == 'grade' && $tdir == 'desc') {
             uasort($this->students, function ($a, $b) {
                 if ($a->get_grade() === null) {
                     return - 1;
-                } elseif ($b->get_grade() === null) {
+                } else if ($b->get_grade() === null) {
                     return 1;
                 } else {
                     return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() >=
@@ -256,11 +256,11 @@ class assign {
                 }
 
             });
-        } elseif ($sort == 'status' && $tdir == 'asc') {
+        } else if ($sort == 'status' && $tdir == 'asc') {
             uasort($this->students, function ($a, $b) {
                 return strcmp($a->get_status(null), $b->get_status(null));
             });
-        } elseif ($sort == 'status' && $tdir == 'desc') {
+        } else if ($sort == 'status' && $tdir == 'desc') {
             uasort($this->students, function ($a, $b) {
                 return strcmp($b->get_status(null), $a->get_status(null));
             });
@@ -273,8 +273,7 @@ class assign {
      * @param int $userid
      * @return void
      */
-    public
-    function take_student(int $userid): ?student {
+    public function take_student(int $userid): ?student {
         if ($this->students[$userid] !== null) {
             return $this->students[$userid];
         }
@@ -285,8 +284,7 @@ class assign {
      * counts the students for this assignment
      * @return int
      */
-    public
-    function count_students(): int {
+    public function count_students(): int {
         return count($this->students);
     }
 
@@ -296,8 +294,7 @@ class assign {
      * @param int|null $userid
      * @return void
      */
-    private
-    function load_grades(int $coursemodule, ?int $userid): void {
+    private function load_grades(int $coursemodule, ?int $userid): void {
         global $DB;
         $conditions = ['externalassignment' => $coursemodule];
         if (!empty($userid)) {
@@ -314,8 +311,7 @@ class assign {
      * counts the number of graded students
      * @return int
      */
-    public
-    function count_grades(): int {
+    public function count_grades(): int {
         $count = 0;
         foreach ($this->students as $student) {
             if ($student->get_grade() !== null) {
@@ -330,8 +326,7 @@ class assign {
      * @return array list of users and grades/feedback
      * @throws \dml_exception
      */
-    public
-    function list_grades(): array {
+    public function list_grades(): array {
         $students = $this->get_students();
         $gradelist = [];
         foreach ($students as $userid => $user) {
@@ -362,8 +357,7 @@ class assign {
      * @param int|null $userid
      * @return void
      */
-    private
-    function load_overrides(int $coursemodule, ?int $userid): void {
+    private function load_overrides(int $coursemodule, ?int $userid): void {
         global $CFG, $DB;
         $conditions = ['externalassignment' => $coursemodule];
         if (!empty($userid)) {
@@ -387,8 +381,7 @@ class assign {
      * casts the object to a stdClass
      * @return \stdClass
      */
-    public
-    function to_stdclass(): \stdClass {
+    public function to_stdclass(): \stdClass {
         $result = new \stdClass();
         foreach ($this as $property => $value) {
 
@@ -401,8 +394,7 @@ class assign {
      * Gets the id
      * @return int|null
      */
-    public
-    function get_id(): ?int {
+    public function get_id(): ?int {
         return $this->id;
     }
 
@@ -410,8 +402,7 @@ class assign {
      * Sets the id
      * @param int|null $id
      */
-    public
-    function set_id(?int $id): void {
+    public function set_id(?int $id): void {
         $this->id = $id;
     }
 
@@ -419,8 +410,7 @@ class assign {
      * Gets the course
      * @return int|null
      */
-    public
-    function get_course(): ?int {
+    public function get_course(): ?int {
         return $this->course;
     }
 
@@ -428,8 +418,7 @@ class assign {
      * Sets the course
      * @param int|null $course
      */
-    public
-    function set_course(?int $course): void {
+    public function set_course(?int $course): void {
         $this->course = $course;
     }
 
@@ -437,8 +426,7 @@ class assign {
      * Gets the context
      * @return context|null
      */
-    public
-    function get_context(): ?context {
+    public function get_context(): ?context {
         return $this->context;
     }
 
@@ -446,8 +434,7 @@ class assign {
      * Sets the context
      * @param context|null the $context
      */
-    public
-    function set_context(?context $context): void {
+    public function set_context(?context $context): void {
         $this->context = $context;
     }
 
@@ -455,8 +442,7 @@ class assign {
      * Gets the name
      * @return string
      */
-    public
-    function get_name(): string {
+    public function get_name(): string {
         return $this->name;
     }
 
@@ -464,8 +450,7 @@ class assign {
      * Sets the name
      * @param string $name
      */
-    public
-    function set_name(string $name): void {
+    public function set_name(string $name): void {
         $this->name = $name;
     }
 
@@ -473,8 +458,7 @@ class assign {
      * Gets the intro
      * @return string
      */
-    public
-    function get_intro(): string {
+    public function get_intro(): string {
         return $this->intro;
     }
 
@@ -482,8 +466,7 @@ class assign {
      * Sets the intro
      * @param string $intro
      */
-    public
-    function set_intro(string $intro): void {
+    public function set_intro(string $intro): void {
         $this->intro = $intro;
     }
 
@@ -491,8 +474,7 @@ class assign {
      * Gets the introformat
      * @return string
      */
-    public
-    function get_introformat(): string {
+    public function get_introformat(): string {
         return $this->introformat;
     }
 
@@ -500,8 +482,7 @@ class assign {
      * Sets the introformat
      * @param string $introformat
      */
-    public
-    function set_introformat(string $introformat): void {
+    public function set_introformat(string $introformat): void {
         $this->introformat = $introformat;
     }
 
@@ -509,8 +490,7 @@ class assign {
      * Gets the alwaysshowdescription
      * @return bool
      */
-    public
-    function is_alwaysshowdescription(): bool {
+    public function is_alwaysshowdescription(): bool {
         return $this->alwaysshowdescription;
     }
 
@@ -518,8 +498,7 @@ class assign {
      * Sets the alwaysshowdescription
      * @param bool $alwaysshowdescription
      */
-    public
-    function set_alwaysshowdescription(bool $alwaysshowdescription): void {
+    public function set_alwaysshowdescription(bool $alwaysshowdescription): void {
         $this->alwaysshowdescription = $alwaysshowdescription;
     }
 
@@ -527,8 +506,7 @@ class assign {
      * Gets the externalname
      * @return string
      */
-    public
-    function get_externalname(): string {
+    public function get_externalname(): string {
         return $this->externalname;
     }
 
@@ -536,8 +514,7 @@ class assign {
      * Sets the externalname
      * @param string $externalname
      */
-    public
-    function set_externalname(string $externalname): void {
+    public function set_externalname(string $externalname): void {
         $this->externalname = $externalname;
     }
 
@@ -545,8 +522,7 @@ class assign {
      * Gets the externallink
      * @return string
      */
-    public
-    function get_externallink(): string {
+    public function get_externallink(): string {
         return $this->externallink;
     }
 
@@ -554,8 +530,7 @@ class assign {
      * Sets the externallink
      * @param string $externallink
      */
-    public
-    function set_externallink(string $externallink): void {
+    public function set_externallink(string $externallink): void {
         $this->externallink = $externallink;
     }
 
@@ -563,8 +538,7 @@ class assign {
      * Gets the alwaysshowlink
      * @return bool
      */
-    public
-    function is_alwaysshowlink(): bool {
+    public function is_alwaysshowlink(): bool {
         return $this->alwaysshowlink;
     }
 
@@ -572,8 +546,7 @@ class assign {
      * Sets the alwaysshowlink
      * @param bool $alwaysshowlink
      */
-    public
-    function set_alwaysshowlink(bool $alwaysshowlink): void {
+    public function set_alwaysshowlink(bool $alwaysshowlink): void {
         $this->alwaysshowlink = $alwaysshowlink;
     }
 
@@ -581,8 +554,7 @@ class assign {
      * Gets the allowsubmissionsfromdate
      * @return int|null
      */
-    public
-    function get_allowsubmissionsfromdate(): ?int {
+    public function get_allowsubmissionsfromdate(): ?int {
         return $this->allowsubmissionsfromdate;
     }
 
@@ -590,8 +562,7 @@ class assign {
      * Sets the allowsubmissionsfromdate
      * @param int|null $allowsubmissionsfromdate
      */
-    public
-    function set_allowsubmissionsfromdate(?int $allowsubmissionsfromdate): void {
+    public function set_allowsubmissionsfromdate(?int $allowsubmissionsfromdate): void {
         $this->allowsubmissionsfromdate = $allowsubmissionsfromdate;
     }
 
@@ -599,8 +570,7 @@ class assign {
      * Gets the duedate
      * @return int|null
      */
-    public
-    function get_duedate(): ?int {
+    public function get_duedate(): ?int {
         return $this->duedate;
     }
 
@@ -608,8 +578,7 @@ class assign {
      * Sets the duedate
      * @param int|null $duedate
      */
-    public
-    function set_duedate(?int $duedate): void {
+    public function set_duedate(?int $duedate): void {
         $this->duedate = $duedate;
     }
 
@@ -617,8 +586,7 @@ class assign {
      * Gets the cutoffdate
      * @return int|null
      */
-    public
-    function get_cutoffdate(): ?int {
+    public function get_cutoffdate(): ?int {
         return $this->cutoffdate;
     }
 
@@ -626,8 +594,7 @@ class assign {
      * Sets the cutoffdate
      * @param int|null $cutoffdate
      */
-    public
-    function set_cutoffdate(?int $cutoffdate): void {
+    public function set_cutoffdate(?int $cutoffdate): void {
         $this->cutoffdate = $cutoffdate;
     }
 
@@ -635,8 +602,7 @@ class assign {
      * Gets the timemodified
      * @return int|null
      */
-    public
-    function get_timemodified(): ?int {
+    public function get_timemodified(): ?int {
         return $this->timemodified;
     }
 
@@ -644,8 +610,7 @@ class assign {
      * Sets the timemodified
      * @param int|null $timemodified
      */
-    public
-    function set_timemodified(?int $timemodified): void {
+    public function set_timemodified(?int $timemodified): void {
         $this->timemodified = $timemodified;
     }
 
@@ -653,8 +618,7 @@ class assign {
      * Gets the externalgrademax
      * @return float|null
      */
-    public
-    function get_externalgrademax(): ?float {
+    public function get_externalgrademax(): ?float {
         return $this->externalgrademax;
     }
 
@@ -662,8 +626,7 @@ class assign {
      * Sets the externalgrademax
      * @param float|null $externalgrademax
      */
-    public
-    function set_externalgrademax(?float $externalgrademax): void {
+    public function set_externalgrademax(?float $externalgrademax): void {
         $this->externalgrademax = $externalgrademax;
     }
 
@@ -671,8 +634,7 @@ class assign {
      * Gets the manualgrademax
      * @return float|null
      */
-    public
-    function get_manualgrademax(): ?float {
+    public function get_manualgrademax(): ?float {
         return $this->manualgrademax;
     }
 
@@ -680,8 +642,7 @@ class assign {
      * Sets the manualgrademax
      * @param float|null $manualgrademax
      */
-    public
-    function set_manualgrademax(?float $manualgrademax): void {
+    public function set_manualgrademax(?float $manualgrademax): void {
         $this->manualgrademax = $manualgrademax;
     }
 
@@ -689,8 +650,7 @@ class assign {
      * Gets the passingpercentage
      * @return float|null
      */
-    public
-    function get_passingpercentage(): ?float {
+    public function get_passingpercentage(): ?float {
         return $this->passingpercentage;
     }
 
@@ -698,8 +658,7 @@ class assign {
      * Sets the passingpercentage
      * @param float|null $passingpercentage
      */
-    public
-    function set_passingpercentage(?float $passingpercentage): void {
+    public function set_passingpercentage(?float $passingpercentage): void {
         $this->passingpercentage = $passingpercentage;
     }
 
@@ -707,8 +666,7 @@ class assign {
      * Gets the needspassinggrade
      * @return int
      */
-    public
-    function get_needspassinggrade(): int {
+    public function get_needspassinggrade(): int {
         return $this->needspassinggrade;
     }
 
@@ -716,34 +674,33 @@ class assign {
      * Sets the needspassinggrade
      * @param int $needspassinggrade
      */
-    public
-    function set_needspassinggrade(int $needspassinggrade): void {
+    public function set_needspassinggrade(int $needspassinggrade): void {
         $this->needspassinggrade = $needspassinggrade;
     }
 
     /**
+     * Gets the students
      * @return array
      */
-    public
-    function get_students(): array {
+    public function get_students(): array {
         return $this->students;
     }
 
     /**
+     * sets the students
      * @param array $students
      * @return void
      */
-    public
-    function set_students(array $students): void {
+    public function set_students(array $students): void {
         $this->students = $students;
     }
 
     /**
+     * gets a student from the array
      * @param int $userid
      * @return \mod_externalassignment\local\student
      */
-    public
-    function get_student(int $userid): student {
+    public function get_student(int $userid): student {
         return $this->students[$userid];
     }
 }

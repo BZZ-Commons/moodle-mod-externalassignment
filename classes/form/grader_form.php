@@ -147,7 +147,7 @@ class grader_form extends moodleform {
      * @return array  error messages
      */
     public function validation($data, $files): array {
-        $errors = parent::validation($data, $files);  // TODO Validate grade external/manual.
+        $errors = parent::validation($data, $files);
         return $errors;
     }
 }

@@ -110,7 +110,7 @@ class assign_control {
                 'eventtype' => 'due',
             ]
         );
-        if ($eventid != FALSE) {
+        if ($eventid != false) {
             $calendarevent = \calendar_event::load($eventid);
             $calendarevent->delete();
         }

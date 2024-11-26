@@ -63,7 +63,6 @@ class view_summary implements renderable, templatable {
         $assignment = new assign(null, $this->get_context());
         $assignment->load_db($this->coursemoduleid);
 
-
         $data = new \stdClass();
         $data->link_grading = "view.php?id=$this->coursemoduleid&action=grading";
         $data->link_grader = "view.php?id=$this->coursemoduleid&action=grader";

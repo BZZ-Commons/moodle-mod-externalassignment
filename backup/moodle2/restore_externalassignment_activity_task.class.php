@@ -65,10 +65,10 @@ class restore_externalassignment_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_contents() {
-        $contents = array();
+    public static function define_decode_contents() {
+        $contents = [];
 
-        $contents[] = new restore_decode_content('externalassignment', array('intro'), 'externalassignment');
+        $contents[] = new restore_decode_content('externalassignment', ['intro'], 'externalassignment');
 
         return $contents;
     }
@@ -81,6 +81,7 @@ class restore_externalassignment_activity_task extends restore_activity_task {
         $this->step->log('Yay, restore!', backup::LOG_DEBUG);
         return $paths;
     }
+
     /**
      * Define the restore log rules that will be applied
      * by the {@link restore_logs_processor} when restoring

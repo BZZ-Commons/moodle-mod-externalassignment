@@ -24,7 +24,7 @@
  * @copyright   2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-global $CFG;
+
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\assign_control;
 use mod_externalassignment\local\grade;
@@ -166,7 +166,6 @@ function externalassignment_supports($feature) {
             return true;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_ASSESSMENT;
-
         default:
             return null;
     }
@@ -274,7 +273,7 @@ function mod_externalassignment_core_calendar_provide_event_action(
 ) {
     $cm = get_fast_modinfo($event->courseid, $userid)->instances['externalassignment'][$event->instance];
     return $factory->create_instance(
-        'view', // get_string('view', 'externalassigment'),
+        'view',
         new \moodle_url('/mod/externalassignment/view.php', ['id' => $cm->id]),
         1,
         true

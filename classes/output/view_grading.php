@@ -80,8 +80,8 @@ class view_grading implements renderable, templatable {
             $gradedata = $student->to_stdclass();
             $gradedata->coursemoduleid = $this->coursemoduleid;
             $gradedata->courseid = $assign->get_course();
-            $gradedata->externalgrade =  number_format($gradedata->grade->externalgrade,2);
-            $gradedata->manualgrade =  number_format($gradedata->grade->manualgrade,2);
+            $gradedata->externalgrade = number_format($gradedata->grade->externalgrade, 2);
+            $gradedata->manualgrade = number_format($gradedata->grade->manualgrade, 2);
             $gradedata->gradefinal = number_format(
                 $gradedata->grade->externalgrade + $gradedata->grade->manualgrade,
                 2

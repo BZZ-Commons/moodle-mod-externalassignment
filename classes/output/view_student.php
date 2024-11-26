@@ -42,8 +42,11 @@ class view_student implements renderable, templatable {
      */
     private context $context;
 
+    /** @var assign $assignment the assignment */
     private assign $assignment;
+    /** @var grade $grade the grade */
     private grade $grade;
+
     /**
      * default constructor
      * @param int $coursemoduleid
@@ -74,14 +77,14 @@ class view_student implements renderable, templatable {
         }
         $data->timeremaining = $due;
 
-        $data->externalgrade = number_format($this->grade->get_externalgrade(),2);
-        $data->externalgrademax = number_format($this->assignment->get_externalgrademax(),2);
+        $data->externalgrade = number_format($this->grade->get_externalgrade(), 2);
+        $data->externalgrademax = number_format($this->assignment->get_externalgrademax(), 2);
         $data->externalpercentage = number_format(
             $this->grade->get_externalgrade() / $this->assignment->get_externalgrademax() * 100,
             2
         );
-        $data->manualgrade = number_format($this->grade->get_manualgrade(),2);
-        $data->manualgrademax = number_format($this->assignment->get_manualgrademax(),2);
+        $data->manualgrade = number_format($this->grade->get_manualgrade(), 2);
+        $data->manualgrademax = number_format($this->assignment->get_manualgrademax(), 2);
         if ($this->assignment->get_manualgrademax() == 0) {
             $data->manualpercentage = number_format(0, 2);
         } else {
@@ -91,20 +94,20 @@ class view_student implements renderable, templatable {
             );
         }
         $data->hasmanualgrade = $data->manualgrademax > 0;
-        $data->totalgrade = number_format($data->externalgrade + $data->manualgrade,2);
-        $data->totalgrademax = number_format($data->externalgrademax + $data->manualgrademax,2);
+        $data->totalgrade = number_format($data->externalgrade + $data->manualgrade, 2);
+        $data->totalgrademax = number_format($data->externalgrademax + $data->manualgrademax, 2);
         if ($data->totalgrademax == 0) {
             $data->totalpercentage = number_format(0, 2);
-            $data->passinggrade = number_format(0,2);
+            $data->passinggrade = number_format(0, 2);
         } else {
-            $data->totalpercentage = number_format($data->totalgrade / $data->totalgrademax * 100,2);
+            $data->totalpercentage = number_format($data->totalgrade / $data->totalgrademax * 100, 2);
             $data->passinggrade = number_format(
                 $data->totalgrademax * $this->assignment->get_passingpercentage() / 100,
                 2
             );
         }
 
-        $data->passingpercentage = number_format($this->assignment->get_passingpercentage(),2);
+        $data->passingpercentage = number_format($this->assignment->get_passingpercentage(), 2);
         $data->externalfeedback = format_text($this->grade->get_externalfeedback(), FORMAT_MARKDOWN);
         $data->manualfeedback = $this->grade->get_manualfeedback();
         return $data;

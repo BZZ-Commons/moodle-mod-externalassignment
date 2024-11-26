@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-namespace mod_externalassignment\local;
 
+namespace mod_externalassignment\local;
 
 /**
  * Represents the override of the submission dates for one user.
@@ -118,13 +118,16 @@ class override {
     }
 
     /**
+     * get the id of the override
      * @return int|null
      */
     public function get_id(): ?int {
+
         return $this->id;
     }
 
     /**
+     * set the id of the override
      * @param int|null $id
      */
     public function set_id(?int $id): void {
@@ -132,6 +135,7 @@ class override {
     }
 
     /**
+     * get the id of the external assignment
      * @return int|null
      */
     public function get_externalassignment(): ?int {
@@ -139,6 +143,7 @@ class override {
     }
 
     /**
+     * set the id of the external assignment
      * @param int|null $externalassignment
      */
     public function set_externalassignment(?int $externalassignment): void {
@@ -146,6 +151,7 @@ class override {
     }
 
     /**
+     * get the id of the user
      * @return int|null
      */
     public function get_userid(): ?int {
@@ -153,6 +159,7 @@ class override {
     }
 
     /**
+     * set the id of the user
      * @param int|null $userid
      */
     public function set_userid(?int $userid): void {
@@ -160,6 +167,7 @@ class override {
     }
 
     /**
+     * get the time when submissions are allowed
      * @return int|null
      */
     public function get_allowsubmissionsfromdate(): ?int {
@@ -167,6 +175,7 @@ class override {
     }
 
     /**
+     * set the time when submissions are allowed
      * @param int|null $allowsubmissionsfromdate
      */
     public function set_allowsubmissionsfromdate(?int $allowsubmissionsfromdate): void {
@@ -174,6 +183,7 @@ class override {
     }
 
     /**
+     * get the time this assignment is due
      * @return int|null
      */
     public function get_duedate(): ?int {
@@ -181,6 +191,7 @@ class override {
     }
 
     /**
+     * set the time this assignment is due
      * @param int|null $duedate
      */
     public function set_duedate(?int $duedate): void {
@@ -188,6 +199,7 @@ class override {
     }
 
     /**
+     * get the time when submissions are no longer possible
      * @return int|null
      */
     public function get_cutoffdate(): ?int {
@@ -195,10 +207,10 @@ class override {
     }
 
     /**
+     * set the time when submissions are no longer possible
      * @param int|null $cutoffdate
      */
     public function set_cutoffdate(?int $cutoffdate): void {
         $this->cutoffdate = $cutoffdate;
     }
-
 }

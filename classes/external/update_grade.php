@@ -83,11 +83,11 @@ class update_grade extends external_api {
             ]
         );
 
-        // get the userid by the external username
+        // Get the userid from the external username.
         $externalusername = self::customfieldid_username();
         $results = [];
-        $users = explode(',',$params['user_name']);
-        echo 'users: ' . print_r($users, true);
+        $users = explode(',', $params['user_name']);
+
         foreach ($users as $user) {
             $userid = self::get_user_id($user, $externalusername);
 
@@ -102,7 +102,7 @@ class update_grade extends external_api {
                 break;
             }
 
-            // get the assignment with the specified name
+            // Get the assignment with the specified name.
             $assignment = self::read_assignment($assignmentname, $userid);
             if (empty($assignment->get_id())) {
                 echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
@@ -117,14 +117,14 @@ class update_grade extends external_api {
                 break;
             }
 
-            // check if the assignment is overdue
+            // Check if the assignment is overdue.
             $override = $assignment->get_students()[$userid]->get_override();
             if (empty($override) || $override == 0) {
                 $cutoffdate = $assignment->get_cutoffdate();
             } else {
                 $cutoffdate = $override->get_cutoffdate();
             }
-            if ($cutoffdate !=0 && $cutoffdate < time()) {
+            if ($cutoffdate != 0 && $cutoffdate < time()) {
                 echo 'WARNING: the assignment is overdue, points/feedback not updated';
                 $results = self::generate_warning(
                     $results,
@@ -135,7 +135,7 @@ class update_grade extends external_api {
                 break;
             }
 
-            // update the grade
+            // Update the grade.
             self::update_grades($assignment, $userid, $params);
             $results = self::generate_warning(
                 $results,
