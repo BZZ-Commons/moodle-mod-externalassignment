@@ -76,7 +76,7 @@ class view_grading implements renderable, templatable {
         $students = $assign->get_students();
         $data = new \stdClass();
         $data->url = $PAGE->url;
-        foreach($students as $student) {
+        foreach ($students as $student) {
             $gradedata = $student->to_stdclass();
             $gradedata->coursemoduleid = $this->coursemoduleid;
             $gradedata->courseid = $assign->get_course();
