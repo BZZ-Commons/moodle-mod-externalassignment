@@ -243,10 +243,11 @@ class update_grade extends external_api {
 
     /**
      * Generates the warning messages to be sent to the caller
-     * @param string $type
-     * @param string $name
-     * @param string $message
-     * @return string[]
+     * @param array $results  the list of results that will be extended and returned
+     * @param string $type the type of the warning
+     * @param string $name  the name of the warning
+     * @param string $message the detailed message
+     * @return array the extended list of results
      */
     private static function generate_warning(
         array $results,
