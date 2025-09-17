@@ -94,7 +94,7 @@ function show_details($context, $coursemoduleid): void {
     $PAGE->set_heading('External assignment details');
     $PAGE->set_pagelayout('standard');
 
-    if (!$assignment->is_alwaysshowdescription() ||
+    if (!$assignment->is_alwaysshowdescription() &&
         ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() >= time())) {
         $assignment->set_intro('');
     }

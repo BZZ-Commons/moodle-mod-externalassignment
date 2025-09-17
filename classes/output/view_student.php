@@ -79,10 +79,14 @@ class view_student implements renderable, templatable {
 
         $data->externalgrade = number_format($this->grade->get_externalgrade(), 2);
         $data->externalgrademax = number_format($this->assignment->get_externalgrademax(), 2);
-        $data->externalpercentage = number_format(
-            $this->grade->get_externalgrade() / $this->assignment->get_externalgrademax() * 100,
-            2
-        );
+        if ($this->assignment->get_externalgrademax() == 0) {
+            $data->externalpercentage = number_format(0, 2);
+        } else {
+            $data->externalpercentage = number_format(
+                $this->grade->get_externalgrade() / $this->assignment->get_externalgrademax() * 100,
+                2
+            );
+        }
         $data->manualgrade = number_format($this->grade->get_manualgrade(), 2);
         $data->manualgrademax = number_format($this->assignment->get_manualgrademax(), 2);
         if ($this->assignment->get_manualgrademax() == 0) {

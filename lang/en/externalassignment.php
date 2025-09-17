@@ -127,6 +127,8 @@ $string['privacy:metadata:grader'] = 'The user ID identifying the grader';
 $string['privacy:metadata:manualfeedback'] = 'The manual feedback from the teacher';
 $string['privacy:metadata:manualgrade'] = 'The manual grade from the teacher';
 $string['privacy:metadata:userid'] = 'The user ID identifying the student';
+$string['privacy:metadata:externalassignment_grades'] = 'Information about grades and feedback for external assignments.';
+$string['privacy:metadata:externalassignment_overrides'] = 'Information about date overrides for individual users in external assignments.';
 
 $string['scoremaximum'] = 'Maximum points';
 $string['scorereached'] = 'Points earned';
