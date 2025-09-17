@@ -46,7 +46,7 @@ $table->head = [get_string('modulenameplural', 'externalassignment')];
 $modinfo = get_fast_modinfo($course);
 
 foreach ($modinfo->get_instances_of('externalassignment') as $instanceid => $cm) {
-    $link = '<a href="view.php?id=' . $instanceid .'">'.format_string($cm->name, true).'</a>';
+    $link = '<a href="view.php?id=' . $cm->id .'">'.format_string($cm->name, true).'</a>';
     $table->data[] = [$link];
 }
 echo html_writer::table($table);
