@@ -95,7 +95,7 @@ final class assign_test extends \advanced_testcase {
         $instance = $generator->create_instance(['course' => $course->id]);
 
         $assign = new assign(null);
-        $assign->load_db($instance->coursemodule);
+        $assign->load_db($instance->cmid);
         $this->assertEquals($instance->id, $assign->get_id());
         $this->assertEquals($instance->course, $assign->get_course());
         $this->assertEquals($instance->name, $assign->get_name());
