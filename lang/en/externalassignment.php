@@ -135,6 +135,7 @@ $string['scorereached'] = 'Points earned';
 $string['seefeedback'] = 'See feedback';
 $string['selectedusers'] = 'Selected users';
 $string['studentlink'] = 'Link to your assignment';
+$string['submissions'] = 'Submissions';
 $string['submissionsdue'] = 'Due:';
 $string['submissionsopen'] = 'Opens:';
 $string['submissionsopened'] = 'Opened:';

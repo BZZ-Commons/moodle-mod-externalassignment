@@ -172,6 +172,33 @@ function externalassignment_supports($feature) {
 }
 
 /**
+ * Extend the settings navigation
+ *
+ * @param settings_navigation $settings
+ * @param navigation_node $navref
+ * @return void
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
+function externalassignment_extend_settings_navigation(settings_navigation $settings, navigation_node $navref) {
+    $cm = $settings->get_page()->cm;
+    if (!$cm) {
+        return;
+    }
+
+    $context = $cm->context;
+    if (has_capability('mod/externalassignment:reviewgrades', $context)) {
+        $url = new moodle_url('/mod/externalassignment/view.php', ['id' => $settings->get_page()->cm->id, 'action' => 'grading']);
+        $navref->add(
+            text: get_string('gradeitem:submissions', 'assign'),
+            action: $url,
+            type: navigation_node::TYPE_SETTING,
+            key: 'mod_externalassignment_submissions'
+        );
+    }
+}
+
+/**
  * Callback to update the grade settings or the grade for one student
  * @param $modinstance
  * @param $grades
