@@ -68,7 +68,8 @@ class view_student implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output): \stdClass {
         $data = new \stdClass();
-        $data->externallink = $this->grade->get_externallink();
+        $data->studentlink = $this->grade->get_externallink();
+        $data->externallink = $this->assignment->get_externallink();
         $timeremaining = $this->assignment->get_duedate() - time();
         if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
