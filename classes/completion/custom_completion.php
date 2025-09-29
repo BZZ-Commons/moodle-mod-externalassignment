@@ -42,8 +42,6 @@ class custom_completion extends activity_custom_completion {
      */
     public function get_state(string $rule): int {
         $this->validate_rule($rule);
-        // MDL-1 Add logic for completion.
-        global $DB;
         $completed = false;
         $coursemoduleid = $this->cm->id;
         $assign = new assign(null);

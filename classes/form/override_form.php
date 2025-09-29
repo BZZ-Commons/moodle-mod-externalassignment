@@ -103,7 +103,7 @@ class override_form extends moodleform {
         );
         $mform->addHelpButton('cutoffdate', 'cutoffdate', 'externalassignment');
 
-        $mform->addElement(
+        /*$mform->addElement(
             'text',
             'id',
             'course_module_id',
@@ -117,7 +117,7 @@ class override_form extends moodleform {
             'extassign_id',
             $this->_customdata->externalassignment
         );
-        $mform->setType('externalassignment', PARAM_INT);
+        $mform->setType('externalassignment', PARAM_INT);*/
 
         $this->add_action_buttons();
         $this->set_data($this->_customdata);

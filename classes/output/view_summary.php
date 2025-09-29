@@ -64,6 +64,7 @@ class view_summary implements renderable, templatable {
         $assignment->load_db($this->coursemoduleid);
 
         $data = new \stdClass();
+        $data->externallink = $assignment->get_externallink();
         $data->link_grading = "view.php?id=$this->coursemoduleid&action=grading";
         $data->link_grader = "view.php?id=$this->coursemoduleid&action=grader";
         $data->externalgrademax = $assignment->get_externalgrademax();
