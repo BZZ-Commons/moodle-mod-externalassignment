@@ -140,4 +140,16 @@ final class grade_test extends \advanced_testcase {
         $this->assertEquals(90.0, $stdclass->manualgrade);
         $this->assertEquals('Excellent work!', $stdclass->manualfeedback);
     }
+
+    /**
+     * Test get_finalgrade calculation
+     * @covers \grade::get_finalgrade
+     */
+    public function test_get_finalgrade(): void {
+        $grade = new grade(null);
+        $grade->set_externalgrade(85.0);
+        $grade->set_manualgrade(10.0);
+
+        $this->assertEquals(95.0, $grade->get_finalgrade());
+    }
 }
