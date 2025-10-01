@@ -115,6 +115,158 @@ final class assign_test extends \advanced_testcase {
     }
 
     /**
+     * Test load_db_external
+     * @covers ::load_db_external
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_load_db_external() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'externalname' => 'externalname']);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+
+        $user = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+        $assign = new assign(null, $context);
+        $assign->load_db_external('externalname', $user->id);
+        $this->assertEquals($instance->id, $assign->get_id());
+    }
+    /**
+    * Test sort_students
+    * @covers \assign::sort_students
+    */
+    public function test_sort_students(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Jane', 'lastname' => 'Smith']);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        $user3 = $this->getDataGenerator()->create_user(['firstname' => 'Alice', 'lastname' => 'Johnson']);
+        $this->getDataGenerator()->enrol_user($user3->id, $course->id);
+        $user4 = $this->getDataGenerator()->create_user(['firstname' => 'Bob', 'lastname' => 'Brown']);
+        $this->getDataGenerator()->enrol_user($user4->id, $course->id);
+
+        $assign = new assign(null, $context);
+
+        // Sort by lastname ascending
+        $assign->load_db($instance->cmid, 'lastname', 'asc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('Brown', reset($users)->get_lastname());
+
+        // Sort by lastname descending
+        $assign->load_db($instance->cmid, 'lastname', 'desc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('Smith', reset($users)->get_lastname());
+
+        // Sort by firstname ascending
+        $assign->load_db($instance->cmid, 'firstname', 'asc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('Alice', reset($users)->get_firstname());
+
+        // Sort by firstname descending
+        $assign->load_db($instance->cmid, 'firstname', 'desc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('John', reset($users)->get_firstname());
+
+        /* Sort by grade ascending
+        $assign->load_db($instance->cmid, 'grade', 'asc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('Doe', $users[0]->lastname);
+        // Sort by grade descending
+        $assign->load_db($instance->cmid, 'grade', 'desc');
+        $users = $assign->get_students();
+        assert (is_array($users));
+        $this->assertCount(4, $users);
+        $this->assertEquals('Smith', $users[0]->lastname); */
+    }
+
+    /**
+     * Test count_students
+     * @covers \assign::count_students
+     */
+    public function test_count_students(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Jane', 'lastname' => 'Smith']);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        $user3 = $this->getDataGenerator()->create_user(['firstname' => 'Alice', 'lastname' => 'Johnson']);
+        $this->getDataGenerator()->enrol_user($user3->id, $course->id);
+        $user4 = $this->getDataGenerator()->create_user(['firstname' => 'Bob', 'lastname' => 'Brown']);
+        $this->getDataGenerator()->enrol_user($user4->id, $course->id);
+
+        $assign = new assign(null, $context);
+
+        // Sort by lastname ascending
+        $assign->load_db($instance->cmid, 'lastname', 'asc');
+        $this->assertEquals(4, $assign->count_students());
+    }
+
+    /**
+     * Test take_students
+     * @covers \assign::take_students
+     */
+    public function test_take_student(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Jane', 'lastname' => 'Smith']);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        $user3 = $this->getDataGenerator()->create_user(['firstname' => 'Alice', 'lastname' => 'Johnson']);
+        $this->getDataGenerator()->enrol_user($user3->id, $course->id);
+        $user4 = $this->getDataGenerator()->create_user(['firstname' => 'Bob', 'lastname' => 'Brown']);
+        $this->getDataGenerator()->enrol_user($user4->id, $course->id);
+
+        $assign = new assign(null, $context);
+
+        // Sort by lastname ascending
+        $assign->load_db($instance->cmid, 'lastname', 'asc');
+        $users = $assign->get_students();
+
+        $user = reset($users);
+        $this->assertEquals($user->get_lastname(), $assign->take_student($user->get_userid())->get_lastname());
+
+        $user = next($users);
+        $this->assertEquals($user->get_lastname(), $assign->take_student($user->get_userid())->get_lastname());
+
+    }
+
+    /**
      * Test the setters and getters
      * @covers \assign::set_id
      * @covers \assign::get_id

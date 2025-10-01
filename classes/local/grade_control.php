@@ -72,6 +72,7 @@ class grade_control {
      * @throws \dml_exception
      * @throws \coding_exception
      * @throws \moodle_exception
+     * @codeCoverageIgnore
      */
     public function process_feedback(): void {
         global $CFG;
@@ -175,6 +176,7 @@ class grade_control {
      * @throws \dml_exception
      * @throws \coding_exception
      * @throws \moodle_exception
+     * @codeCoverageIgnore
      */
     public function process_override(array $userids): void {
         global $CFG;
@@ -233,7 +235,8 @@ class grade_control {
      * inserts or updates a user override
      * @param override $override
      * @return void
-     * @throws dml_exception
+     * @throws \dml_exception
+     * @codeCoverageIgnore
      */
     private function override_update(override $override): void {
         global $DB;

@@ -38,7 +38,6 @@ final class student_test extends \advanced_testcase {
         $studentdata->firstname = 'Test';
         $studentdata->lastname = 'User';
         $studentdata->email = 'test@example.com';
-
         $student = new student($assign, $studentdata);
 
         $this->assertEquals(1, $student->get_userid());
