@@ -91,5 +91,8 @@ final class grade_control_test extends \advanced_testcase {
 
         $gradecontrol->set_userid(5);
         $this->assertEquals(5, $gradecontrol->get_userid());
+
+        $gradecontrol->set_userlist(['Bart', 'Lisa']);
+        $this->assertEquals(['Bart', 'Lisa'], $gradecontrol->get_userlist());
     }
 }

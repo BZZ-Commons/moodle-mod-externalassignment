@@ -55,4 +55,30 @@ class mod_externalassignment_generator extends testing_module_generator {
 
         return parent::create_instance($record, (array)$options);
     }
+
+    /**
+     * create an override entry
+     * @param array|null $override
+     * @return bool|int
+     * @throws dml_exception
+     */
+    public function create_override_entry(?array $override = null) {
+        global $DB;
+        $override = (object)(array)$override;
+        $defaultsettings = [
+            'externalassignment' => 1,
+            'userid' => 1,
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => 0,
+            'cutoffdate' => 0
+        ];
+
+        foreach ($defaultsettings as $name => $value) {
+            if (!isset($override->{$name})) {
+                $override->{$name} = $value;
+            }
+        }
+
+        return $DB->insert_record('externalassignment_overrides', (array)$override);
+    }
 }

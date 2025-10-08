@@ -120,6 +120,14 @@ class update_grade extends external_api {
             // Check if the assignment is overdue.
             $override = $assignment->get_students()[$userid]->get_override();
             if (empty($override) || $override == 0) {
+                $results = self::generate_warning(
+                    $results,
+                    'info',
+                    'no_override',
+                    'No override found.\n' .
+                    '  * assignmentname "' . $params['assignment_name'] . '"\n' .
+                    '  * username "' . $user . '"'
+                );
                 $cutoffdate = $assignment->get_cutoffdate();
             } else {
                 $cutoffdate = $override->get_cutoffdate();
@@ -276,11 +284,8 @@ class update_grade extends external_api {
             'message' => '',
         ];
         foreach ($results as $result) {
-            if ($result['type'] === 'error') {
-                $return['type'] = 'error';
-            }
-            if ($result['type'] === 'warning' && $result['type'] !== 'error') {
-                $return['type'] = 'warning';
+            if ($result['type'] !== 'warning' && $result['type'] !== 'error') {
+                $return['type'] = 'info';
             }
 
             $return['name'] .= $result['name'] . '\n';
