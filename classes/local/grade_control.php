@@ -112,7 +112,7 @@ class grade_control {
         $data->externallink = '';
         $data->externalfeedback['text'] = '';
         $data->externalfeedback['format'] = 1;
-        $data->manualfeedback['text'] = '<p>Nothing here</p>';
+        $data->manualfeedback['text'] = '';
         $data->manualfeedback['format'] = 1;
         $data->gradefinal = 0;
 

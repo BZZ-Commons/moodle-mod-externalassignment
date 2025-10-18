@@ -151,8 +151,7 @@ class assign {
             $this->set_duedate($data->duedate);
             $this->set_cutoffdate($data->cutoffdate);
             $this->set_externalname($data->externalname);
-            $this->students[$userid] = new student($this, null);
-            $this->load_overrides($data->coursemoduleid, $userid);
+            $this->load_overrides($data->id, $userid);
         }
     }
 
@@ -372,6 +371,9 @@ class assign {
         // FIXME: Find out why autoloading does not work here.
         foreach ($data as $record) {
             $override = new override($record);
+            if ($this->students[$record->userid] == null) {
+                $this->students[$record->userid] = new student($this, $DB->get_record('user', ['id' => $record->userid]));
+            }
             $this->students[$record->userid]->set_override($override);
         }
 

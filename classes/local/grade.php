@@ -102,10 +102,10 @@ class grade {
      * loads the grading data from the database
      * @param int $externalassignment  the id of the external assignment
      * @param int $userid
-     * @return void
+     * @return bool successful
      * @throws \dml_exception
      */
-    public function load_db($externalassignment, $userid): void {
+    public function load_db($externalassignment, $userid): bool {
         global $DB;
         $data = $DB->get_record(
             'externalassignment_grades',
@@ -119,7 +119,9 @@ class grade {
             $this->load_data($data);
             $this->externalassignment = $data->externalassignment;
             $this->grader = $data->grader;
+            return true;
         }
+        return false;
     }
 
     /**

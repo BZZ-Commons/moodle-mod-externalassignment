@@ -118,7 +118,12 @@ class update_grade extends external_api {
             }
 
             // Check if the assignment is overdue.
-            $override = $assignment->get_students()[$userid]->get_override();
+            $students = $assignment->get_students();
+            $override = null;
+            if (!empty($students[$userid])) {
+                $override = $students[$userid]->get_override();
+            }
+
             if (empty($override) || $override == 0) {
                 $cutoffdate = $assignment->get_cutoffdate();
             } else {

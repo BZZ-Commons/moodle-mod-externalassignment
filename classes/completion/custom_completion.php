@@ -31,7 +31,8 @@ use mod_externalassignment\local\grade;
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class custom_completion extends activity_custom_completion {
+class custom_completion extends activity_custom_completion
+{
 
     /**
      * Fetches the completion state for a given completion rule.
@@ -40,21 +41,25 @@ class custom_completion extends activity_custom_completion {
      * @return int The completion state.
      * @throws \dml_exception
      */
-    public function get_state(string $rule): int {
+    public function get_state(string $rule): int
+    {
         $this->validate_rule($rule);
-        $completed = false;
         $coursemoduleid = $this->cm->id;
         $assign = new assign(null);
         $assign->load_db($coursemoduleid);
-        if ($assign->get_needspassinggrade()) {
-            $grade = new grade(null);
-            $grade->load_db($assign->get_id(), $this->userid);
-            $maxgrade = $assign->get_externalgrademax() + $assign->get_manualgrademax();
-            $passinggrade = $maxgrade * $assign->get_passingpercentage() / 100;
-            $totalgrade = $grade->get_externalgrade() + $grade->get_manualgrade();
-            $completed = $totalgrade >= $passinggrade;
+
+        $grade = new grade(null);
+        if ($grade->load_db($assign->get_id(), $this->userid)) {
+            if ($assign->get_needspassinggrade()) {
+                $maxgrade = $assign->get_externalgrademax() + $assign->get_manualgrademax();
+                $passinggrade = $maxgrade * $assign->get_passingpercentage() / 100;
+                $totalgrade = $grade->get_externalgrade() + $grade->get_manualgrade();
+                return $totalgrade >= $passinggrade ? COMPLETION_COMPLETE : COMPLETION_COMPLETE_FAIL;
+            } else {
+                return COMPLETION_COMPLETE;
+            }
         }
-        return $completed ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+        return COMPLETION_INCOMPLETE;
     }
 
     /**
@@ -62,7 +67,9 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public static function get_defined_custom_rules(): array {
+    public
+    static function get_defined_custom_rules(): array
+    {
         return ['needspassinggrade'];
     }
 
@@ -71,7 +78,9 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public function get_custom_rule_descriptions(): array {
+    public
+    function get_custom_rule_descriptions(): array
+    {
         return [
             'needspassinggrade' => get_string('needspassinggrade', 'externalassignment'),
         ];
@@ -82,7 +91,9 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public function get_sort_order(): array {
+    public
+    function get_sort_order(): array
+    {
         return [
             'needspassinggrade',
         ];
