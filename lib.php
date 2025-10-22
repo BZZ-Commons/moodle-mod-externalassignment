@@ -59,7 +59,7 @@ function externalassignment_update_instance(\stdClass $data, $form) {
 
 /**
  * delete an assignment instance
- * @param int $id
+ * @param int $id the id of the assignment to be deleted
  * @return bool
  * @throws dml_exception
  * @throws coding_exception

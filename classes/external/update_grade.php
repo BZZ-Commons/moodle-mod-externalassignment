@@ -146,7 +146,7 @@ class update_grade extends external_api {
                 $results,
                 'info',
                 'success',
-                'Update successful'
+                'Update successful (c=' . $assignment->get_externalname() . ', a=' . $assignment->get_id() . ', u=' . $userid . ')'
             );
         }
 
