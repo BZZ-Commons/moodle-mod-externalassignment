@@ -338,7 +338,7 @@ class update_grade extends external_api {
         list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
         $completion = new \completion_info($course);
         if ($completion->is_enabled($coursemodule)) {
-            $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+            $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $userid);
         }
 
     }

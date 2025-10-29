@@ -73,7 +73,14 @@ class grade {
      * @return void
      */
     private function load_data(\stdClass $data): void {
-        $this->set_id($data->gradeid);
+        if (property_exists($data, 'id')) {
+            $this->id = $data->id;
+        } elseif (property_exists($data, 'externalassignment')) {
+            $this->set_id($data->gradeid);
+        } else {
+            $this->id = -1;
+        }
+
         $this->set_userid($data->userid);
         $this->set_externallink($data->externallink);
         if (empty($data->externalgrade)) {

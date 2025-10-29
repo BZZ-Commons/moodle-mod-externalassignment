@@ -87,7 +87,13 @@ class grade_control {
         $data->lastname = $student->get_lastname();
         $data->externalgrademax = $this->get_assign()->get_externalgrademax();
         $data->manualgrademax = $this->get_assign()->get_manualgrademax();
-        $data->gradeid = - 1;
+
+        $grade = $student->get_grade();
+        if (!empty($student->get_grade())) {
+            $data->gradeid = $grade->get_id();
+        } else {
+            $data->gradeid = -1;
+        }
         $data->externalassignment = $this->get_assign()->get_id();
         $data->status = $student->get_status();
         $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
@@ -137,6 +143,11 @@ class grade_control {
                 $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
                 externalassignment_grade_item_update($this->get_assign()->to_stdclass(), $gradevalues);
 
+                list ($course, $coursemodule) = get_course_and_cm_from_cmid($this->coursemoduleid, 'externalassignment');
+                $completion = new \completion_info($course);
+                if ($completion->is_enabled($coursemodule)) {
+                    $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $this->get_userid());
+                }
                 redirect(
                     new \moodle_url('view.php',
                         [

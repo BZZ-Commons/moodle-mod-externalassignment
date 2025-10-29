@@ -68,6 +68,8 @@ class restore_externalassignment_activity_structure_step extends restore_activit
 
         // Immediately after inserting "activity" record, call this!
         $this->apply_activity_instance($newitemid);
+
+        $this->calendar_event_add($data);
     }
 
     /**

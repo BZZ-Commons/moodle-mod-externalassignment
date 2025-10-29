@@ -54,12 +54,18 @@ class custom_completion extends activity_custom_completion
                 $maxgrade = $assign->get_externalgrademax() + $assign->get_manualgrademax();
                 $passinggrade = $maxgrade * $assign->get_passingpercentage() / 100;
                 $totalgrade = $grade->get_externalgrade() + $grade->get_manualgrade();
-                return $totalgrade >= $passinggrade ? COMPLETION_COMPLETE : COMPLETION_COMPLETE_FAIL;
+                $state = $totalgrade >= $passinggrade ? COMPLETION_COMPLETE : COMPLETION_COMPLETE_FAIL;
+                return $state;
             } else {
                 return COMPLETION_COMPLETE;
             }
         }
         return COMPLETION_INCOMPLETE;
+    }
+
+    function get_overall_completion_state(): int
+    {
+        return $this->get_state('needspassinggrade');
     }
 
     /**

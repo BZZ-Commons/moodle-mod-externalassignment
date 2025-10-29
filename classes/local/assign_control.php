@@ -48,7 +48,7 @@ class assign_control {
      * @param $coursemodule cm_info|null  The course module
      * @throws \coding_exception
      */
-    public function __construct($coursemodulecontext, $coursemodule) {
+    public function __construct($coursemodulecontext, ?cm_info $coursemodule) {
         $this->set_context($coursemodulecontext);
         $this->set_coursemodule(cm_info::create($coursemodule));
     }
