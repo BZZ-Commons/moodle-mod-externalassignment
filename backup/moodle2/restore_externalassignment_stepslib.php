@@ -69,7 +69,7 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         // Immediately after inserting "activity" record, call this!
         $this->apply_activity_instance($newitemid);
 
-        $this->calendar_event_add($data);
+        // $this->calendar_event_add($newitemid, $data); TODO issue #31
     }
 
     /**
@@ -107,6 +107,46 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $this->set_mapping('externalassignment_overrides', $oldid, $newitemid);
     }
 
+    /**
+     * adds the calendar event for this external assignment
+     * @param $instanceid
+     * @param $data
+     * @return void
+     */
+    protected function calendar_event_add($instanceid, $data) {
+        global $CFG, $DB;
+        $event = new \stdClass();
+        $event->eventtype = 'due';
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
+        $event->name = $data->name . ' ' . get_string('isdue', 'externalassignment', $name);
+        $event->description = format_module_intro(
+            'externalassignment',
+            $this->$instanceid,
+            $this->get_coursemoduleid(),
+            false
+        );
+        $event->format = FORMAT_HTML;
+        $event->courseid = $this->get_course()->id;
+        $event->groupid = 0;
+        $event->userid = 0;
+        $event->modulename = 'externalassignment';
+        $event->instance = $instanceid;
+        $event->timestart = $data->duedate;
+        $event->timesort = $data->duedate;
+        $event->visible = true;
+        $event->timeduration = 0;
+
+        $event->id = $DB->get_field(
+            'event',
+            'id',
+            [
+                'modulename' => 'externalassignment',
+                'instance' => $instanceid,
+                'eventtype' => 'due',
+            ]
+        );
+        \calendar_event::create($event);
+    }
     /**
      * After execute the step, add related files
      */
