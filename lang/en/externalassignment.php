@@ -39,7 +39,7 @@ $string['availability'] = 'Availability';
 
 $string['changeuser'] = 'Change user';
 $string['completiongradesgroup'] = 'Completion grades group';
-$string['completiongradesgroup_help'] = 'TODO Completion grades group';
+$string['completiongradesgroup_help'] = 'Rules for automatic completion, based on the grades';
 $string['configintro'] = 'The values set here are used by the "External assignment" plugin';
 $string['cutoffdate'] = 'Cut-off date';
 $string['cutoffdate_help'] = 'If set, submissions will not be accepted after this date without an extension. If not set, submissions will always be accepted.';
@@ -49,7 +49,7 @@ $string['cutoffdatevalidation'] = 'Cut-off date cannot be earlier than the due d
 $string['description'] = 'Description';
 $string['done'] = 'done';
 $string['duedate'] = 'Due date';
-$string['duedate_help'] = 'TODO duedate_help';
+$string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date. Set an assignment cut-off date to prevent submissions after a certain date.';
 $string['duedateaftersubmissionvalidation'] = 'Due date must be after the allow submissions from date.';
 $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submissions from date.';
 
