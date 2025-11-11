@@ -113,15 +113,6 @@ class grade_control {
         }
         $data->timeremainingstr = $due;
 
-        $data->externalgrade = '';
-        $data->manualgrade = '';
-        $data->externallink = '';
-        $data->externalfeedback['text'] = '';
-        $data->externalfeedback['format'] = 1;
-        $data->manualfeedback['text'] = '';
-        $data->manualfeedback['format'] = 1;
-        $data->gradefinal = 0;
-
         require_once($CFG->dirroot . '/mod/externalassignment/classes/form/grader_form.php');
         $mform = new grader_form(null, $data);
 
@@ -158,6 +149,14 @@ class grade_control {
                     )
                 );
             } else {  // Display the form.
+                $data->externalgrade = '';
+                $data->manualgrade = '';
+                $data->externallink = '';
+                $data->externalfeedback['text'] = '';
+                $data->externalfeedback['format'] = 1;
+                $data->manualfeedback['text'] = 'TODO';
+                $data->manualfeedback['format'] = 1;
+                $data->gradefinal = 0;
                 if (array_key_exists($this->get_userid(), $this->get_assign()->get_students())) {
 
                     if (!empty($student->get_grade())) {

@@ -98,7 +98,7 @@ class view_student implements renderable, templatable {
                 2
             );
         }
-        $data->hasmanualgrade = $data->manualgrademax > 0 || $data->manualgrade > 0;
+        $data->hasmanualgrade = $data->manualgrademax > 0 || $data->manualgrade != 0;
         $data->totalgrade = number_format($data->externalgrade + $data->manualgrade, 2);
         $data->totalgrademax = number_format($data->externalgrademax + $data->manualgrademax, 2);
         if ($data->totalgrademax == 0) {
