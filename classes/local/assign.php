@@ -143,7 +143,12 @@ class assign {
                 'assignmentname' => $assignmentname,
             ]
         );
-        if (!empty($data)) {
+        $context = \context_module::instance($data->coursemoduleid);
+
+        if (!empty($data) &&
+            !has_capability('mod/externalassignment:grade', $context, $userid) &&  // no grader/tea
+            has_capability('mod/externalassignment:submit', $context, $userid)     // student
+        ) {
             require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
             $this->set_id($data->id);
             $this->set_course($data->course);
