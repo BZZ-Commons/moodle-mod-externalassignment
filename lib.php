@@ -216,15 +216,15 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
 }
 
 /**
- * Obtains the automatic completion state for this forum based on any conditions
- * in forum settings.
+ * Obtains the automatic completion state for this assignment based on any conditions
+ * in the settings.
  *
  * @param object $course Course
  * @param object $cm Course-module
  * @param int $userid User ID
  * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
  * @return bool True if completed, false if not, $type if conditions not set.
- */
+ *
 function externalassignment_get_completion_state(object $course, object $coursemodule, int $userid, bool $type): bool {
     return true; // TODO implement logic
 }
@@ -234,7 +234,7 @@ function externalassignment_get_completion_state(object $course, object $coursem
  *
  * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
  * @return array $descriptions the array of descriptions for the custom rules.
- */
+ *
 function mod_externalassignment_get_completion_active_rule_descriptions($cm) {
     // Values will be present in cm_info, and we assume these are up to date.
     if (empty($cm->customdata['customcompletionrules'])
@@ -256,6 +256,7 @@ function mod_externalassignment_get_completion_active_rule_descriptions($cm) {
     }
     return $descriptions;
 }
+*/
 
 /**
  * Updates the grade for one student

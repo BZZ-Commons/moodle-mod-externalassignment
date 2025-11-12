@@ -73,8 +73,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public
-    static function get_defined_custom_rules(): array
+    public static function get_defined_custom_rules(): array
     {
         return ['needspassinggrade'];
     }
@@ -84,8 +83,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public
-    function get_custom_rule_descriptions(): array
+    public function get_custom_rule_descriptions(): array
     {
         return [
             'needspassinggrade' => get_string('needspassinggrade', 'externalassignment'),
@@ -97,8 +95,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public
-    function get_sort_order(): array
+    public function get_sort_order(): array
     {
         return [
             'needspassinggrade',

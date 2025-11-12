@@ -150,7 +150,7 @@ class provider implements
         $userid = $user->id;
         foreach ($contextlist->get_contexts() as $context) {
             if ($context->contextlevel == CONTEXT_MODULE) {
-                $assign = new assign(null, $context->instanceid);
+                $assign = new assign(null, $context);
                 $assign->load_db($context->instanceid, $userid);
                 $data = new \stdClass();
                 $data->userid = $userid;
