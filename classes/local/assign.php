@@ -306,6 +306,7 @@ class assign {
         }
         $data = $DB->get_records('externalassignment_grades', $conditions);
         foreach ($data as $record) {
+            $record->gradeid = $record->id;
             $grade = new grade($record);
             $this->students[$record->userid]->set_grade($grade);
         }
