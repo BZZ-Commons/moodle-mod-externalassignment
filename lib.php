@@ -256,7 +256,7 @@ function mod_externalassignment_get_completion_active_rule_descriptions($cm) {
     }
     return $descriptions;
 }
-*/
+
 
 /**
  * Updates the grade for one student
