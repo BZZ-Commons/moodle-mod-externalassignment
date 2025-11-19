@@ -1,4 +1,4 @@
-@mod @mod_assign
+@mod @mod_extassignment
 Feature: Check that the starting and due dates are display correctly and will work as intended
 
   Background:

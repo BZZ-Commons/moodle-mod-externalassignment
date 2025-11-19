@@ -1,16 +1,16 @@
 # List of acceptance tests for mod externalassignment
 ## 1) Create new external assignment
-| # | Due Date | Cut Off Date | Completion | Feature |
-|---|----------|--------------|------------|---------|
-| a | Y | Y | pass | — |
-| b | Y | Y | manual | — |
-| c | Y | Y | none | — |
-| d | Y | N | pass | — |
-| e | Y | N | manual | — |
-| f | Y | N | none | — |
-| g | N | N | pass | — |
-| h | N | N | manual | — |
-| i | N | N | none | — |
+| # | Due Date | Cut Off Date | Completion | Feature                         |
+|---|----------|--------------|------------|---------------------------------|
+| a | Y | Y | pass | dates_and_passingggrade.feature |
+| b | Y | Y | manual | —                               |
+| c | Y | Y | none | —                               |
+| d | Y | N | pass | —                               |
+| e | Y | N | manual | —                               |
+| f | Y | N | none | —                               |
+| g | N | N | pass | —                               |
+| h | N | N | manual | —                               |
+| i | N | N | none | —                               |
 
 ## 2) Errors while creating external assignment
 | # | Condition | Feature |

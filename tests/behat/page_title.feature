@@ -1,4 +1,4 @@
-@mod @mod_externalassignment
+@mod @mod_extassignment
 Feature: In an externalassignment, page titles are informative
   In order to know I am viewing the correct page
   The page titles need to reflect the current assignment and action

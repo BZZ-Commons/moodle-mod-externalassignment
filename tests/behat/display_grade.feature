@@ -1,4 +1,4 @@
-@mod @mod_assign
+@mod @mod_extassignment
 Feature: Check that the externalassignment grade can be updated correctly
   In order to ensure that the grade is shown correctly in the grading table
   As a teacher
