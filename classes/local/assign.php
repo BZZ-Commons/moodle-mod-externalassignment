@@ -135,7 +135,9 @@ class assign {
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
             ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
-            ' WHERE ae.externalname=:assignmentname AND ue.userid=:userid';
+            ' WHERE ae.externalname=:assignmentname '.
+            '   AND ue.userid=:userid' .
+            '   AND cm.module=28';
         $data = $DB->get_record_sql(
             $query,
             [
