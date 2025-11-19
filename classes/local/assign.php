@@ -308,7 +308,10 @@ class assign {
         foreach ($data as $record) {
             $record->gradeid = $record->id;
             $grade = new grade($record);
-            $this->students[$record->userid]->set_grade($grade);
+            // check if student object exists
+            if ($this->students[$record->userid] != null) {
+                $this->students[$record->userid]->set_grade($grade);
+            }
         }
     }
 
