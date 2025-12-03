@@ -135,12 +135,15 @@ class assign {
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
             ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
-            ' WHERE ae.externalname=:assignmentname AND ue.userid=:userid';
+            ' WHERE ae.externalname=:assignmentname '.
+            ' AND ue.userid=:userid' .
+            ' AND cm.module=:moduleid';
         $data = $DB->get_record_sql(
             $query,
             [
                 'userid' => $userid,
                 'assignmentname' => $assignmentname,
+                'moduleid' => $this->read_module_id()
             ]
         );
         $context = \context_module::instance($data->coursemoduleid);
@@ -160,6 +163,22 @@ class assign {
         }
     }
 
+    private function read_module_id(): ?int {
+        global $DB;
+        $query = 'SELECT id ' .
+            'FROM {modules} ' .
+            'WHERE name=`externalassignment`';
+        $data = $DB->get_record_select(
+            'modules',
+            'name=:modulename',
+            ['modulename' => 'externalassignment'],
+            'id'
+        );
+        if (!empty($data)) {
+            return $data->id;
+        }
+        return -1;
+    }
     /**
      * Loads the values for the attributes
      * @param \stdClass $data the object that contains the data
