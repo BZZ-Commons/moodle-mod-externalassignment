@@ -107,7 +107,22 @@ class mod_externalassignment_mod_form extends moodleform_mod {
      * @throws coding_exception
      */
     public function validation($data, $files): array {
+
         $errors = parent::validation($data, $files);
+        global $DB;
+        $count = $DB->count_records_select(
+            'externalassignment',
+            'externalname = :externalname AND course = :course AND id <> :id',
+            [
+                'externalname' => $data['externalname'],
+                'course' => $data['course'],
+                'id' => $data['coursemodule'],
+            ]
+        );
+        if ($count > 0) {
+            $errors['externalname'] = get_string('duplicatenamevalidation', 'externalassignment');
+        }
+
         if (!empty($data['allowsubmissionsfromdate']) && !empty($data['duedate'])) {
             if ($data['duedate'] <= $data['allowsubmissionsfromdate']) {
                 $errors['duedate'] = get_string('duedateaftersubmissionvalidation', 'externalassignment');

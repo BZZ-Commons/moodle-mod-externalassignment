@@ -63,6 +63,9 @@ class assign_control {
     public function add_instance(\stdClass $formdata, int $coursemoduleid) {
         global $DB;
         $assign = new assign($formdata, $this->get_context());
+        if ($this->has_duplicate_name($assign)) {
+            $assign->set_externalname('FIXME');
+        }
 
         $returnid = $DB->insert_record('externalassignment', $assign->to_stdclass());
         $this->set_coursemoduleid($coursemoduleid);
@@ -84,6 +87,9 @@ class assign_control {
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
         $assign = new assign($formdata, $this->get_context());
+        if ($this->has_duplicate_name($assign)) {
+            $assign->set_externalname('FIXME');
+        }
         $this->set_coursemoduleid($coursemoduleid);
         $data = $assign->to_stdclass();
         $result = $DB->update_record('externalassignment', $data);
@@ -119,6 +125,24 @@ class assign_control {
         $DB->delete_records('externalassignment', ['id' => $id]);
     }
 
+    /**
+     * checks if there is another assignment with the same external name in the same course
+     * @param assign $assign
+     */
+    private function has_duplicate_name(assign $assign): bool {
+
+        global $DB;
+        $count = $DB->count_records_select(
+            'externalassignment',
+            'externalname = :externalname AND course = :course AND id <> :id',
+            [
+                'externalname' => $assign->get_externalname(),
+                'course' => $assign->get_course(),
+                'id' => $assign->get_id(),
+            ]
+        );
+        return $count > 0;
+    }
     /**
      * Inserts or updates the grade settings for this assignment in grade_items
      * @return int
