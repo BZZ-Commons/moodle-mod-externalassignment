@@ -79,6 +79,7 @@ $string['externalusername'] = 'External username';
 $string['externalusername_desc'] = 'The user profile field containing the external username';
 
 $string['feedback'] = 'Feedback';
+$string['findduplicates'] = 'Find assignments with duplicate external names';
 $string['finalgrade'] = 'Final grade';
 
 $string['grade'] = 'Grade';
