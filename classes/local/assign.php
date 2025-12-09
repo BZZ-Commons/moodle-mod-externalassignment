@@ -137,8 +137,9 @@ class assign {
             ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
             ' WHERE ae.externalname=:assignmentname '.
             ' AND ue.userid=:userid' .
-            ' AND cm.module=:moduleid';
-        $data = $DB->get_record_sql(
+            ' AND cm.module=:moduleid' .
+            ' ORDER BY ae.id DESC LIMIT 1';
+        $data = $DB->get_records_sql(
             $query,
             [
                 'userid' => $userid,
@@ -146,23 +147,33 @@ class assign {
                 'moduleid' => $this->read_module_id()
             ]
         );
-        $context = \context_module::instance($data->coursemoduleid);
-
-        if (!empty($data) &&
-            !has_capability('mod/externalassignment:grade', $context, $userid) &&  // no grader/tea
-            has_capability('mod/externalassignment:submit', $context, $userid)     // student
-        ) {
-            require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
-            $this->set_id($data->id);
-            $this->set_course($data->course);
-            $this->set_externalgrademax($data->externalgrademax);
-            $this->set_duedate($data->duedate);
-            $this->set_cutoffdate($data->cutoffdate);
-            $this->set_externalname($data->externalname);
-            $this->load_overrides($data->id, $userid);
+        if (!empty($data)) {
+            $row = reset($data);
+            $context = \context_module::instance($row->coursemoduleid);
+            // check if the user is a student (no grader/teacher)
+            if (!has_capability('mod/externalassignment:grade', $context, $userid) &&  // no grader/tea
+                has_capability('mod/externalassignment:submit', $context, $userid)     // student
+            ) {
+                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
+                $this->set_id($row->id);
+                $this->set_course($row->course);
+                $this->set_externalgrademax($row->externalgrademax);
+                $this->set_duedate($row->duedate);
+                $this->set_cutoffdate($row->cutoffdate);
+                $this->set_externalname($row->externalname);
+                $this->load_overrides($row->id, $userid);
+            }
         }
+
+
+
     }
 
+    /**
+     * reads the module id of external assignment
+     * @return int|null
+     * @throws \dml_exception
+     */
     private function read_module_id(): ?int {
         global $DB;
         $query = 'SELECT id ' .
