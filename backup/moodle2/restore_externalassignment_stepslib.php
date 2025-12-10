@@ -63,7 +63,9 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
         $data->duedate = $this->apply_date_offset($data->duedate);
         $data->cutoffdate = $this->apply_date_offset($data->cutoffdate);
-
+        if ($this->has_duplicate_name($data)) {
+            $data->externalname = 'FIXME';
+        }
         $newitemid = $DB->insert_record('externalassignment', $data);
 
         // Immediately after inserting "activity" record, call this!
@@ -71,7 +73,23 @@ class restore_externalassignment_activity_structure_step extends restore_activit
 
         // $this->calendar_event_add($newitemid, $data); TODO issue #31
     }
+    /**
+     * checks if there is another assignment with the same external name in the same course
+     * @param $data
+     */
+    protected function has_duplicate_name($data): bool {
 
+        global $DB;
+        $count = $DB->count_records_select(
+            'externalassignment',
+            'externalname = :externalname AND course = :course',
+            [
+                'externalname' => $data->externalname,
+                'course' => $data->course,
+            ]
+        );
+        return $count > 0;
+    }
     /**
      * Process externalassignment grades element
      *

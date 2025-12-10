@@ -52,6 +52,7 @@ $string['duedate'] = 'Due date';
 $string['duedate_help'] = 'This is when the assignment is due. Submissions will still be allowed after this date. Set an assignment cut-off date to prevent submissions after a certain date.';
 $string['duedateaftersubmissionvalidation'] = 'Due date must be after the allow submissions from date.';
 $string['duedatevalidation'] = 'Due date cannot be earlier than the allow submissions from date.';
+$string['duplicatenamevalidation'] = 'An assignment with this external name already exists in this course. Please choose another name.';
 
 $string['extensiongranted'] = ' / Extension granted: ';
 $string['external'] = 'External';
@@ -78,6 +79,7 @@ $string['externalusername'] = 'External username';
 $string['externalusername_desc'] = 'The user profile field containing the external username';
 
 $string['feedback'] = 'Feedback';
+$string['findduplicates'] = 'Find assignments with duplicate external names';
 $string['finalgrade'] = 'Final grade';
 
 $string['grade'] = 'Grade';
