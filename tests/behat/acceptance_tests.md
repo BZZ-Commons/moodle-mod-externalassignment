@@ -10,9 +10,9 @@
 | d | Y        | N            | pass       | due_and_passinggrade.feature     |
 | e | Y        | N            | manual     | due_and_manual.feature           |
 | f | Y        | N            | none       | due_no_conditions.feature        |
-| g | N        | N            | pass       | —                                |
-| h | N        | N            | manual     | —                                |
-| i | N        | N            | none       | —                                |
+| g | N        | N            | pass       | nodates_and_passinggrade.feature |
+| h | N        | N            | manual     | nodates_and_manual.feature       |
+| i | N        | N            | none       | nodates_no_conditions.features   |
 
 ## 2) Errors while creating external assignment
 

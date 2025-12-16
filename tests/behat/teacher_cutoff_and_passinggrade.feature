@@ -1,8 +1,8 @@
 @mod @mod_externalassignment
-Feature: Create external assignment without dates and completion conditions
+Feature: Create external assignment with due/cut off dates and passing grade
   In order to manage assignments effectively
   As a teacher
-  I need to be able to create external assignments without dates and completion conditions
+  I need to be able to create external assignments with specific dates and passing grades
 
   Background:
     Given the following "courses" exist:
@@ -21,21 +21,23 @@ Feature: Create external assignment without dates and completion conditions
       | Group 1 | C1     | G1       |
 
   @javascript
-  Scenario: Create an external assignment without due date and no completion conditions
+  Scenario: Create an external assignment with dates and passing grade
     Given I am logged in as "teacher1"
     And I turn editing mode on
     And I add an externalassignment activity to course "Course 1" section "1" and I fill the form with:
-      | Assignment name              | Assignment without due Date and completion conditions |
-      | External assignment          | m999-extassignmentsample                              |
-      | Assignment link              | https://www.example.com/assignment                    |
-      | Description                  | This is a test assignment.                            |
-      | Due date                     | ##last day of this month noon##                       |
-      | Cut-off date                 | ##last day of this month 11pm##                       |
-      | Completion conditions > None | 1                                                     |
-    Then I should see "Assignment without due Date and completion conditions"
+      | Assignment name     | Assignment with due/cut off Dates and Passing Grade |
+      | External assignment | m999-extassignmentsample                            |
+      | Assignment link     | https://www.example.com/assignment                  |
+      | Description         | This is a test assignment.                          |
+      | Due date            | ##last day of this month noon##                     |
+      | Cut-off date        | ##last day of this month 11pm##                     |
+      | Add requirements    | 1                                                   |
+      | needspassinggrade   | 1                                                   |
+    And I click on "Completion" "button"
+    Then I should see "Assignment with due/cut off Dates and Passing Grade"
     And I should see "Due:"
     And I should see "##last day of this month noon##%A, %d %B %Y, %I:%M##"
     And I should not see "Mark as done"
-    And I should not see "Completion"
-
+    And I should see "Completion"
+    And I should see "Receive a passing grade"
 
