@@ -116,7 +116,7 @@ class mod_externalassignment_mod_form extends moodleform_mod {
             [
                 'externalname' => $data['externalname'],
                 'course' => $data['course'],
-                'id' => $data['coursemodule'],
+                'id' => $data['instance'],
             ]
         );
         if ($count > 0) {

@@ -86,6 +86,10 @@ class assign_control {
      */
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
+
+        if ($formdata->completion == 2) { // Completion by grade.
+            $formdata->needspassinggrade = 1;
+        }
         $assign = new assign($formdata, $this->get_context());
         if ($this->has_duplicate_name($assign)) {
             $assign->set_externalname('FIXME');
