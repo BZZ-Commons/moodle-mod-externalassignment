@@ -142,6 +142,7 @@ $string['submissionsopen'] = 'Opens:';
 $string['submissionsopened'] = 'Opened:';
 $string['submissionstatus'] = 'Submission status';
 
+$string['taskduplicatenames'] = 'Check for duplicate external assignment names for all students';
 $string['timeremaining'] = 'Time left';
 $string['timeremainingcolon'] = 'Time remaining: {$a}';
 $string['totalgrade'] = 'Total points';
