@@ -87,7 +87,7 @@ function show_details($context, $coursemoduleid): void {
 
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
     $assignmentname = $context->get_context_name(false, true);
-    $assignment = new assign(null);
+    $assignment = new assign(null, $context);
     $assignment->load_db($coursemoduleid);
     $title = $courseshortname . ': ' . $assignmentname;
     $PAGE->set_title($title);
@@ -114,7 +114,7 @@ function show_details($context, $coursemoduleid): void {
         $grade = new grade(null);
         $grade->load_db($assignment->get_id(), $USER->id);
 
-        $renderable = new view_student($coursemoduleid, $context, $assignment, $grade);
+        $renderable = new view_student($coursemoduleid, $context, $assignment, $grade, $USER->id);
         echo $output->render($renderable);
     }
     echo $output->footer();

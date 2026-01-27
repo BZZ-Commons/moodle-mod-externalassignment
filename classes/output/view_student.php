@@ -19,6 +19,7 @@ namespace mod_externalassignment\output;
 use core\context;
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade;
+use mod_externalassignment\local\student;
 use renderable;
 use renderer_base;
 use templatable;
@@ -47,16 +48,29 @@ class view_student implements renderable, templatable {
     /** @var grade $grade the grade */
     private grade $grade;
 
+    /** @var student $student the student */
+    private student $student;
+
     /**
      * default constructor
      * @param int $coursemoduleid
      * @param context $context
+     * @param assign $assign
+     * @param grade $grade
+     * @param int $userid
      */
-    public function __construct(int $coursemoduleid, context $context, assign $assign, grade $grade) {
+    public function __construct(
+        int $coursemoduleid,
+        context $context,
+        assign $assign,
+        grade $grade,
+        int $userid
+    ) {
         $this->coursemoduleid = $coursemoduleid;
         $this->context = $context;
         $this->assignment = $assign;
         $this->grade = $grade;
+        $this->student = $this->assignment->take_student($userid);
     }
 
     /**
@@ -70,7 +84,8 @@ class view_student implements renderable, templatable {
         $data = new \stdClass();
         $data->studentlink = $this->grade->get_externallink();
         $data->externallink = $this->assignment->get_externallink();
-        $timeremaining = $this->assignment->get_duedate() - time();
+        $timeremaining = $this->student->get_duedate() - time();
+        //$timeremaining = $this->assignment->get_duedate() - time();
         if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
         } else {

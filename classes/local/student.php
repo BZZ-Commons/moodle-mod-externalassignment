@@ -90,6 +90,19 @@ class student {
     }
 
     /**
+     * gets the due date of this student
+     * @return int
+     */
+    public function get_duedate(): int {
+        // Check if there is no override for the due date.
+        if (empty($this->get_override()) || $this->get_override()->get_duedate() == 0) {
+            return $this->get_assign()->get_duedate();
+        } else {
+            return $this->get_override()->get_duedate();
+        }
+    }
+
+    /**
      * gets the status text of this student
      * @return string
      * @throws \coding_exception
