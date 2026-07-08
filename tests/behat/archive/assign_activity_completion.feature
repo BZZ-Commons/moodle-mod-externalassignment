@@ -1,4 +1,4 @@
-@mod @mod_externalassignment @core_completion
+@mod @mod_extassignment @core_completion
 Feature: View activity completion in the externalassignment activity
   In order to have visibility of assignment completion requirements
   As a student

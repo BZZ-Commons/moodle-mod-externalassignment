@@ -1,4 +1,4 @@
-@mod @mod_externalassignment
+@mod @mod_extassignment
 Feature: Check that the externalassignment grades can not be input in a wrong format.
   In order to ensure that the grade is entered in the right format
   As a teacher
