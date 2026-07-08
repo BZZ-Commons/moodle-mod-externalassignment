@@ -66,6 +66,15 @@ final class override_test extends \advanced_testcase {
     }
 
     /**
+     * Test load_db
+     * @covers \override::load_db
+     */
+    public function test_load_db(): void {
+        // TODO: implement when db access is possible in unit tests.
+        $this->markTestIncomplete('This test has not been implemented yet.');
+    }
+
+    /**
      * Test setters and getters
      * @covers \override::set_id
      * @covers \override::get_id

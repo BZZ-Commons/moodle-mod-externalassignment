@@ -267,6 +267,53 @@ final class assign_test extends \advanced_testcase {
     }
 
     /**
+     * Test load_overrides
+     * @covers \assign::load_overrides
+     */
+    public function test_load_overrides() {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+        $assign = new assign(null, $context);
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Jane', 'lastname' => 'Smith']);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+
+        $students = [
+            $user1->id => new student($assign, $user1),
+            $user2->id => new student($assign, $user2)
+        ];
+        $assign->set_students($students);
+
+
+        $override = $generator->create_override_entry(
+            [
+                'externalassignment' => $instance->cmid,
+                'userid' => $user1->id,
+                'allowsubmissionsfromdate' => time() - 3600,
+                'duedate' => time() + 3600,
+                'cutoffdate' => time() + 7200
+            ]
+        );
+        $reflection = new \ReflectionClass($assign);
+        $method = $reflection->getMethod('load_overrides');
+        $method->setAccessible(true);
+        $method->invoke($assign, $instance->cmid, $user1->id);
+        $result = $assign->take_student($user1->id)->get_override();
+        $this->assertNotNull($result);
+        $this->assertEquals($instance->cmid, $result->get_externalassignment());
+        $this->assertEquals($user1->id, $result->get_userid());
+
+
+        $this->assertNull($assign->take_student($user2->id)->get_override());
+    }
+
+    /**
      * Test the setters and getters
      * @covers \assign::set_id
      * @covers \assign::get_id

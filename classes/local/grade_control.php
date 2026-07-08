@@ -43,12 +43,16 @@ class grade_control {
     /** @var assign $assign the externalassignment instance this grade belongs to */
     private assign $assign;
 
+    /** @var int The key to identify the user
+     */
+    private int $userid;
+
     /** @var array A key used to identify userlists created by this object. *
      * private array $userlist;
      *
      * /** @var int The key to identify the user
      */
-    private int $userid;
+    private array $userlist;
 
     /**
      * default constructor
@@ -64,6 +68,7 @@ class grade_control {
         $this->set_assign(new assign(null, $this->get_context()));
         $this->get_assign()->load_db($coursemoduleid, 'lastname', 'asc', $userid);
         $this->set_userid($userid);
+        $this->set_userlist([]);
     }
 
     /**
