@@ -49,6 +49,7 @@ $urlparams = [
     'userids' => optional_param_array('uid', [], PARAM_INT),
     'sort' => optional_param('sort', 'lastname', PARAM_ALPHA),
     'tdir' => optional_param('tdir', 'asc', PARAM_ALPHA),
+    'status' => optional_param('status', '', PARAM_ALPHA),
 ];
 
 $url = new moodle_url(
@@ -60,6 +61,13 @@ $url = new moodle_url(
 );
 if ($urlparams['userid'] != null && $urlparams['userid'] != 0) {
     $url->param('userid', $urlparams['userid']);
+}
+if ($urlparams['action'] == 'grading' || $urlparams['action'] == 'grader') {
+    $url->param('sort', $urlparams['sort']);
+    $url->param('tdir', $urlparams['tdir']);
+}
+if ($urlparams['action'] == 'grader' && $urlparams['status'] !== '') {
+    $url->param('status', $urlparams['status']);
 }
 
 $PAGE->set_url($url);

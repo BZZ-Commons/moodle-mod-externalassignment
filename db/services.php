@@ -46,7 +46,7 @@ $functions = [
         'classname' => 'mod_externalassignment\external\read_students',
 
         // A brief, human-readable, description of the web service function.
-        'description' => 'Reads all students enroled in a course',
+        'description' => 'Reads the students of an external assignment, sorted and optionally filtered by status',
 
         // Options include read, and write.
         'type' => 'read',

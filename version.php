@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_externalassignment';
 $plugin->release = '1.1.0';
-$plugin->version = 2026082601;
+$plugin->version = 2026082602;
 $plugin->requires = 2025041400;   // Version 5.0.
 $plugin->maturity = MATURITY_RC;

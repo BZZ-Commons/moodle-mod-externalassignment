@@ -19,7 +19,7 @@ namespace mod_externalassignment\external;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/lib/externallib.php");
 
-use context_course;
+use context_module;
 use core_external\restricted_context_exception;
 use external_api;
 use external_function_parameters;
@@ -27,6 +27,7 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
+use mod_externalassignment\local\assign;
 use required_capability_exception;
 
 /**
@@ -48,49 +49,62 @@ class read_students extends external_api {
                 'firstname' => new external_value(PARAM_TEXT, 'firstname'),
                 'lastname' => new external_value(PARAM_TEXT, 'lastname'),
                 'email' => new external_value(PARAM_TEXT, 'email address'),
+                'done' => new external_value(PARAM_BOOL, 'whether the student has already been graded'),
             ])
         );
     }
 
     /**
      * execute the service
-     * @param int $courseid
+     * @param int $coursemoduleid the id of the externalassignment coursemodule
+     * @param string $sort the field to sort the students by (firstname, lastname, status, grade)
+     * @param string $tdir the direction to sort the students by (asc, desc)
+     * @param string $status filter the students by status: 'open', 'done' or '' for no filter
      * @throws restricted_context_exception
      * @throws invalid_parameter_exception
      * @throws required_capability_exception
      */
     public static function execute(
-        int $courseid
+        int $coursemoduleid,
+        string $sort = 'lastname',
+        string $tdir = 'asc',
+        string $status = ''
     ): array {
         $params = self::validate_parameters(
             self::execute_parameters(),
-            ['courseid' => $courseid]
+            [
+                'coursemoduleid' => $coursemoduleid,
+                'sort' => $sort,
+                'tdir' => $tdir,
+                'status' => $status,
+            ]
         );
-        $context = context_course::instance($courseid);
+        $context = context_module::instance($params['coursemoduleid']);
         self::validate_context($context);
         require_capability('mod/externalassignment:reviewgrades', $context);
-        $users = get_enrolled_users(
-            $context,
-            'mod/externalassignment:submit',
-            '',
-            'u.*',
-            null,
-            0,
-            0,
-            true
-        );
+
+        $assign = new assign(null, $context);
+        $assign->load_db($params['coursemoduleid'], $params['sort'], $params['tdir']);
+
         $students = [];
-        foreach ($users as $user) {
-            $student = new \stdClass();
-            $student->firstname = $user->firstname;
-            $student->lastname = $user->lastname;
-            $student->userid = $user->id;
-            $student->email = $user->email;
-            $students[] = (array)$student;
+        foreach ($assign->get_students() as $student) {
+            $done = $student->get_grade() !== null;
+            if ($params['status'] === 'open' && $done) {
+                continue;
+            }
+            if ($params['status'] === 'done' && !$done) {
+                continue;
+            }
+            $students[] = [
+                'userid' => $student->get_userid(),
+                'firstname' => $student->get_firstname(),
+                'lastname' => $student->get_lastname(),
+                'email' => $student->get_email(),
+                'done' => $done,
+            ];
         }
 
         return $students;
-
     }
 
     /**
@@ -98,9 +112,17 @@ class read_students extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(
-            ['courseid' => new external_value(PARAM_INT, 'id of the course')]
-        );
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'id of the externalassignment coursemodule'),
+            'sort' => new external_value(PARAM_ALPHA, 'the field to sort the students by', VALUE_DEFAULT, 'lastname'),
+            'tdir' => new external_value(PARAM_ALPHA, 'the direction to sort the students by', VALUE_DEFAULT, 'asc'),
+            'status' => new external_value(
+                PARAM_ALPHA,
+                'filter the students by status: open, done or empty for no filter',
+                VALUE_DEFAULT,
+                ''
+            ),
+        ]);
     }
 
 }

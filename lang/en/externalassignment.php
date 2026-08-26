@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['addinstance'] = 'Add instance';
 $string['allowsubmissionsfromdate'] = 'Allow submissions from';
 $string['allowsubmissionsfromdate_help'] = 'If enabled, students will not be able to submit before this date. If disabled, students will be able to start submitting right away.';
+$string['allstatuses'] = 'All';
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the assignment description above will only become visible to students on the "Allow submissions from" date.';
 $string['alwaysshowlink'] = 'Always show link';
@@ -107,6 +108,7 @@ $string['needspassinggradedesc'] = 'Student needs a passing grade to complete th
 $string['nextuser'] = 'Next user';
 $string['notsubmitted'] = 'not submitted';
 
+$string['open'] = 'open';
 $string['overdue'] = 'overdue';
 $string['override'] = 'Override';
 
@@ -136,6 +138,7 @@ $string['scoremaximum'] = 'Maximum points';
 $string['scorereached'] = 'Points earned';
 $string['seefeedback'] = 'See feedback';
 $string['selectedusers'] = 'Selected users';
+$string['statusfilter'] = 'Filter by status';
 $string['studentlink'] = 'Your assignment';
 $string['submissions'] = 'Submissions';
 $string['submissionsdue'] = 'Due:';

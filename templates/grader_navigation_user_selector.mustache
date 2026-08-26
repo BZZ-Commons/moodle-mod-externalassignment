@@ -33,6 +33,12 @@
     Example context (json):
     { }
 }}
+<label for="status-filter" class="sr-only">{{#str}} statusfilter, mod_externalassignment {{/str}}</label>
+<select id="status-filter" class="custom-select" aria-label="{{#str}} statusfilter, mod_externalassignment {{/str}}">
+    <option value="">{{#str}} allstatuses, mod_externalassignment {{/str}}</option>
+    <option value="open">{{#str}} open, mod_externalassignment {{/str}}</option>
+    <option value="done">{{#str}} done, mod_externalassignment {{/str}}</option>
+</select>
 <a id="previous-user" href="#previous" data-action="previous-user" aria-label="{{#str}} previoususer, mod_externalassignment {{/str}}" title="{{#str}} previoususer, mod_externalassignment {{/str}}">◄</a>
 <span data-region="input-field">
     <label for="change-user-select" class="sr-only">{{#str}} changeuser, mod_externalassignment {{/str}}</label>

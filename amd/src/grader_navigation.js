@@ -24,6 +24,7 @@
 import {fetchAllStudents} from './repository';
 
 export const init = () => {
+    initStatusFilter();
     loadAllStudents()
         .then(() => {
             document.getElementById('user_autocomplete_downarrow').addEventListener('click', toggleUserlist);
@@ -40,16 +41,39 @@ export const init = () => {
 };
 
 /**
- * Loads all students for the current course
+ * Sets up the status filter dropdown to reflect and update the "status" URL parameter
+ */
+function initStatusFilter() {
+    const statusFilter = document.getElementById('status-filter');
+    if (!statusFilter) {
+        return;
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    statusFilter.value = urlParams.get('status') ?? '';
+    statusFilter.addEventListener('change', () => {
+        const newParams = new URLSearchParams(window.location.search);
+        if (statusFilter.value === '') {
+            newParams.delete('status');
+        } else {
+            newParams.set('status', statusFilter.value);
+        }
+        window.location.href = '?' + newParams.toString();
+    });
+}
+
+/**
+ * Loads all students for the current external assignment, respecting the current sort and status filter
  * @returns {Promise<void>}
  */
 const loadAllStudents = async() => {
-    const courseid = document.getElementsByName('courseid')[0].value;
-    const response = await fetchAllStudents(courseid);
+    const urlParams = new URLSearchParams(window.location.search);
+    const coursemoduleid = urlParams.get('id');
+    const sort = urlParams.get('sort') ?? 'lastname';
+    const tdir = urlParams.get('tdir') ?? 'asc';
+    const status = urlParams.get('status') ?? '';
+    const response = await fetchAllStudents(coursemoduleid, sort, tdir, status);
     let dropdown = document.getElementById('change-user-select');
     let datalist = document.getElementById('user_autocomplete_suggestions');
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
     const currentId = urlParams.get('userid');
     for (let i = 0; i < response.length; i++) {
         addStudents(response[i], dropdown, datalist, currentId);

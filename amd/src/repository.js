@@ -1,10 +1,16 @@
 import {call as fetchMany} from 'core/ajax';
 
 export const fetchAllStudents = (
-    courseid
+    coursemoduleid,
+    sort,
+    tdir,
+    status
 ) => fetchMany([{
     methodname: 'mod_externalassignment_read_students',
     args: {
-        courseid
+        coursemoduleid,
+        sort,
+        tdir,
+        status
     },
 }])[0];
