@@ -114,5 +114,4 @@ class view_summary implements renderable, templatable {
     public function set_context(context $context): void {
         $this->context = $context;
     }
-
 }

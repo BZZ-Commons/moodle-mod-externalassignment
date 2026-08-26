@@ -133,5 +133,4 @@ class view_grader_navigation implements renderable, templatable {
     public function set_userid(?int $userid): void {
         $this->userid = $userid;
     }
-
 }

@@ -26,8 +26,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Date extractor class for external assignment module integration with report_editdates.
  *
@@ -40,7 +38,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_externalassignment_report_editdates_integration extends report_editdates_mod_date_extractor {
-
     /**
      * Constructor.
      *

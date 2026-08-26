@@ -31,7 +31,6 @@ require_once("$CFG->libdir/formslib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class grader_form extends moodleform {
-
     /**
      * definition of the grader form
      * @return void
@@ -43,7 +42,8 @@ class grader_form extends moodleform {
         $mform->addElement(
             'header',
             'grading',
-            get_string('grading', 'externalassignment') . ' ' . $this->_customdata->firstname . ' ' . $this->_customdata->lastname);
+            get_string('grading', 'externalassignment') . ' ' . $this->_customdata->firstname . ' ' . $this->_customdata->lastname
+        );
         $mform->setExpanded('grading');
 
         $mform->addElement('static', 'status', get_string('status'), $this->_customdata->status);
@@ -72,9 +72,11 @@ class grader_form extends moodleform {
         $mform->addElement(
             'editor',
             'externalfeedback',
-            get_string('feedback',
+            get_string(
+                'feedback',
                 null,
-                self::editor_options())
+                self::editor_options()
+            )
         );
         $mform->setType('externalfeedback', PARAM_RAW);
 

@@ -93,10 +93,10 @@ class assign {
      * @throws \dml_exception
      */
     public function load_db(
-        int     $coursemoduleid,
+        int $coursemoduleid,
         ?string $sort = 'lastname',
         ?string $tdir = 'asc',
-        ?int    $userid = null
+        ?int $userid = null
     ): void {
         global $DB;
         $query = 'SELECT cm.instance, ae.* ' .
@@ -135,7 +135,7 @@ class assign {
             ' JOIN {enrol} en ON (ue.enrolid = en.id)' .
             ' JOIN {externalassignment} ae ON (ae.course = en.courseid)' .
             ' JOIN {course_modules} cm ON (cm.instance = ae.id)' .
-            ' WHERE ae.externalname=:assignmentname '.
+            ' WHERE ae.externalname=:assignmentname ' .
             ' AND ue.userid=:userid' .
             ' AND cm.module=:moduleid' .
             ' ORDER BY ae.id DESC LIMIT 1';
@@ -144,15 +144,16 @@ class assign {
             [
                 'userid' => $userid,
                 'assignmentname' => $assignmentname,
-                'moduleid' => $this->read_module_id()
+                'moduleid' => $this->read_module_id(),
             ]
         );
         if (!empty($data)) {
             $row = reset($data);
             $context = \context_module::instance($row->coursemoduleid);
-            // check if the user is a student (no grader/teacher)
-            if (!has_capability('mod/externalassignment:grade', $context, $userid) &&  // no grader/tea
-                has_capability('mod/externalassignment:submit', $context, $userid)     // student
+            // Check if the user is a student (no grader/teacher).
+            if (
+                !has_capability('mod/externalassignment:grade', $context, $userid) &&  // No grader/teacher.
+                has_capability('mod/externalassignment:submit', $context, $userid)     // Student.
             ) {
                 require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
                 $this->set_id($row->id);
@@ -164,9 +165,6 @@ class assign {
                 $this->load_overrides($row->id, $userid);
             }
         }
-
-
-
     }
 
     /**
@@ -176,9 +174,6 @@ class assign {
      */
     private function read_module_id(): ?int {
         global $DB;
-        $query = 'SELECT id ' .
-            'FROM {modules} ' .
-            'WHERE name=`externalassignment`';
         $data = $DB->get_record_select(
             'modules',
             'name=:modulename',
@@ -276,7 +271,6 @@ class assign {
                     return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() <=
                         $b->get_grade()->get_externalgrade() + $b->get_grade()->get_manualgrade();
                 }
-
             });
         } else if ($sort == 'grade' && $tdir == 'desc') {
             uasort($this->students, function ($a, $b) {
@@ -288,7 +282,6 @@ class assign {
                     return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() >=
                         $b->get_grade()->get_externalgrade() + $b->get_grade()->get_manualgrade();
                 }
-
             });
         } else if ($sort == 'status' && $tdir == 'asc') {
             uasort($this->students, function ($a, $b) {
@@ -338,7 +331,7 @@ class assign {
         foreach ($data as $record) {
             $record->gradeid = $record->id;
             $grade = new grade($record);
-            // check if student object exists
+            // Check if student object exists.
             if ($this->students[$record->userid] != null) {
                 $this->students[$record->userid]->set_grade($grade);
             }
@@ -353,7 +346,7 @@ class assign {
         $count = 0;
         foreach ($this->students as $student) {
             if ($student->get_grade() !== null) {
-                $count ++;
+                $count++;
             }
         }
         return $count;
@@ -415,7 +408,6 @@ class assign {
             }
             $this->students[$record->userid]->set_override($override);
         }
-
     }
 
     /**
@@ -425,7 +417,6 @@ class assign {
     public function to_stdclass(): \stdClass {
         $result = new \stdClass();
         foreach ($this as $property => $value) {
-
             $result->$property = $value;
         }
         return $result;

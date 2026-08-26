@@ -37,7 +37,7 @@ global $PAGE;
 
 $coursemoduleid = required_param('id', PARAM_INT);
 
-list ($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'externalassignment');
+ [$course, $coursemodule] = get_course_and_cm_from_cmid($coursemoduleid, 'externalassignment');
 require_login($course, true, $coursemodule);
 $context = context_module::instance($coursemodule->id);
 require_capability('mod/externalassignment:view', $context);
@@ -102,15 +102,19 @@ function show_details($context, $coursemoduleid): void {
     $PAGE->set_heading('External assignment details');
     $PAGE->set_pagelayout('standard');
 
-    if (!$assignment->is_alwaysshowdescription() &&
-        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() >= time())) {
+    if (
+        !$assignment->is_alwaysshowdescription() &&
+        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() >= time())
+    ) {
         $assignment->set_intro('');
     }
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
 
-    if ($assignment->is_alwaysshowlink() ||
-        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() <= time())) {
+    if (
+        $assignment->is_alwaysshowlink() ||
+        ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() <= time())
+    ) {
         $renderable = new view_link($coursemoduleid, $assignment);
         echo $output->render($renderable);
     }
@@ -141,8 +145,8 @@ function show_details($context, $coursemoduleid): void {
 function show_grading(
     context $context,
     int $coursemoduleid,
-    String $sort,
-    String $tdir
+    string $sort,
+    string $tdir
 ): void {
     global $PAGE;
     require_capability('mod/externalassignment:reviewgrades', $context);

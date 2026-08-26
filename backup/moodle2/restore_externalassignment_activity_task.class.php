@@ -26,7 +26,6 @@ require_once($CFG->dirroot . '/mod/externalassignment/backup/moodle2/restore_ext
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_externalassignment_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have, none at this time
      */
@@ -40,7 +39,8 @@ class restore_externalassignment_activity_task extends restore_activity_task {
         // Activity externalassignment only has one structure step.
         $this->add_step(
             new restore_externalassignment_activity_structure_step(
-                'externalassignment_structure', 'externalassignment.xml'
+                'externalassignment_structure',
+                'externalassignment.xml'
             )
         );
     }
@@ -56,7 +56,6 @@ class restore_externalassignment_activity_task extends restore_activity_task {
         $rules[] = new restore_decode_rule('EXTERNALASSIGNMENTINDEX', '/mod/externalassignment/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**
@@ -92,22 +91,40 @@ class restore_externalassignment_activity_task extends restore_activity_task {
         $rules = [];
 
         $rules[] = new restore_log_rule(
-            'externalassignment', 'add', 'view.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'add',
+            'view.php?id={course_module}',
+            '{externalassignment}'
         );
         $rules[] = new restore_log_rule(
-            'externalassignment', 'update', 'view.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'update',
+            'view.php?id={course_module}',
+            '{externalassignment}'
         );
         $rules[] = new restore_log_rule(
-            'externalassignment', 'view', 'view.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'view',
+            'view.php?id={course_module}',
+            '{externalassignment}'
         );
         $rules[] = new restore_log_rule(
-            'externalassignment', 'choose', 'view.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'choose',
+            'view.php?id={course_module}',
+            '{externalassignment}'
         );
         $rules[] = new restore_log_rule(
-            'externalassignment', 'choose again', 'view.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'choose again',
+            'view.php?id={course_module}',
+            '{externalassignment}'
         );
         $rules[] = new restore_log_rule(
-            'externalassignment', 'report', 'report.php?id={course_module}', '{externalassignment}'
+            'externalassignment',
+            'report',
+            'report.php?id={course_module}',
+            '{externalassignment}'
         );
 
         return $rules;

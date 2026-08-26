@@ -29,12 +29,13 @@ use required_capability_exception;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class read_students_test extends \advanced_testcase {
-
     /**
      * Creates a course, an externalassignment instance and a teacher who may review grades.
      * @return array [course, instance, teacher]
      */
     private function setup_assignment(): array {
+        $this->setAdminUser();
+
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
         $instance = $generator->create_instance(['course' => $course->id]);

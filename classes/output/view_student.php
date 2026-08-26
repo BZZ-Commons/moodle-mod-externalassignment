@@ -85,7 +85,6 @@ class view_student implements renderable, templatable {
         $data->studentlink = $this->grade->get_externallink();
         $data->externallink = $this->assignment->get_externallink();
         $timeremaining = $this->student->get_duedate() - time();
-        //$timeremaining = $this->assignment->get_duedate() - time();
         if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
         } else {

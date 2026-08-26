@@ -16,19 +16,16 @@
 
 namespace mod_externalassignment\external;
 
-defined('MOODLE_INTERNAL') || die();
-require_once("$CFG->dirroot/lib/externallib.php");
-
 use context_module;
+use core\exception\invalid_parameter_exception;
+use core\exception\required_capability_exception;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use core_external\restricted_context_exception;
-use external_api;
-use external_function_parameters;
-use external_multiple_structure;
-use external_single_structure;
-use external_value;
-use invalid_parameter_exception;
 use mod_externalassignment\local\assign;
-use required_capability_exception;
 
 /**
  * webservice to update the externalgrade and externalfeedback
@@ -124,5 +121,4 @@ class read_students extends external_api {
             ),
         ]);
     }
-
 }

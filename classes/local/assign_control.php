@@ -113,7 +113,8 @@ class assign_control {
     public function delete_instance(int $id): void {
         global $DB;
         $this->set_coursemoduleid($id);
-        $eventid = $DB->get_field('event',
+        $eventid = $DB->get_field(
+            'event',
             'id',
             [
                 'instance' => $this->get_coursemoduleid(),
@@ -166,7 +167,8 @@ class assign_control {
             $this->get_instance()->id,
             0,
             null,
-            $params);
+            $params
+        );
     }
 
     /**

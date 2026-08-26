@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace mod_externalassignment\privacy;
 
 use core_privacy\local\metadata\collection;
@@ -33,8 +34,8 @@ use mod_externalassignment\local\assign;
  */
 class provider implements
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Provides metadata that is stored about a user with mod_externalassignment.
      *
@@ -61,12 +62,12 @@ class provider implements
         $collection->add_database_table(
             'externalassignment_grades',
             $grades,
-            'privacy:metadata:externalassignment:grades'
+            'privacy:metadata:externalassignment_grades'
         );
         $collection->add_database_table(
             'externalassignment_overrides',
             $overrides,
-            'privacy:metadata:externalassignment:overrides'
+            'privacy:metadata:externalassignment_overrides'
         );
 
         return $collection;
@@ -242,11 +243,13 @@ class provider implements
         $in = $DB->get_in_or_equal($userids);
         $DB->delete_records_select(
             'externalassignment_grades',
-            'externalassignment = :externalassignment AND userid $in', $params
+            'externalassignment = :externalassignment AND userid $in',
+            $params
         );
         $DB->delete_records_select(
             'externalassignment_overrides',
-            'externalassignment = :externalassignment AND userid $in', $params
+            'externalassignment = :externalassignment AND userid $in',
+            $params
         );
     }
 

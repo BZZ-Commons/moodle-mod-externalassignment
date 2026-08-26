@@ -57,7 +57,6 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
@@ -105,7 +104,6 @@ class restore_externalassignment_activity_structure_step extends restore_activit
 
         $newitemid = $DB->insert_record('externalassignment_grades', $data);
         $this->set_mapping('externalassignment_grades', $oldid, $newitemid);
-
     }
 
     /**

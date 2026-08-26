@@ -64,7 +64,6 @@ class grade {
             $this->set_manualfeedback('');
         }
         $this->set_grader($USER->id);
-
     }
 
     /**
@@ -75,8 +74,6 @@ class grade {
     private function load_data(\stdClass $data): void {
         if (property_exists($data, 'gradeid')) {
             $this->set_id($data->gradeid);
-//        } elseif (property_exists($data, 'externalassignment')) {
-//            $this->set_id($data->gradeid);
         } else {
             $this->id = -1;
         }
@@ -143,7 +140,6 @@ class grade {
             }
         }
         return $result;
-
     }
 
     /**
@@ -232,7 +228,6 @@ class grade {
     public function set_externallink(string $externallink): void {
 
             $this->externallink = $externallink;
-
     }
 
     /**
@@ -298,5 +293,4 @@ class grade {
     public function set_manualfeedback(?string $manualfeedback): void {
         $this->manualfeedback = $manualfeedback;
     }
-
 }

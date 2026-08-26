@@ -33,7 +33,6 @@ use mod_externalassignment\local\grade;
  */
 class custom_completion extends activity_custom_completion
 {
-
     /**
      * Fetches the completion state for a given completion rule.
      *
@@ -41,8 +40,7 @@ class custom_completion extends activity_custom_completion
      * @return int The completion state.
      * @throws \dml_exception
      */
-    public function get_state(string $rule): int
-    {
+    public function get_state(string $rule): int {
         $this->validate_rule($rule);
         $coursemoduleid = $this->cm->id;
         $assign = new assign(null);
@@ -63,8 +61,13 @@ class custom_completion extends activity_custom_completion
         return COMPLETION_INCOMPLETE;
     }
 
-    function get_overall_completion_state(): int
-    {
+    /**
+     * Returns the overall completion state, based on the needspassinggrade rule.
+     *
+     * @return int The completion state.
+     * @throws \dml_exception
+     */
+    public function get_overall_completion_state(): int {
         return $this->get_state('needspassinggrade');
     }
 
@@ -73,8 +76,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public static function get_defined_custom_rules(): array
-    {
+    public static function get_defined_custom_rules(): array {
         return ['needspassinggrade'];
     }
 
@@ -83,8 +85,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public function get_custom_rule_descriptions(): array
-    {
+    public function get_custom_rule_descriptions(): array {
         return [
             'needspassinggrade' => get_string('needspassinggrade', 'externalassignment'),
         ];
@@ -95,8 +96,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public function get_sort_order(): array
-    {
+    public function get_sort_order(): array {
         return [
             'needspassinggrade',
         ];

@@ -16,16 +16,12 @@
 
 namespace mod_externalassignment\external;
 
-defined('MOODLE_INTERNAL') || die();
-global $CFG;
-require_once("$CFG->dirroot/lib/externallib.php");
-
+use core\exception\invalid_parameter_exception;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
 use dml_exception;
-use external_api;
-use external_function_parameters;
-use external_single_structure;
-use external_value;
-use invalid_parameter_exception;
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\grade;
 
@@ -66,8 +62,8 @@ class update_grade extends external_api {
     public static function execute(
         string $assignmentname,
         string $username,
-        float  $points,
-        float  $max,
+        float $points,
+        float $max,
         string $externallink,
         string $feedback
     ): array {
@@ -209,7 +205,8 @@ class update_grade extends external_api {
         $customfield = $DB->get_record(
             'user_info_field',
             ['shortname' => get_config('mod_externalassignment', 'external_username')],
-            'id,shortname');
+            'id,shortname'
+        );
         return $customfield->id;
     }
 
@@ -340,35 +337,10 @@ class update_grade extends external_api {
         );
 
         $cm = get_coursemodule_from_instance('externalassignment', $assignment->get_id(), 0, false, MUST_EXIST);
-        list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
+         [$course, $coursemodule] = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
         $completion = new \completion_info($course);
         if ($completion->is_enabled($coursemodule)) {
             $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $userid);
         }
-
-    }
-
-    /**
-     * reads the grade using the assignment-name and userid
-     *
-     * @param int $coursemoduleid the id of the coursemodule for this external assignment
-     * @param int $userid  the userid of the student
-     * @return object|null
-     * @throws dml_exception
-     */
-    private static function read_grade(int $coursemoduleid, int $userid): ?object {
-        global $DB;
-
-        $data = $DB->get_record(
-            'externalassignment_grades',
-            [
-                'userid' => $userid,
-                'externalassignment' => $coursemoduleid,
-            ]
-        );
-        if (!$data) {
-            return null;
-        }
-        return $data;
     }
 }

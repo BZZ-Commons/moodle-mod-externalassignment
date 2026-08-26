@@ -70,7 +70,7 @@ class mod_externalassignment_generator extends testing_module_generator {
             'userid' => 1,
             'allowsubmissionsfromdate' => 0,
             'duedate' => 0,
-            'cutoffdate' => 0
+            'cutoffdate' => 0,
         ];
 
         foreach ($defaultsettings as $name => $value) {

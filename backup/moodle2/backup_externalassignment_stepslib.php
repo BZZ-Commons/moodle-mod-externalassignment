@@ -23,7 +23,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_externalassignment_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Define the structure of the externalassignment element
      */
@@ -76,8 +75,8 @@ class backup_externalassignment_activity_structure_step extends backup_activity_
             );
 
             $override->set_source_sql(
-                'SELECT * '.
-                '  FROM {externalassignment_overrides} '.
+                'SELECT * ' .
+                '  FROM {externalassignment_overrides} ' .
                 ' WHERE externalassignment = ?',
                 [backup::VAR_PARENTID],
             );

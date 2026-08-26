@@ -36,7 +36,7 @@ $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_url('/mod/externalassignment/index.php', ['id' => $course->id]);
-$PAGE->set_title($course->shortname.': '. get_string('modulenameplural', 'externalassignment'));
+$PAGE->set_title($course->shortname . ': ' . get_string('modulenameplural', 'externalassignment'));
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add(get_string('modulenameplural', 'externalassignment'));
 echo $OUTPUT->header();
@@ -46,7 +46,7 @@ $table->head = [get_string('modulenameplural', 'externalassignment')];
 $modinfo = get_fast_modinfo($course);
 
 foreach ($modinfo->get_instances_of('externalassignment') as $instanceid => $cm) {
-    $link = '<a href="view.php?id=' . $cm->id .'">'.format_string($cm->name, true).'</a>';
+    $link = '<a href="view.php?id=' . $cm->id . '">' . format_string($cm->name, true) . '</a>';
     $table->data[] = [$link];
 }
 echo html_writer::table($table);

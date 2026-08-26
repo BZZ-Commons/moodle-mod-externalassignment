@@ -117,8 +117,10 @@ function externalassignment_cm_info_view(cm_info $coursemodule): void {
         '" target="_blank">' . get_string('externallink', 'externalassignment') . '</a>';
     $content = '';
     if (array_key_exists('allowsubmissionsfromdate', $coursemodule->customdata)) {
-        if ($coursemodule->customdata['alwaysshowlink'] ||
-            $coursemodule->customdata['allowsubmissionsfromdate'] < time()) {
+        if (
+            $coursemodule->customdata['alwaysshowlink'] ||
+            $coursemodule->customdata['allowsubmissionsfromdate'] < time()
+        ) {
             $content .= $externallink;
         }
         if ($coursemodule->customdata['allowsubmissionsfromdate'] >= time()) {
@@ -127,7 +129,6 @@ function externalassignment_cm_info_view(cm_info $coursemodule): void {
             $label = get_string('submissionsopened', 'externalassignment');
         }
         $content .= '<br><strong>' . $label . '</strong> ' . userdate($coursemodule->customdata['allowsubmissionsfromdate']);
-
     } else {
         $content .= $externallink;
     }
@@ -160,8 +161,6 @@ function externalassignment_supports($feature) {
     switch ($feature) {
         case FEATURE_BACKUP_MOODLE2:
             return true;
-        /*case FEATURE_GRADE_HAS_GRADE:
-            return true;*/
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_MOD_PURPOSE:
@@ -204,7 +203,7 @@ function externalassignment_extend_settings_navigation(settings_navigation $sett
  * @param $grades
  * @return int
  */
-function externalassignment_grade_item_update($modinstance, $grades=null): int {
+function externalassignment_grade_item_update($modinstance, $grades = null): int {
     return grade_update(
         'mod/externalassignment',
         $modinstance->course,
@@ -212,7 +211,8 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
         'externalassignment',
         $modinstance->id,
         0,
-        $grades);
+        $grades
+    );
 }
 
 /**
@@ -225,27 +225,27 @@ function externalassignment_grade_item_update($modinstance, $grades=null): int {
  * @throws dml_exception
  * @throws moodle_exception
  */
-function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=true) {
+function externalassignment_update_grades($modinstance, $userid = 0, $nullifnone = true) {
     global $DB;
     $cm = get_coursemodule_from_instance('externalassignment', $modinstance->id, 0, false, MUST_EXIST);
     $grade = new grade(null);
     $grade->load_db($modinstance->id, $userid);
-    $gradevalues = new \stdClass;
+    $gradevalues = new \stdClass();
     $gradevalues->userid = $userid;
     $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
-    $link = new \moodle_url('/mod/externalassignment/view.php',
+    $link = new \moodle_url(
+        '/mod/externalassignment/view.php',
         ['id' => $modinstance->id]
     );
     $gradevalues->feedback = '<a href="' . $link->out(true) . '">' .
         get_string('seefeedback', 'externalassignment') . '</a>';
     $gradevalues->feedbackformat = 1;
 
-    list ($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
+     [$course, $coursemodule] = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
     $completion = new \completion_info($course);
     if ($completion->is_enabled($coursemodule)) {
         $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
     }
-
 }
 
 /**
@@ -254,7 +254,7 @@ function externalassignment_update_grades($modinstance, $userid=0, $nullifnone=t
  * @param int $courseid The ID of the course to reset
  * @param string $type Optional type of activity to limit the reset to a particular activity type
  */
-function externalassignment_reset_gradebook(int $courseid, string $type='') {
+function externalassignment_reset_gradebook(int $courseid, string $type = '') {
     global $DB;
 
     $params = ['moduletype' => 'externalassignment', 'courseid' => $courseid];

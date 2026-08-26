@@ -67,8 +67,12 @@ class mod_externalassignment_mod_form extends moodleform_mod {
         $mform->setExpanded('availability', true);
 
         $options = ['optional' => true];
-        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate',
-            get_string('allowsubmissionsfromdate', 'externalassignment'), $options);
+        $mform->addElement(
+            'date_time_selector',
+            'allowsubmissionsfromdate',
+            get_string('allowsubmissionsfromdate', 'externalassignment'),
+            $options
+        );
         $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'externalassignment');
 
         $mform->addElement('date_time_selector', 'duedate', get_string('duedate', 'externalassignment'), $options);

@@ -43,7 +43,6 @@ class override_form extends moodleform {
     public function __construct($submiturl, $assign, $customdata = null) {
         $this->assign = $assign;
         parent::__construct($submiturl, $customdata);
-
     }
 
     /**
@@ -62,7 +61,7 @@ class override_form extends moodleform {
         $mform->addElement('static', 'selectedusers', get_string('selectedusers', 'externalassignment'), '');
         $count = 0;
 
-        foreach ($this->_customdata->users as $userid => $user) {
+        foreach ($this->_customdata->users as $user) {
             $element = $mform->addElement('hidden', "uid[$count]", $user->get_userid());
             $element->setType(PARAM_INT);
             $mform->addElement(
@@ -146,7 +145,7 @@ class override_form extends moodleform {
         }
 
         if (!empty($data['cutoffdate']) && !empty($data['duedate'])) {
-            if ($data['cutoffdate'] < $data['duedate'] ) {
+            if ($data['cutoffdate'] < $data['duedate']) {
                 $errors['cutoffdate'] = get_string('cutoffdatevalidation', 'externalassignment');
             }
         }

@@ -26,7 +26,6 @@ namespace mod_externalassignment\local;
  * /
  */
 final class grade_control_test extends \advanced_testcase {
-
     /**
      * Test constructor
      * @covers \grade_control::__construct

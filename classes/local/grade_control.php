@@ -139,13 +139,14 @@ class grade_control {
                 $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
                 externalassignment_grade_item_update($this->get_assign()->to_stdclass(), $gradevalues);
 
-                list ($course, $coursemodule) = get_course_and_cm_from_cmid($this->coursemoduleid, 'externalassignment');
+                 [$course, $coursemodule] = get_course_and_cm_from_cmid($this->coursemoduleid, 'externalassignment');
                 $completion = new \completion_info($course);
                 if ($completion->is_enabled($coursemodule)) {
                     $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $this->get_userid());
                 }
                 redirect(
-                    new \moodle_url('view.php',
+                    new \moodle_url(
+                        'view.php',
                         [
                             'id' => $this->coursemoduleid,
                             'action' => 'grader',
@@ -163,7 +164,6 @@ class grade_control {
                 $data->manualfeedback['format'] = 1;
                 $data->gradefinal = 0;
                 if (array_key_exists($this->get_userid(), $this->get_assign()->get_students())) {
-
                     if (!empty($student->get_grade())) {
                         $grade = $student->get_grade();
                         $data->gradeid = $grade->get_id();
@@ -238,7 +238,6 @@ class grade_control {
                     ]
                 );
                 redirect($url);
-
             } else {
                 $mform->set_data($data);
                 $mform->display();
@@ -255,13 +254,15 @@ class grade_control {
      */
     private function override_update(override $override): void {
         global $DB;
-        if ($record = $DB->get_record(
-            'externalassignment_overrides',
-            [
+        if (
+            $record = $DB->get_record(
+                'externalassignment_overrides',
+                [
                 'externalassignment' => $override->get_externalassignment(),
                 'userid' => $override->get_userid(),
-            ]
-        )) {
+                ]
+            )
+        ) {
             $override->set_id($record->id);
             $DB->update_record('externalassignment_overrides', $override->to_stdclass());
         } else {
@@ -365,5 +366,4 @@ class grade_control {
     public function set_userid(?int $userid): void {
         $this->userid = $userid;
     }
-
 }

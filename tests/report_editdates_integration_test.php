@@ -27,7 +27,6 @@ namespace mod_externalassignment;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class report_editdates_integration_test extends \advanced_testcase {
-
     /**
      * Test the constructor and basic functionality.
      *

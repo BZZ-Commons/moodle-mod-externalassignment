@@ -16,42 +16,65 @@
 
 namespace mod_externalassignment\local;
 
+use mod_externalassignment\external\update_grade;
+
 /**
- * Unit tests for class assign
+ * Unit tests for class update_grade
  * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
 final class update_grade_test extends \advanced_testcase {
+    /**
+     * Test that a valid update from an external system is applied when the assignment is not overdue.
+     * @covers \mod_externalassignment\external\update_grade::execute
+     */
     public function test_execute_not_cutoff(): void {
+        global $DB;
 
         $this->resetAfterTest(true);
         $this->setAdminUser();
+
+        set_config('external_username', 'github_user', 'mod_externalassignment');
+        $field = $this->getDataGenerator()->create_custom_profile_field([
+            'datatype' => 'text',
+            'shortname' => 'github_user',
+            'name' => 'GitHub username',
+        ]);
+
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
         $instance = $generator->create_instance(
             [
                 'course' => $course->id,
                 'externalname' => 'externalname',
-                'cutoffdate' => time() + 3600
+                'externalgrademax' => 100,
+                'cutoffdate' => time() + 3600,
             ]
         );
+
         $user = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
-        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
 
-        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
-        $context = \context_module::instance($cm->id);
-        $assign = new assign(null, $context);
-        $assign->load_db_external('externalname', $user->id);
+        $DB->insert_record('user_info_data', [
+            'userid' => $user->id,
+            'fieldid' => $field->id,
+            'data' => 'octocat',
+            'dataformat' => FORMAT_MOODLE,
+        ]);
 
-        $stub = $this->getMockBuilder(assign::class)
-            ->onlyMethods(['update_grade'])
-            ->getMock();
-        $stub->expects($this->once())
-            ->method('update_grade')
-            ->with($this->equalTo($user->id), $this->equalTo(50.0));
+        $result = update_grade::execute('externalname', 'octocat', 45.0, 100.0, 'https://example.com/repo', '');
+
+        $this->assertEquals('info', $result['type']);
+
+        $grade = $DB->get_record('externalassignment_grades', [
+            'externalassignment' => $instance->id,
+            'userid' => $user->id,
+        ]);
+        $this->assertNotEmpty($grade);
+        $this->assertEqualsWithDelta(45.0, (float)$grade->externalgrade, 0.001);
+        $this->assertEquals('https://example.com/repo', $grade->externallink);
     }
 }

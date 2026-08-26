@@ -28,7 +28,6 @@ use core\context\course;
  * /
  */
 final class assign_control_test extends \advanced_testcase {
-
     /**
      * Test add_instance
      * @covers \assign_control::add_instance
@@ -66,8 +65,9 @@ final class assign_control_test extends \advanced_testcase {
 
         $module = get_coursemodule_from_instance('externalassignment', $instance->id);
         $context = \context_module::instance($module->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
 
-        $assigncontrol = new assign_control($context, $module);
+        $assigncontrol = new assign_control($context, $cm);
 
         $formdata = new \stdClass();
         $formdata->instance = $instance->id;
@@ -112,8 +112,9 @@ final class assign_control_test extends \advanced_testcase {
 
         $module = get_coursemodule_from_instance('externalassignment', $instance->id);
         $context = \context_module::instance($module->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
 
-        $assigncontrol = new assign_control($context, $module);
+        $assigncontrol = new assign_control($context, $cm);
         $assigncontrol->delete_instance($instance->id);
 
         $record = $DB->get_record('externalassignment', ['id' => $instance->id]);
@@ -143,8 +144,9 @@ final class assign_control_test extends \advanced_testcase {
 
         $module = get_coursemodule_from_instance('externalassignment', $instance->id);
         $context = \context_module::instance($module->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
 
-        $assigncontrol = new assign_control($context, $module);
+        $assigncontrol = new assign_control($context, $cm);
 
         $instanceobj = new \stdClass();
         $instanceobj->id = 1;

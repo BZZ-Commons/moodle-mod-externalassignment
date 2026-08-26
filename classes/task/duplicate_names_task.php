@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_externalassignment\task;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Represents the model of an external assignment
@@ -40,8 +39,7 @@ class duplicate_names_task extends \core\task\scheduled_task
     /**
      * Gets the name of the task
      */
-    public function get_name(): string
-    {
+    public function get_name(): string {
         return get_string('taskduplicatenames', 'mod_externalassignment');
     }
 
@@ -49,8 +47,7 @@ class duplicate_names_task extends \core\task\scheduled_task
      * Execute the task
      * @throws \dml_exception
      */
-    public function execute(): void
-    {
+    public function execute(): void {
         mtrace('  Looking for duplicate external names...');
         // Find all courses and students with duplicate external assignment names.
         $rows = $this->read_duplicates();
@@ -73,8 +70,7 @@ class duplicate_names_task extends \core\task\scheduled_task
      * @return array
      * @throws \dml_exception
      */
-    private function read_duplicates()
-    {
+    private function read_duplicates() {
         global $DB;
         $query =
             'SELECT t.*' .
@@ -115,8 +111,7 @@ class duplicate_names_task extends \core\task\scheduled_task
      * @return bool
      * @throws \dml_exception
      */
-    private function is_teacher($userid, $courseid): bool
-    {
+    private function is_teacher($userid, $courseid): bool {
         global $DB;
         $context = \context_course::instance($courseid);
         return has_capability('moodle/course:viewhiddenactivities', $context, $userid);

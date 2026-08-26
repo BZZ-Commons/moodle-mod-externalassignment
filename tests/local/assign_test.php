@@ -69,7 +69,6 @@ final class assign_test extends \advanced_testcase {
         $this->assertEquals(10, $assign->get_manualgrademax());
         $this->assertEquals(60, $assign->get_passingpercentage());
         $this->assertEquals(1, $assign->get_needspassinggrade());
-
     }
 
     /**
@@ -120,7 +119,7 @@ final class assign_test extends \advanced_testcase {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function test_load_db_external() {
+    public function test_load_db_external(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         $course = $this->getDataGenerator()->create_course();
@@ -136,9 +135,9 @@ final class assign_test extends \advanced_testcase {
         $this->assertEquals($instance->id, $assign->get_id());
     }
     /**
-    * Test sort_students
-    * @covers \assign::sort_students
-    */
+     * Test sort_students
+     * @covers \assign::sort_students
+     */
     public function test_sort_students(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
@@ -159,31 +158,31 @@ final class assign_test extends \advanced_testcase {
 
         $assign = new assign(null, $context);
 
-        // Sort by lastname ascending
+        // Sort by lastname ascending.
         $assign->load_db($instance->cmid, 'lastname', 'asc');
         $users = $assign->get_students();
-        assert (is_array($users));
+        assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('Brown', reset($users)->get_lastname());
 
-        // Sort by lastname descending
+        // Sort by lastname descending.
         $assign->load_db($instance->cmid, 'lastname', 'desc');
         $users = $assign->get_students();
-        assert (is_array($users));
+        assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('Smith', reset($users)->get_lastname());
 
-        // Sort by firstname ascending
+        // Sort by firstname ascending.
         $assign->load_db($instance->cmid, 'firstname', 'asc');
         $users = $assign->get_students();
-        assert (is_array($users));
+        assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('Alice', reset($users)->get_firstname());
 
-        // Sort by firstname descending
+        // Sort by firstname descending.
         $assign->load_db($instance->cmid, 'firstname', 'desc');
         $users = $assign->get_students();
-        assert (is_array($users));
+        assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('John', reset($users)->get_firstname());
 
@@ -225,7 +224,7 @@ final class assign_test extends \advanced_testcase {
 
         $assign = new assign(null, $context);
 
-        // Sort by lastname ascending
+        // Sort by lastname ascending.
         $assign->load_db($instance->cmid, 'lastname', 'asc');
         $this->assertEquals(4, $assign->count_students());
     }
@@ -254,7 +253,7 @@ final class assign_test extends \advanced_testcase {
 
         $assign = new assign(null, $context);
 
-        // Sort by lastname ascending
+        // Sort by lastname ascending.
         $assign->load_db($instance->cmid, 'lastname', 'asc');
         $users = $assign->get_students();
 
@@ -263,14 +262,13 @@ final class assign_test extends \advanced_testcase {
 
         $user = next($users);
         $this->assertEquals($user->get_lastname(), $assign->take_student($user->get_userid())->get_lastname());
-
     }
 
     /**
      * Test load_overrides
      * @covers \assign::load_overrides
      */
-    public function test_load_overrides() {
+    public function test_load_overrides(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         $course = $this->getDataGenerator()->create_course();
@@ -286,10 +284,9 @@ final class assign_test extends \advanced_testcase {
 
         $students = [
             $user1->id => new student($assign, $user1),
-            $user2->id => new student($assign, $user2)
+            $user2->id => new student($assign, $user2),
         ];
         $assign->set_students($students);
-
 
         $override = $generator->create_override_entry(
             [
@@ -297,7 +294,7 @@ final class assign_test extends \advanced_testcase {
                 'userid' => $user1->id,
                 'allowsubmissionsfromdate' => time() - 3600,
                 'duedate' => time() + 3600,
-                'cutoffdate' => time() + 7200
+                'cutoffdate' => time() + 7200,
             ]
         );
         $reflection = new \ReflectionClass($assign);
@@ -308,7 +305,6 @@ final class assign_test extends \advanced_testcase {
         $this->assertNotNull($result);
         $this->assertEquals($instance->cmid, $result->get_externalassignment());
         $this->assertEquals($user1->id, $result->get_userid());
-
 
         $this->assertNull($assign->take_student($user2->id)->get_override());
     }
