@@ -206,7 +206,10 @@ class assign {
         $this->set_manualgrademax($data->manualgrademax);
         $this->set_passingpercentage($data->passingpercentage);
 
-        if (isset($data->needspassinggrade)) {
+        if (isset($data->completion) && (int)$data->completion === COMPLETION_TRACKING_AUTOMATIC) {
+            // Custom completion is selected, so the passing grade rule must be active.
+            $this->set_needspassinggrade(1);
+        } else if (isset($data->needspassinggrade)) {
             $this->set_needspassinggrade($data->needspassinggrade);
         } else {
             $this->set_needspassinggrade(0);
@@ -403,7 +406,7 @@ class assign {
         // FIXME: Find out why autoloading does not work here.
         foreach ($data as $record) {
             $override = new override($record);
-            if ($this->students[$record->userid] == null) {
+            if (!array_key_exists($record->userid, $this->students) || $this->students[$record->userid] == null) {
                 $this->students[$record->userid] = new student($this, $DB->get_record('user', ['id' => $record->userid]));
             }
             $this->students[$record->userid]->set_override($override);

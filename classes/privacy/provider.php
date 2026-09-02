@@ -81,8 +81,9 @@ class provider implements
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
-        $query = 'SELECT coursemodule.instance ' .
-            'FROM {course_modules} coursemodule ' .
+        $query = 'SELECT ctx.id ' .
+            'FROM {context} ctx ' .
+            'JOIN {course_modules} coursemodule ON (coursemodule.id = ctx.instanceid AND ctx.contextlevel = :contextlevel) ' .
             'JOIN {externalassignment} extassign ON (coursemodule.instance = extassign.id) ' .
             'JOIN {externalassignment_grades} grades ON (extassign.id = grades.externalassignment) ' .
             'WHERE grades.userid = :userid';
@@ -93,8 +94,9 @@ class provider implements
         ];
         $contextlist->add_from_sql($query, $params);
 
-        $query = 'SELECT coursemodule.instance ' .
-            'FROM {course_modules} coursemodule ' .
+        $query = 'SELECT ctx.id ' .
+            'FROM {context} ctx ' .
+            'JOIN {course_modules} coursemodule ON (coursemodule.id = ctx.instanceid AND ctx.contextlevel = :contextlevel) ' .
             'JOIN {externalassignment} extassign ON (coursemodule.instance = extassign.id) ' .
             'JOIN {externalassignment_overrides} overrides ON (extassign.id = overrides.externalassignment) ' .
             'WHERE overrides.userid = :userid';
@@ -123,7 +125,7 @@ class provider implements
             'instanceid' => $context->instanceid,
             'modulename' => 'externalassignment',
         ];
-        $query = 'SELECT DISTINCT user.id ' .
+        $query = 'SELECT DISTINCT user.id AS userid ' .
             'FROM {user} user ' .
             'JOIN {externalassignment_grades} grades ON (user.id = grades.userid) ' .
             'JOIN {externalassignment} extassign ON (grades.externalassignment = extassign.id) ' .
@@ -131,7 +133,7 @@ class provider implements
             'WHERE cm.id = :instanceid ';
         $userlist->add_from_sql('userid', $query, $params);
 
-        $query = 'SELECT DISTINCT user.id ' .
+        $query = 'SELECT DISTINCT user.id AS userid ' .
             'FROM {user} user ' .
             'JOIN {externalassignment_overrides} overrides ON (user.id = overrides.userid) ' .
             'JOIN {externalassignment} extassign ON (overrides.externalassignment = extassign.id) ' .

@@ -16,19 +16,39 @@
 
 namespace mod_externalassignment\local;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for class student
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(student::class, '__construct')]
+#[CoversMethod(student::class, 'set_userid')]
+#[CoversMethod(student::class, 'get_userid')]
+#[CoversMethod(student::class, 'set_username')]
+#[CoversMethod(student::class, 'get_username')]
+#[CoversMethod(student::class, 'set_firstname')]
+#[CoversMethod(student::class, 'get_firstname')]
+#[CoversMethod(student::class, 'set_lastname')]
+#[CoversMethod(student::class, 'get_lastname')]
+#[CoversMethod(student::class, 'set_email')]
+#[CoversMethod(student::class, 'get_email')]
+#[CoversMethod(student::class, 'set_grade')]
+#[CoversMethod(student::class, 'get_grade')]
+#[CoversMethod(student::class, 'set_override')]
+#[CoversMethod(student::class, 'get_override')]
+#[CoversMethod(student::class, 'set_assign')]
+#[CoversMethod(student::class, 'get_assign')]
+#[CoversMethod(student::class, 'to_stdclass')]
+#[CoversMethod(student::class, 'get_status')]
 final class student_test extends \advanced_testcase {
     /**
      * Test constructor with student data
-     * @covers \student::__construct
      */
     public function test_constructor_with_student_data(): void {
         $assign = new assign(null);
@@ -51,7 +71,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test constructor without student data
-     * @covers \student::__construct
      */
     public function test_constructor_without_student_data(): void {
         $assign = new assign(null);
@@ -64,22 +83,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test setters and getters
-     * @covers \student::set_userid
-     * @covers \student::get_userid
-     * @covers \student::set_username
-     * @covers \student::get_username
-     * @covers \student::set_firstname
-     * @covers \student::get_firstname
-     * @covers \student::set_lastname
-     * @covers \student::get_lastname
-     * @covers \student::set_email
-     * @covers \student::get_email
-     * @covers \student::set_grade
-     * @covers \student::get_grade
-     * @covers \student::set_override
-     * @covers \student::get_override
-     * @covers \student::set_assign
-     * @covers \student::get_assign
      */
     public function test_setters_getters(): void {
         $assign = new assign(null);
@@ -109,7 +112,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test casting to stdclass
-     * @covers \student::to_stdclass
      */
     public function test_to_stdclass(): void {
         $assign = new assign(null);
@@ -146,7 +148,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test to_stdclass with override
-     * @covers \student::to_stdclass
      */
     public function test_to_stdclass_with_override(): void {
         $assign = new assign(null);
@@ -178,7 +179,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test get_status with no grade
-     * @covers \student::get_status
      */
     public function test_get_status_no_grade(): void {
         $assign = new assign(null);
@@ -192,7 +192,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test get_status with passing grade
-     * @covers \student::get_status
      */
     public function test_get_status_with_passing_grade(): void {
         $assign = new assign(null);
@@ -215,7 +214,6 @@ final class student_test extends \advanced_testcase {
 
     /**
      * Test get_status with overdue assignment
-     * @covers \student::get_status
      */
     public function test_get_status_overdue(): void {
         $assign = new assign(null);

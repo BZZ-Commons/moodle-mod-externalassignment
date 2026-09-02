@@ -16,19 +16,31 @@
 
 namespace mod_externalassignment\local;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for class grade_control
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(grade_control::class, '__construct')]
+#[CoversMethod(grade_control::class, 'set_coursemoduleid')]
+#[CoversMethod(grade_control::class, 'get_coursemoduleid')]
+#[CoversMethod(grade_control::class, 'set_courseid')]
+#[CoversMethod(grade_control::class, 'get_courseid')]
+#[CoversMethod(grade_control::class, 'set_context')]
+#[CoversMethod(grade_control::class, 'get_context')]
+#[CoversMethod(grade_control::class, 'set_assign')]
+#[CoversMethod(grade_control::class, 'get_assign')]
+#[CoversMethod(grade_control::class, 'set_userid')]
+#[CoversMethod(grade_control::class, 'get_userid')]
 final class grade_control_test extends \advanced_testcase {
     /**
      * Test constructor
-     * @covers \grade_control::__construct
      */
     public function test_constructor(): void {
         $this->resetAfterTest(true);
@@ -50,16 +62,6 @@ final class grade_control_test extends \advanced_testcase {
 
     /**
      * Test getters and setters
-     * @covers \grade_control::set_coursemoduleid
-     * @covers \grade_control::get_coursemoduleid
-     * @covers \grade_control::set_courseid
-     * @covers \grade_control::get_courseid
-     * @covers \grade_control::set_context
-     * @covers \grade_control::get_context
-     * @covers \grade_control::set_assign
-     * @covers \grade_control::get_assign
-     * @covers \grade_control::set_userid
-     * @covers \grade_control::get_userid
      */
     public function test_setters_getters(): void {
         $this->resetAfterTest(true);
@@ -93,5 +95,37 @@ final class grade_control_test extends \advanced_testcase {
 
         $gradecontrol->set_userlist(['Bart', 'Lisa']);
         $this->assertEquals(['Bart', 'Lisa'], $gradecontrol->get_userlist());
+    }
+
+    /**
+     * Regression test for GitHub issue #25 ("Error with sort_students() on grader page").
+     * The grader page instantiates grade_control(), whose constructor loads the assignment via
+     * assign::load_db(). assign::sort_students() declares non-nullable string $sort/$tdir
+     * parameters, so a caller that ever passes null for those again (as grade_control's
+     * constructor briefly did) triggers a fatal TypeError as soon as a real student is enrolled.
+     * This test exercises that exact path with enrolled students to guard against a regression.
+     */
+    public function test_constructor_loads_and_sorts_students_without_error(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+
+        $userb = $this->getDataGenerator()->create_user(['firstname' => 'Bob', 'lastname' => 'Brown']);
+        $this->getDataGenerator()->enrol_user($userb->id, $course->id, 'student');
+        $usera = $this->getDataGenerator()->create_user(['firstname' => 'Alice', 'lastname' => 'Anderson']);
+        $this->getDataGenerator()->enrol_user($usera->id, $course->id, 'student');
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($module->id);
+
+        // This must not throw, and must sort by lastname ascending (the constructor's default).
+        $gradecontrol = new grade_control($module->id, $context, 0);
+
+        $students = $gradecontrol->get_assign()->get_students();
+        $this->assertCount(2, $students);
+        $this->assertEquals('Anderson', reset($students)->get_lastname());
     }
 }

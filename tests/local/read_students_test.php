@@ -18,16 +18,19 @@ namespace mod_externalassignment\local;
 
 use core_external\external_api;
 use mod_externalassignment\external\read_students;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
 use required_capability_exception;
 
 /**
  * Unit tests for the read_students external function
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2026 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(read_students::class, 'execute')]
 final class read_students_test extends \advanced_testcase {
     /**
      * Creates a course, an externalassignment instance and a teacher who may review grades.
@@ -66,7 +69,6 @@ final class read_students_test extends \advanced_testcase {
 
     /**
      * Test that the students are returned sorted by the requested field and direction
-     * @covers \mod_externalassignment\external\read_students::execute
      */
     public function test_execute_sorts_students(): void {
         $this->resetAfterTest(true);
@@ -97,7 +99,6 @@ final class read_students_test extends \advanced_testcase {
 
     /**
      * Test that the students can be filtered by their grading status
-     * @covers \mod_externalassignment\external\read_students::execute
      */
     public function test_execute_filters_by_status(): void {
         $this->resetAfterTest(true);
@@ -131,7 +132,6 @@ final class read_students_test extends \advanced_testcase {
 
     /**
      * Test that a user without the reviewgrades capability cannot call this function
-     * @covers \mod_externalassignment\external\read_students::execute
      */
     public function test_execute_requires_capability(): void {
         $this->resetAfterTest(true);

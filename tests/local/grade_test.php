@@ -16,20 +16,40 @@
 
 namespace mod_externalassignment\local;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for class assign
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(grade::class, '__construct')]
+#[CoversMethod(grade::class, 'load_data')]
+#[CoversMethod(grade::class, 'set_id')]
+#[CoversMethod(grade::class, 'get_id')]
+#[CoversMethod(grade::class, 'set_externalassignment')]
+#[CoversMethod(grade::class, 'get_externalassignment')]
+#[CoversMethod(grade::class, 'set_userid')]
+#[CoversMethod(grade::class, 'get_userid')]
+#[CoversMethod(grade::class, 'set_externallink')]
+#[CoversMethod(grade::class, 'get_externallink')]
+#[CoversMethod(grade::class, 'set_externalgrade')]
+#[CoversMethod(grade::class, 'get_externalgrade')]
+#[CoversMethod(grade::class, 'set_externalfeedback')]
+#[CoversMethod(grade::class, 'get_externalfeedback')]
+#[CoversMethod(grade::class, 'set_manualgrade')]
+#[CoversMethod(grade::class, 'get_manualgrade')]
+#[CoversMethod(grade::class, 'set_manualfeedback')]
+#[CoversMethod(grade::class, 'get_manualfeedback')]
+#[CoversMethod(grade::class, 'to_stdclass')]
+#[CoversMethod(grade::class, 'get_finalgrade')]
 final class grade_test extends \advanced_testcase {
     /**
      * Test constructor with formdata simulation the add/edit form
-     * @covers \grade::__construct
-     * @covers \grade::load_data
      */
     public function test_constructor_with_formdata(): void {
         $formdata = new \stdClass();
@@ -56,7 +76,6 @@ final class grade_test extends \advanced_testcase {
 
     /**
      * Test constructor without formdata
-     * @covers \grade::__construct
      */
     public function test_constructor_without_formdata(): void {
         $grade = new grade(null);
@@ -73,23 +92,6 @@ final class grade_test extends \advanced_testcase {
 
     /**
      * Test setters and getters
-     * @covers \grade::set_id
-     * @covers \grade::get_id
-     * @covers \grade::set_externalassignment
-     * @covers \grade::get_externalassignment
-     * @covers \grade::set_userid
-     * @covers \grade::get_userid
-     * @covers \grade::set_externallink
-     * @covers \grade::get_externallink
-     * @covers \grade::set_externalgrade
-     * @covers \grade::get_externalgrade
-     * @covers \grade::set_externalfeedback
-     * @covers \grade::get_externalfeedback
-     * @covers \grade::set_manualgrade
-     * @covers \grade::get_manualgrade
-     * @covers \grade::set_manualfeedback
-     * @covers \grade::get_manualfeedback
-     *
      */
     public function test_setters_getters(): void {
         $grade = new grade(null);
@@ -116,7 +118,6 @@ final class grade_test extends \advanced_testcase {
 
     /**
      * Test casting to stdclass
-     * @covers \grade::to_stdclass
      */
     public function test_to_stdclass(): void {
         $grade = new grade(null);
@@ -143,7 +144,6 @@ final class grade_test extends \advanced_testcase {
 
     /**
      * Test get_finalgrade calculation
-     * @covers \grade::get_finalgrade
      */
     public function test_get_finalgrade(): void {
         $grade = new grade(null);

@@ -88,7 +88,6 @@ class update_grade extends external_api {
             $userid = self::get_user_id($user, $externalusername);
 
             if (empty($userid)) {
-                echo 'ERROR: no username ' . $params['user_name'] . ' found';
                 $results = self::generate_warning(
                     $results,
                     'error',
@@ -101,7 +100,6 @@ class update_grade extends external_api {
             // Get the assignment with the specified name.
             $assignment = self::read_assignment($assignmentname, $userid);
             if (empty($assignment->get_id())) {
-                echo 'ERROR: no assignment ' . $params['assignment_name'] . ' found';
                 $results = self::generate_warning(
                     $results,
                     'error',
@@ -134,7 +132,6 @@ class update_grade extends external_api {
                 $cutoffdate = $override->get_cutoffdate();
             }
             if ($cutoffdate != 0 && $cutoffdate < time()) {
-                echo 'WARNING: the assignment is overdue, points/feedback not updated';
                 $results = self::generate_warning(
                     $results,
                     'warning',

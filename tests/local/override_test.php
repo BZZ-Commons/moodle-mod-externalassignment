@@ -16,20 +16,37 @@
 
 namespace mod_externalassignment\local;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for class override
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(override::class, '__construct')]
+#[CoversMethod(override::class, 'load_data')]
+#[CoversMethod(override::class, 'load_db')]
+#[CoversMethod(override::class, 'set_id')]
+#[CoversMethod(override::class, 'get_id')]
+#[CoversMethod(override::class, 'set_externalassignment')]
+#[CoversMethod(override::class, 'get_externalassignment')]
+#[CoversMethod(override::class, 'set_userid')]
+#[CoversMethod(override::class, 'get_userid')]
+#[CoversMethod(override::class, 'set_allowsubmissionsfromdate')]
+#[CoversMethod(override::class, 'get_allowsubmissionsfromdate')]
+#[CoversMethod(override::class, 'set_duedate')]
+#[CoversMethod(override::class, 'get_duedate')]
+#[CoversMethod(override::class, 'set_cutoffdate')]
+#[CoversMethod(override::class, 'get_cutoffdate')]
+#[CoversMethod(override::class, 'to_stdclass')]
+#[CoversMethod(override::class, 'load_formdata')]
 final class override_test extends \advanced_testcase {
     /**
      * Test constructor with data
-     * @covers \override::__construct
-     * @covers \override::load_data
      */
     public function test_constructor_with_data(): void {
         $data = new \stdClass();
@@ -52,7 +69,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test constructor without data
-     * @covers \override::__construct
      */
     public function test_constructor_without_data(): void {
         $override = new override(null);
@@ -67,7 +83,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test load_db
-     * @covers \override::load_db
      */
     public function test_load_db(): void {
         // TODO: implement when db access is possible in unit tests.
@@ -76,18 +91,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test setters and getters
-     * @covers \override::set_id
-     * @covers \override::get_id
-     * @covers \override::set_externalassignment
-     * @covers \override::get_externalassignment
-     * @covers \override::set_userid
-     * @covers \override::get_userid
-     * @covers \override::set_allowsubmissionsfromdate
-     * @covers \override::get_allowsubmissionsfromdate
-     * @covers \override::set_duedate
-     * @covers \override::get_duedate
-     * @covers \override::set_cutoffdate
-     * @covers \override::get_cutoffdate
      */
     public function test_setters_getters(): void {
         $override = new override();
@@ -109,7 +112,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test casting to stdclass
-     * @covers \override::to_stdclass
      */
     public function test_to_stdclass(): void {
         $override = new override();
@@ -132,7 +134,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test to_stdclass with null values
-     * @covers \override::to_stdclass
      */
     public function test_to_stdclass_with_null_values(): void {
         $override = new override();
@@ -152,7 +153,6 @@ final class override_test extends \advanced_testcase {
 
     /**
      * Test load_formdata
-     * @covers \override::load_formdata
      */
     public function test_load_formdata(): void {
         $formdata = new \stdClass();

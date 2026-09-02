@@ -16,20 +16,62 @@
 
 namespace mod_externalassignment\local;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for class assign
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel@ghwalin.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * /
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(assign::class, '__construct')]
+#[CoversMethod(assign::class, 'load_data')]
+#[CoversMethod(assign::class, 'load_db')]
+#[CoversMethod(assign::class, 'load_db_external')]
+#[CoversMethod(assign::class, 'sort_students')]
+#[CoversMethod(assign::class, 'count_students')]
+#[CoversMethod(assign::class, 'take_student')]
+#[CoversMethod(assign::class, 'load_overrides')]
+#[CoversMethod(assign::class, 'set_id')]
+#[CoversMethod(assign::class, 'get_id')]
+#[CoversMethod(assign::class, 'set_course')]
+#[CoversMethod(assign::class, 'get_course')]
+#[CoversMethod(assign::class, 'set_name')]
+#[CoversMethod(assign::class, 'get_name')]
+#[CoversMethod(assign::class, 'set_intro')]
+#[CoversMethod(assign::class, 'get_intro')]
+#[CoversMethod(assign::class, 'set_introformat')]
+#[CoversMethod(assign::class, 'get_introformat')]
+#[CoversMethod(assign::class, 'set_alwaysshowdescription')]
+#[CoversMethod(assign::class, 'is_alwaysshowdescription')]
+#[CoversMethod(assign::class, 'set_externalname')]
+#[CoversMethod(assign::class, 'get_externalname')]
+#[CoversMethod(assign::class, 'set_externallink')]
+#[CoversMethod(assign::class, 'get_externallink')]
+#[CoversMethod(assign::class, 'set_alwaysshowlink')]
+#[CoversMethod(assign::class, 'is_alwaysshowlink')]
+#[CoversMethod(assign::class, 'set_allowsubmissionsfromdate')]
+#[CoversMethod(assign::class, 'get_allowsubmissionsfromdate')]
+#[CoversMethod(assign::class, 'set_duedate')]
+#[CoversMethod(assign::class, 'get_duedate')]
+#[CoversMethod(assign::class, 'set_cutoffdate')]
+#[CoversMethod(assign::class, 'get_cutoffdate')]
+#[CoversMethod(assign::class, 'set_externalgrademax')]
+#[CoversMethod(assign::class, 'get_externalgrademax')]
+#[CoversMethod(assign::class, 'set_manualgrademax')]
+#[CoversMethod(assign::class, 'get_manualgrademax')]
+#[CoversMethod(assign::class, 'set_passingpercentage')]
+#[CoversMethod(assign::class, 'get_passingpercentage')]
+#[CoversMethod(assign::class, 'set_needspassinggrade')]
+#[CoversMethod(assign::class, 'get_needspassinggrade')]
+#[CoversMethod(assign::class, 'is_needspassinggrade')]
+#[CoversMethod(assign::class, 'to_stdclass')]
 final class assign_test extends \advanced_testcase {
     /**
      * Test constructor with formdata simulation the add/edit form
-     * @covers \assign::__construct
-     * @covers \assign::load_data
      */
     public function test_constructor_with_formdata(): void {
         $formdata = new \stdClass();
@@ -73,7 +115,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test constructor without formdata
-     * @covers \assign::__construct
      */
     public function test_constructor_without_formdata(): void {
         $assign = new assign(null);
@@ -82,7 +123,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test loaddata
-     * @covers \assign::load_db
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -115,7 +155,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test load_db_external
-     * @covers ::load_db_external
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -136,7 +175,6 @@ final class assign_test extends \advanced_testcase {
     }
     /**
      * Test sort_students
-     * @covers \assign::sort_students
      */
     public function test_sort_students(): void {
         $this->resetAfterTest(true);
@@ -202,7 +240,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test count_students
-     * @covers \assign::count_students
      */
     public function test_count_students(): void {
         $this->resetAfterTest(true);
@@ -231,7 +268,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test take_students
-     * @covers \assign::take_students
      */
     public function test_take_student(): void {
         $this->resetAfterTest(true);
@@ -266,7 +302,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test load_overrides
-     * @covers \assign::load_overrides
      */
     public function test_load_overrides(): void {
         $this->resetAfterTest(true);
@@ -311,39 +346,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test the setters and getters
-     * @covers \assign::set_id
-     * @covers \assign::get_id
-     * @covers \assign::set_course
-     * @covers \assign::get_course
-     * @covers \assign::set_name
-     * @covers \assign::get_name
-     * @covers \assign::set_intro
-     * @covers \assign::get_intro
-     * @covers \assign::set_introformat
-     * @covers \assign::get_introformat
-     * @covers \assign::set_alwaysshowdescription
-     * @covers \assign::is_alwaysshowdescription
-     * @covers \assign::set_externalname
-     * @covers \assign::get_externalname
-     * @covers \assign::set_externallink
-     * @covers \assign::get_externallink
-     * @covers \assign::set_alwaysshowlink
-     * @covers \assign::is_alwaysshowlink
-     * @covers \assign::set_allowsubmissionsfromdate
-     * @covers \assign::get_allowsubmissionsfromdate
-     * @covers \assign::set_duedate
-     * @covers \assign::get_duedate
-     * @covers \assign::set_cutoffdate
-     * @covers \assign::get_cutoffdate
-     * @covers \assign::set_externalgrademax
-     * @covers \assign::get_externalgrademax
-     * @covers \assign::set_manualgrademax
-     * @covers \assign::get_manualgrademax
-     * @covers \assign::set_passingpercentage
-     * @covers \assign::get_passingpercentage
-     * @covers \assign::set_needspassinggrade
-     * @covers \assign::get_needspassinggrade
-     * @covers \assign::is_needspassinggrade
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -387,7 +389,6 @@ final class assign_test extends \advanced_testcase {
 
     /**
      * Test the casting to a stdclass
-     * @covers \assign::to_stdclass
      */
     public function test_to_stdclass(): void {
         $assign = new assign(null);

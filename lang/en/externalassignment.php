@@ -121,6 +121,7 @@ $string['percentage'] = 'Percentage';
 $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
+$string['privacy:export:externalassignment:grades'] = 'Grades for external assignment';
 $string['privacy:metadata:allowsubmissionsfromdate'] = 'The overridden allow submissions from date';
 $string['privacy:metadata:cutoffdate'] = 'The overridden cut-off date';
 $string['privacy:metadata:duedate'] = 'The overridden due date';

@@ -16,21 +16,26 @@
 
 namespace mod_externalassignment;
 
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * Unit tests for the report_editdates integration class.
  *
- * @group mod_externalassignment
  * @package mod_externalassignment
  * @category test
  * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
  * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[Group('mod_externalassignment')]
+#[CoversMethod(\mod_externalassignment_report_editdates_integration::class, '__construct')]
+#[CoversMethod(\mod_externalassignment_report_editdates_integration::class, 'get_settings')]
+#[CoversMethod(\mod_externalassignment_report_editdates_integration::class, 'validate_dates')]
+#[CoversMethod(\mod_externalassignment_report_editdates_integration::class, 'save_dates')]
 final class report_editdates_integration_test extends \advanced_testcase {
     /**
      * Test the constructor and basic functionality.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::__construct
      */
     public function test_constructor(): void {
         global $CFG;
@@ -56,8 +61,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test get_settings returns correct date fields.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::get_settings
      */
     public function test_get_settings(): void {
         global $CFG;
@@ -114,8 +117,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test validate_dates with valid dates.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::validate_dates
      */
     public function test_validate_dates_valid(): void {
         global $CFG;
@@ -154,8 +155,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test validate_dates with due date before allow submissions from date.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::validate_dates
      */
     public function test_validate_dates_duedate_before_allowsubmissionsfromdate(): void {
         global $CFG;
@@ -195,8 +194,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test validate_dates with cutoff date before due date.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::validate_dates
      */
     public function test_validate_dates_cutoffdate_before_duedate(): void {
         global $CFG;
@@ -236,8 +233,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test validate_dates with cutoff date before allow submissions from date.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::validate_dates
      */
     public function test_validate_dates_cutoffdate_before_allowsubmissionsfromdate(): void {
         global $CFG;
@@ -277,8 +272,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test validate_dates with empty dates (all disabled).
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::validate_dates
      */
     public function test_validate_dates_empty(): void {
         global $CFG;
@@ -316,8 +309,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test save_dates updates the database correctly.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::save_dates
      */
     public function test_save_dates(): void {
         global $CFG, $DB;
@@ -367,8 +358,6 @@ final class report_editdates_integration_test extends \advanced_testcase {
 
     /**
      * Test save_dates with zero/disabled dates.
-     *
-     * @covers \mod_externalassignment_report_editdates_integration::save_dates
      */
     public function test_save_dates_disabled(): void {
         global $CFG, $DB;
