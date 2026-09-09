@@ -404,4 +404,111 @@ final class report_editdates_integration_test extends \advanced_testcase {
         $this->assertEquals(0, $record->duedate);
         $this->assertEquals(0, $record->cutoffdate);
     }
+
+    /**
+     * Regression test for GitHub issue #38 ("Calendar entry with dates plugin"): changing the
+     * due date through the report_editdates report bypasses assign_control::update_instance()
+     * entirely (it writes straight to the externalassignment table), so the shared "due" calendar
+     * event kept showing the *old* due date after saving here. save_dates() must now refresh it,
+     * exactly like report/editdates/mod/assigndates.php does for mod_assign.
+     */
+    public function test_save_dates_updates_calendar_event(): void {
+        global $CFG, $DB;
+
+        // Skip if report_editdates is not installed.
+        if (!file_exists($CFG->dirroot . '/report/editdates/lib.php')) {
+            $this->markTestSkipped('report_editdates plugin is not installed.');
+        }
+
+        require_once($CFG->dirroot . '/report/editdates/lib.php');
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/report_editdates_integration.php');
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $originalduedate = time() + DAYSECS;
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'duedate' => $originalduedate,
+        ]);
+
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $modinfo = get_fast_modinfo($course);
+        $cminfo = $modinfo->get_cm($cm->id);
+
+        $integration = new \mod_externalassignment_report_editdates_integration($course);
+        $newduedate = time() + (5 * DAYSECS);
+        $integration->save_dates($cminfo, [
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => $newduedate,
+            'cutoffdate' => 0,
+        ]);
+
+        $event = $DB->get_record('event', [
+            'modulename' => 'externalassignment',
+            'instance' => $instance->id,
+            'eventtype' => 'due',
+            'courseid' => $course->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals($newduedate, $event->timestart);
+        $this->assertEquals($newduedate, $event->timesort);
+    }
+
+    /**
+     * Companion test for GitHub issue #38: a student's personal override event (see
+     * assign_control::update_override_calendar_event(), added for issue #37) must survive a
+     * save_dates() call for the assignment's own dates - the override is unaffected, but it must
+     * not be dropped or left stale by the refresh.
+     */
+    public function test_save_dates_leaves_override_calendar_event_intact(): void {
+        global $CFG, $DB;
+
+        if (!file_exists($CFG->dirroot . '/report/editdates/lib.php')) {
+            $this->markTestSkipped('report_editdates plugin is not installed.');
+        }
+
+        require_once($CFG->dirroot . '/report/editdates/lib.php');
+        require_once($CFG->dirroot . '/mod/externalassignment/classes/report_editdates_integration.php');
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+
+        $overrideduedate = time() + (10 * DAYSECS);
+        $DB->insert_record('externalassignment_overrides', (object) [
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => $overrideduedate,
+            'cutoffdate' => $overrideduedate,
+        ]);
+
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $modinfo = get_fast_modinfo($course);
+        $cminfo = $modinfo->get_cm($cm->id);
+
+        $integration = new \mod_externalassignment_report_editdates_integration($course);
+        $integration->save_dates($cminfo, [
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => time() + (5 * DAYSECS),
+            'cutoffdate' => 0,
+        ]);
+
+        $overrideevent = $DB->get_record('event', [
+            'modulename' => 'externalassignment',
+            'instance' => $instance->id,
+            'eventtype' => 'due',
+            'userid' => $student->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals(0, $overrideevent->courseid);
+        $this->assertEquals($overrideduedate, $overrideevent->timestart);
+    }
 }

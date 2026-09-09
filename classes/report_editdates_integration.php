@@ -126,13 +126,18 @@ class mod_externalassignment_report_editdates_integration extends report_editdat
     /**
      * Save the new dates for this activity instance.
      *
-     * Updates the date fields in the externalassignment table.
+     * Updates the date fields in the externalassignment table and, like mod_form.php's own
+     * save path (see assign_control::update_instance()), refreshes the "due" calendar event(s)
+     * to match - report_editdates otherwise bypasses assign_control entirely, so without this the
+     * calendar event silently kept showing the *old* due date after editing it here (GitHub
+     * issue #38). This mirrors what report/editdates/mod/assigndates.php itself does for mod_assign
+     * (calling $module->update_calendar($cm->id) after saving).
      *
      * @param cm_info $cm The activity to save the dates for.
      * @param array $dates Array of dates to save.
      */
     public function save_dates(cm_info $cm, array $dates) {
-        global $DB;
+        global $CFG, $DB;
 
         $update = new stdClass();
         $update->id = $cm->instance;
@@ -142,5 +147,8 @@ class mod_externalassignment_report_editdates_integration extends report_editdat
         $update->timemodified = time();
 
         $DB->update_record('externalassignment', $update);
+
+        require_once($CFG->dirroot . '/mod/externalassignment/lib.php');
+        externalassignment_refresh_events(0, $cm->instance, $cm);
     }
 }
