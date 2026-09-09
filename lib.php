@@ -270,6 +270,59 @@ function externalassignment_reset_gradebook(int $courseid, string $type = '') {
 }
 
 /**
+ * Updates the "due" calendar event(s) for one or all externalassignment instances.
+ *
+ * This is Moodle's standard hook for a module to (re-)create its own calendar events: it is
+ * called from course_module_bulk_update_calendar_events() and course_module_update_calendar_events(),
+ * and - most notably - by the core\task\refresh_mod_calendar_events_task adhoc task that core
+ * queues at the end of every course restore or activity duplication. Action-type calendar events
+ * such as the "is due" reminder are deliberately excluded from activity backups (see
+ * restore_calendarevents_structure_step), so without this function a duplicated or restored
+ * external assignment would never get its due-date event back (GitHub issue #31).
+ *
+ * @param int $courseid Course id to refresh events for, 0 for all courses
+ * @param \stdClass|int|null $instance externalassignment instance or its id, null to process all matching instances
+ * @param \stdClass|null $cm the course module the instance belongs to, looked up when omitted
+ * @return bool
+ */
+function externalassignment_refresh_events($courseid = 0, $instance = null, $cm = null) {
+    global $DB;
+
+    if (isset($instance)) {
+        if (!is_object($instance)) {
+            $instance = $DB->get_record('externalassignment', ['id' => $instance], '*', MUST_EXIST);
+        }
+        if (!isset($cm)) {
+            $cm = get_coursemodule_from_instance('externalassignment', $instance->id, $instance->course, false, MUST_EXIST);
+        }
+        assign_control::update_calendar_event($instance, $instance->course, $cm->id);
+        return true;
+    }
+
+    if ($courseid) {
+        if (!$instances = $DB->get_records('externalassignment', ['course' => $courseid])) {
+            return true;
+        }
+    } else {
+        if (!$instances = $DB->get_records('externalassignment')) {
+            return true;
+        }
+    }
+
+    foreach ($instances as $externalassignment) {
+        $module = get_coursemodule_from_instance(
+            'externalassignment',
+            $externalassignment->id,
+            $externalassignment->course,
+            false,
+            MUST_EXIST
+        );
+        assign_control::update_calendar_event($externalassignment, $externalassignment->course, $module->id);
+    }
+    return true;
+}
+
+/**
  * Is the event visible?
  *
  * This is used to determine global visibility of an event in all places throughout Moodle.

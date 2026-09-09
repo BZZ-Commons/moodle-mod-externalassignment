@@ -70,7 +70,11 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         // Immediately after inserting "activity" record, call this!
         $this->apply_activity_instance($newitemid);
 
-        // $this->calendar_event_add($newitemid, $data); TODO issue #31
+        // The "due" calendar event is deliberately not restored here: action-type calendar
+        // events are excluded from activity backups (see restore_calendarevents_structure_step)
+        // and are instead recreated by externalassignment_refresh_events() in lib.php, which is
+        // called by the core\task\refresh_mod_calendar_events_task adhoc task that core queues at
+        // the end of every restore/duplication. See GitHub issue #31.
     }
     /**
      * checks if there is another assignment with the same external name in the same course
@@ -123,46 +127,6 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $this->set_mapping('externalassignment_overrides', $oldid, $newitemid);
     }
 
-    /**
-     * adds the calendar event for this external assignment
-     * @param $instanceid
-     * @param $data
-     * @return void
-     */
-    protected function calendar_event_add($instanceid, $data) {
-        global $CFG, $DB;
-        $event = new \stdClass();
-        $event->eventtype = 'due';
-        $event->type = CALENDAR_EVENT_TYPE_ACTION;
-        $event->name = $data->name . ' ' . get_string('isdue', 'externalassignment', $name);
-        $event->description = format_module_intro(
-            'externalassignment',
-            $this->$instanceid,
-            $this->get_coursemoduleid(),
-            false
-        );
-        $event->format = FORMAT_HTML;
-        $event->courseid = $this->get_course()->id;
-        $event->groupid = 0;
-        $event->userid = 0;
-        $event->modulename = 'externalassignment';
-        $event->instance = $instanceid;
-        $event->timestart = $data->duedate;
-        $event->timesort = $data->duedate;
-        $event->visible = true;
-        $event->timeduration = 0;
-
-        $event->id = $DB->get_field(
-            'event',
-            'id',
-            [
-                'modulename' => 'externalassignment',
-                'instance' => $instanceid,
-                'eventtype' => 'due',
-            ]
-        );
-        \calendar_event::create($event);
-    }
     /**
      * After execute the step, add related files
      */

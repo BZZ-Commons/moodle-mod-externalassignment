@@ -179,28 +179,51 @@ class assign_control {
      * @throws \moodle_exception
      */
     private function calendar_event_update(): void {
+        self::update_calendar_event($this->get_instance(), $this->get_course()->id, $this->get_coursemoduleid());
+    }
+
+    /**
+     * Inserts, updates or deletes the "due" calendar event for an externalassignment instance.
+     *
+     * This is also called from externalassignment_refresh_events() in lib.php, which is Moodle's
+     * standard hook for (re-)creating a module's calendar events outside of the settings form -
+     * most notably, it is what recreates the event after an activity has been duplicated or a
+     * course restored: action-type calendar events are deliberately not included in activity
+     * backups (see restore_calendarevents_structure_step), and are instead queued for recreation
+     * via the core\task\refresh_mod_calendar_events_task adhoc task at the end of every
+     * restore/duplication. See GitHub issue #31.
+     *
+     * @param \stdClass $instance the externalassignment record
+     * @param int $courseid the id of the course the instance belongs to
+     * @param int $coursemoduleid the id of the course module
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function update_calendar_event(\stdClass $instance, int $courseid, int $coursemoduleid): void {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/calendar/lib.php');
 
-        $name = $this->get_instance()->name;
+        $name = $instance->name;
         $event = new \stdClass();
         $event->eventtype = 'due';
         $event->type = CALENDAR_EVENT_TYPE_ACTION;
         $event->name = $name . ' ' . get_string('isdue', 'externalassignment', $name);
         $event->description = format_module_intro(
             'externalassignment',
-            $this->get_instance(),
-            $this->get_coursemoduleid(),
+            $instance,
+            $coursemoduleid,
             false
         );
         $event->format = FORMAT_HTML;
-        $event->courseid = $this->get_course()->id;
+        $event->courseid = $courseid;
         $event->groupid = 0;
         $event->userid = 0;
         $event->modulename = 'externalassignment';
-        $event->instance = $this->get_instance()->id;
-        $event->timestart = $this->get_instance()->duedate;
-        $event->timesort = $this->get_instance()->duedate;
+        $event->instance = $instance->id;
+        $event->timestart = $instance->duedate;
+        $event->timesort = $instance->duedate;
         $event->visible = true;
         $event->timeduration = 0;
 
@@ -209,14 +232,14 @@ class assign_control {
             'id',
             [
                 'modulename' => 'externalassignment',
-                'instance' => $this->get_instance()->id,
+                'instance' => $instance->id,
                 'eventtype' => 'due',
             ]
         );
 
         if ($event->id) {   // Does the event already exists?
             $calendarevent = \calendar_event::load($event->id);
-            if ($this->get_instance()->duedate !== null) {
+            if ($instance->duedate !== null) {
                 $calendarevent->update($event, false);
             } else {    // No more due date, so delete the event
                 // Calendar event is no longer needed.

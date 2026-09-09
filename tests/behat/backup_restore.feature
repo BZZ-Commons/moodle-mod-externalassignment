@@ -41,3 +41,37 @@ Feature: External assignments must survive a course backup and restore
     And I am on "Course 1" course homepage with editing mode on
     And I duplicate "Backup test assignment" activity
     Then I should see "Backup test assignment (copy)"
+
+  @javascript
+  Scenario: Duplicating an external assignment also duplicates its due-date calendar event
+    # Regression test for GitHub issue #31 ("No calendar event on duplication"): duplicating an
+    # external assignment did not recreate the "is due" calendar event for the copy.
+    Given the following "activities" exist:
+      | activity           | course | name                     | externalname       | externallink                       | duedate         |
+      | externalassignment | C1     | Calendar test assignment | m999-calendartest  | https://www.example.com/assignment | ##today noon##  |
+    And I am logged in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I duplicate "Calendar test assignment" activity
+    And I should see "Calendar test assignment (copy)"
+    And I follow "Dashboard"
+    When I click on today in the mini-calendar block to view the detail
+    Then I should see "Calendar test assignment is due"
+    And I should see "Calendar test assignment (copy) is due"
+
+  @javascript
+  Scenario: An external assignment's calendar event survives a course backup and restore
+    # Regression test for GitHub issue #31 ("No calendar event on duplication"): the restored
+    # copy's "is due" calendar event only appears once Moodle's adhoc task queue - which core
+    # schedules at the end of every restore - has been processed.
+    Given the following "activities" exist:
+      | activity           | course | name                         | externalname          | externallink                       | duedate         |
+      | externalassignment | C1     | Restore calendar assignment  | m999-restorecalendar  | https://www.example.com/assignment | ##today noon##  |
+    And I am logged in as "teacher1"
+    And I backup "Course 1" course using this options:
+      | Confirmation | Filename | calendar_test_backup.mbz |
+    When I restore "calendar_test_backup.mbz" backup into a new course using this options:
+      | Schema | Course name | Course 3 |
+    And I run all adhoc tasks
+    And I follow "Dashboard"
+    And I click on today in the mini-calendar block to view the detail
+    Then I should see "Restore calendar assignment is due"
