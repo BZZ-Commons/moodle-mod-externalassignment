@@ -41,6 +41,8 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(assign_control::class, 'get_context')]
 #[CoversMethod(assign_control::class, 'set_coursemodule')]
 #[CoversMethod(assign_control::class, 'get_coursemodule')]
+#[CoversMethod(assign_control::class, 'update_calendar_event')]
+#[CoversMethod(assign_control::class, 'update_override_calendar_event')]
 final class assign_control_test extends \advanced_testcase {
     /**
      * Test add_instance
@@ -279,6 +281,144 @@ final class assign_control_test extends \advanced_testcase {
             $record->needspassinggrade,
             'A new assignment with automatic completion must not end up with no completion rule selected.'
         );
+    }
+
+    /**
+     * Regression test for GitHub issue #37 ("Status: overdue despite overwrite"):
+     * update_override_calendar_event() must create a userid-scoped "due" calendar event
+     * (courseid=0, mirroring mod_assign's own per-user override events) using the *overridden*
+     * due date, separate from the shared assignment-level event.
+     */
+    public function test_update_override_calendar_event_creates_personal_event(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() - DAYSECS]);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $record = $DB->get_record('externalassignment', ['id' => $instance->id], '*', MUST_EXIST);
+        $overrideduedate = time() + DAYSECS;
+
+        assign_control::update_override_calendar_event($record, $module->id, $student->id, $overrideduedate);
+
+        $event = $DB->get_record('event', [
+            'modulename' => 'externalassignment',
+            'instance' => $instance->id,
+            'eventtype' => 'due',
+            'userid' => $student->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals(0, $event->courseid);
+        $this->assertEquals($overrideduedate, $event->timestart);
+        $this->assertEquals($overrideduedate, $event->timesort);
+    }
+
+    /**
+     * Companion test for GitHub issue #37: passing an empty/null due date (the override does not
+     * extend the due date, e.g. only the cutoff date was changed) must not create an event, and
+     * must remove one left over from a previous call.
+     */
+    public function test_update_override_calendar_event_deletes_when_no_duedate(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $record = $DB->get_record('externalassignment', ['id' => $instance->id], '*', MUST_EXIST);
+
+        assign_control::update_override_calendar_event($record, $module->id, $student->id, time() + 2 * DAYSECS);
+        $this->assertEquals(1, $DB->count_records('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'userid' => $student->id,
+        ]));
+
+        assign_control::update_override_calendar_event($record, $module->id, $student->id, null);
+        $this->assertEquals(0, $DB->count_records('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'userid' => $student->id,
+        ]));
+    }
+
+    /**
+     * Regression test for GitHub issue #37: once a student has a personal override calendar
+     * event, saving the assignment's own settings again (update_instance()) must still find and
+     * update the single shared event rather than creating a duplicate - update_calendar_event()
+     * can no longer rely on userid=0 to identify the shared event, because calendar_event
+     * silently replaces an empty userid with the acting user's id on creation.
+     */
+    public function test_update_instance_does_not_duplicate_shared_event_when_override_exists(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $record = $DB->get_record('externalassignment', ['id' => $instance->id], '*', MUST_EXIST);
+        assign_control::update_override_calendar_event($record, $module->id, $student->id, time() + 2 * DAYSECS);
+
+        $context = \context_module::instance($module->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
+        $assigncontrol = new assign_control($context, $cm);
+        $formdata = $this->build_formdata($course->id, 'Renamed Assignment', $instance->externalname);
+        $formdata->instance = $instance->id;
+        $formdata->coursemodule = $module->id;
+        $formdata->duedate = time() + 3 * DAYSECS;
+
+        $assigncontrol->update_instance($formdata, $module->id);
+        $assigncontrol->update_instance($formdata, $module->id);
+
+        $this->assertEquals(2, $DB->count_records('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'eventtype' => 'due',
+        ]));
+        $shared = $DB->get_record('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'courseid' => $course->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals($formdata->duedate, $shared->timestart);
+    }
+
+    /**
+     * Regression test for GitHub issue #37: deleting an assignment must clean up the shared
+     * calendar event AND any per-student override events, not just the first one it finds.
+     */
+    public function test_delete_instance_removes_override_calendar_events(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $record = $DB->get_record('externalassignment', ['id' => $instance->id], '*', MUST_EXIST);
+        assign_control::update_override_calendar_event($record, $module->id, $student->id, time() + 2 * DAYSECS);
+
+        $this->assertEquals(2, $DB->count_records('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'eventtype' => 'due',
+        ]));
+
+        $context = \context_module::instance($module->id);
+        $assigncontrol = new assign_control($context, null);
+        $assigncontrol->delete_instance($instance->id);
+
+        $this->assertEquals(0, $DB->count_records('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'eventtype' => 'due',
+        ]));
     }
 
     /**

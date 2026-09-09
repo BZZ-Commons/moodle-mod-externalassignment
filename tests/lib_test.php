@@ -109,6 +109,53 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * Regression test for GitHub issue #37 ("Status: overdue despite overwrite"), as it interacts
+     * with issue #31's fix: a student's personal "due" override event (see
+     * assign_control::update_override_calendar_event()) is, like the shared event, excluded from
+     * activity backups. Without also refreshing it here, a restored/duplicated course would
+     * silently drop every student's extension and immediately reintroduce issue #37 for them.
+     */
+    public function test_refresh_events_recreates_override_events(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $duedate = time() - DAYSECS;
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => $duedate]);
+
+        $overrideduedate = time() + DAYSECS;
+        $DB->insert_record('externalassignment_overrides', (object) [
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'allowsubmissionsfromdate' => 0,
+            'duedate' => $overrideduedate,
+            'cutoffdate' => $overrideduedate,
+        ]);
+
+        // Simulate the situation right after a restore: no calendar events exist at all yet.
+        $DB->delete_records('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]);
+
+        externalassignment_refresh_events(0, $instance->id);
+
+        $sharedevent = $DB->get_record('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'courseid' => $course->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals($duedate, $sharedevent->timestart);
+
+        $overrideevent = $DB->get_record('event', [
+            'modulename' => 'externalassignment', 'instance' => $instance->id, 'userid' => $student->id,
+        ], '*', MUST_EXIST);
+        $this->assertEquals(0, $overrideevent->courseid);
+        $this->assertEquals($overrideduedate, $overrideevent->timestart);
+    }
+
+    /**
      * With no instance given, externalassignment_refresh_events() must refresh every instance in
      * the given course - this is the code path the refresh_mod_calendar_events_task adhoc task
      * actually uses when it processes a course after a restore/duplication.

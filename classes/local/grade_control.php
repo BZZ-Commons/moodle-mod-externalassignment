@@ -246,13 +246,17 @@ class grade_control {
     }
 
     /**
-     * inserts or updates a user override
+     * inserts or updates a user override, and keeps that student's personal "due" calendar
+     * event (see assign_control::update_override_calendar_event()) in sync with it - otherwise
+     * their Dashboard would keep marking the assignment "Overdue" using the original due date
+     * even after being granted an extension (GitHub issue #37).
      * @param override $override
      * @return void
      * @throws \dml_exception
-     * @codeCoverageIgnore
+     * @throws \coding_exception
+     * @throws \moodle_exception
      */
-    private function override_update(override $override): void {
+    public function override_update(override $override): void {
         global $DB;
         if (
             $record = $DB->get_record(
@@ -268,6 +272,13 @@ class grade_control {
         } else {
             $DB->insert_record('externalassignment_overrides', $override->to_stdclass());
         }
+
+        assign_control::update_override_calendar_event(
+            $this->get_assign()->to_stdclass(),
+            $this->get_coursemoduleid(),
+            $override->get_userid(),
+            $override->get_duedate()
+        );
     }
 
 

@@ -278,7 +278,10 @@ function externalassignment_reset_gradebook(int $courseid, string $type = '') {
  * queues at the end of every course restore or activity duplication. Action-type calendar events
  * such as the "is due" reminder are deliberately excluded from activity backups (see
  * restore_calendarevents_structure_step), so without this function a duplicated or restored
- * external assignment would never get its due-date event back (GitHub issue #31).
+ * external assignment would never get its due-date event back (GitHub issue #31). It also
+ * recreates the personal "due" event for every student who has an override (GitHub issue #37),
+ * since those are excluded from backups for the same reason and would otherwise leave a
+ * restored/duplicated override silently falling back to the assignment's own due date.
  *
  * @param int $courseid Course id to refresh events for, 0 for all courses
  * @param \stdClass|int|null $instance externalassignment instance or its id, null to process all matching instances
@@ -295,7 +298,7 @@ function externalassignment_refresh_events($courseid = 0, $instance = null, $cm 
         if (!isset($cm)) {
             $cm = get_coursemodule_from_instance('externalassignment', $instance->id, $instance->course, false, MUST_EXIST);
         }
-        assign_control::update_calendar_event($instance, $instance->course, $cm->id);
+        externalassignment_refresh_instance_events($instance, $cm->id);
         return true;
     }
 
@@ -317,9 +320,33 @@ function externalassignment_refresh_events($courseid = 0, $instance = null, $cm 
             false,
             MUST_EXIST
         );
-        assign_control::update_calendar_event($externalassignment, $externalassignment->course, $module->id);
+        externalassignment_refresh_instance_events($externalassignment, $module->id);
     }
     return true;
+}
+
+/**
+ * Refreshes the shared "due" calendar event and every per-student override event for one
+ * externalassignment instance. See externalassignment_refresh_events().
+ *
+ * @param \stdClass $instance the externalassignment record
+ * @param int $coursemoduleid the id of the course module
+ * @return void
+ */
+function externalassignment_refresh_instance_events(\stdClass $instance, int $coursemoduleid): void {
+    global $DB;
+
+    assign_control::update_calendar_event($instance, $instance->course, $coursemoduleid);
+
+    $overrides = $DB->get_records('externalassignment_overrides', ['externalassignment' => $instance->id]);
+    foreach ($overrides as $override) {
+        assign_control::update_override_calendar_event(
+            $instance,
+            $coursemoduleid,
+            $override->userid,
+            $override->duedate ?: null
+        );
+    }
 }
 
 /**

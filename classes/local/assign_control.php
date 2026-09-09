@@ -113,17 +113,18 @@ class assign_control {
     public function delete_instance(int $id): void {
         global $DB;
         $this->set_coursemoduleid($id);
-        $eventid = $DB->get_field(
+        // Delete the shared event as well as any per-student override events (see
+        // update_override_calendar_event()) - there can be more than one matching row.
+        $events = $DB->get_records(
             'event',
-            'id',
             [
+                'modulename' => 'externalassignment',
                 'instance' => $this->get_coursemoduleid(),
                 'eventtype' => 'due',
             ]
         );
-        if ($eventid != false) {
-            $calendarevent = \calendar_event::load($eventid);
-            $calendarevent->delete();
+        foreach ($events as $event) {
+            \calendar_event::load($event->id)->delete();
         }
         $DB->delete_records('externalassignment_overrides', ['externalassignment' => $id]);
         $DB->delete_records('externalassignment_grades', ['externalassignment' => $id]);
@@ -234,6 +235,11 @@ class assign_control {
                 'modulename' => 'externalassignment',
                 'instance' => $instance->id,
                 'eventtype' => 'due',
+                // Distinguishes the shared event from any per-student override events (see
+                // update_override_calendar_event()): calendar_event defaults an empty userid to
+                // the acting user, so it cannot be relied on to identify the shared event, but
+                // courseid=0 is exclusive to the personal override events we create.
+                'courseid' => $courseid,
             ]
         );
 
@@ -247,6 +253,92 @@ class assign_control {
             }
         } else {
             \calendar_event::create($event);
+        }
+    }
+
+    /**
+     * Inserts, updates or deletes the personal "due" calendar event for a student who has an
+     * override.
+     *
+     * The shared event created by update_calendar_event() always uses the assignment's own due
+     * date and is visible to every enrolled user, so a student with an extension still had
+     * Moodle's Dashboard "Timeline" block and calendar mark their assignment "Overdue" once the
+     * *original* due date passed (the overdue flag is computed purely from that shared event's
+     * timesort, see calendar/classes/external/event_exporter_base.php). This creates a separate
+     * userid-scoped event (courseid=0) with the overridden due date instead, exactly like
+     * mod_assign does for its own user/group overrides. See GitHub issue #37.
+     *
+     * @param \stdClass $instance the externalassignment record
+     * @param int $coursemoduleid the id of the course module
+     * @param int $userid the id of the student the override belongs to
+     * @param int|null $duedate the overridden due date, or null/0 if the override does not
+     *                          extend the due date (e.g. only the cutoff date was changed)
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function update_override_calendar_event(
+        \stdClass $instance,
+        int $coursemoduleid,
+        int $userid,
+        ?int $duedate
+    ): void {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $eventid = $DB->get_field(
+            'event',
+            'id',
+            [
+                'modulename' => 'externalassignment',
+                'instance' => $instance->id,
+                'eventtype' => 'due',
+                'userid' => $userid,
+                // courseid=0 is what marks this as the personal override event, as opposed to
+                // the shared event (see update_calendar_event()).
+                'courseid' => 0,
+            ]
+        );
+
+        if (empty($duedate)) {
+            // The override does not extend the due date: the student falls back to the shared
+            // event, so any personal event left over from a previous override must be removed.
+            if ($eventid) {
+                \calendar_event::load($eventid)->delete();
+            }
+            return;
+        }
+
+        $name = $instance->name;
+        $event = new \stdClass();
+        $event->eventtype = 'due';
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
+        $event->name = $name . ' ' . get_string('isdue', 'externalassignment', $name);
+        $event->description = format_module_intro(
+            'externalassignment',
+            $instance,
+            $coursemoduleid,
+            false
+        );
+        $event->format = FORMAT_HTML;
+        // The events API ignores userid-scoped events when courseid is non-zero.
+        $event->courseid = 0;
+        $event->groupid = 0;
+        $event->userid = $userid;
+        $event->modulename = 'externalassignment';
+        $event->instance = $instance->id;
+        $event->timestart = $duedate;
+        $event->timesort = $duedate;
+        $event->visible = true;
+        $event->timeduration = 0;
+        $event->priority = CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+
+        if ($eventid) {
+            $event->id = $eventid;
+            \calendar_event::load($eventid)->update($event, false);
+        } else {
+            \calendar_event::create($event, false);
         }
     }
 
