@@ -238,4 +238,126 @@ final class update_grade_test extends \advanced_testcase {
         ]);
         $this->assertFalse($grade);
     }
+
+    /**
+     * Regression test for GitHub issue #39 ("Update grades with manual completion"): posting a
+     * grade for an assignment whose completion tracking is set to "Students manually mark the
+     * activity as completed" must not throw completion_info's "Unexpected manual completion
+     * state ...: -1" error. update_grades() used to unconditionally call
+     * completion_info::update_state(..., COMPLETION_UNKNOWN, ...) to ask completion_info to
+     * recompute the state - but COMPLETION_UNKNOWN is only a valid value for *automatic*
+     * tracking; manual tracking only ever accepts an explicit complete/incomplete and is driven
+     * by the student's own toggle, not by grades.
+     */
+    public function test_execute_does_not_error_with_manual_completion(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        set_config('external_username', 'github_user', 'mod_externalassignment');
+        $field = $this->getDataGenerator()->create_custom_profile_field([
+            'datatype' => 'text',
+            'shortname' => 'github_user',
+            'name' => 'GitHub username',
+        ]);
+
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(
+            [
+                'course' => $course->id,
+                'externalname' => 'externalname',
+                'externalgrademax' => 100,
+                'completion' => COMPLETION_TRACKING_MANUAL,
+            ]
+        );
+
+        $student = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $DB->insert_record('user_info_data', [
+            'userid' => $student->id,
+            'fieldid' => $field->id,
+            'data' => 'octocat-manual',
+            'dataformat' => FORMAT_MOODLE,
+        ]);
+
+        // This must not throw completion_info's "Unexpected manual completion state" error.
+        $result = update_grade::execute('externalname', 'octocat-manual', 45.0, 100.0, 'https://example.com/repo', '');
+
+        $this->assertEquals('info', $result['type']);
+        $this->assertStringContainsString('success', $result['name']);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
+        $completion = new \completion_info($course);
+
+        // Manual tracking is driven by the student's own toggle, not by grades - updating the
+        // grade must leave the completion state untouched (still incomplete, since the student
+        // has not marked the activity complete themselves).
+        $this->assertEquals(
+            COMPLETION_INCOMPLETE,
+            $completion->get_data($cm, false, $student->id)->completionstate
+        );
+    }
+
+    /**
+     * Companion test for GitHub issue #39: the fix above must only skip the completion update for
+     * *manual* tracking - automatic tracking must still have its state recomputed exactly as
+     * before, so a passing grade posted through the webservice still marks the activity complete.
+     */
+    public function test_execute_still_updates_automatic_completion(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        set_config('external_username', 'github_user', 'mod_externalassignment');
+        $field = $this->getDataGenerator()->create_custom_profile_field([
+            'datatype' => 'text',
+            'shortname' => 'github_user',
+            'name' => 'GitHub username',
+        ]);
+
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(
+            [
+                'course' => $course->id,
+                'externalname' => 'externalname',
+                'externalgrademax' => 100,
+                'manualgrademax' => 0,
+                'passingpercentage' => 40,
+                'needspassinggrade' => 1,
+                'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            ]
+        );
+
+        $student = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $DB->insert_record('user_info_data', [
+            'userid' => $student->id,
+            'fieldid' => $field->id,
+            'data' => 'octocat-auto',
+            'dataformat' => FORMAT_MOODLE,
+        ]);
+
+        // 45/100 clears the 40% passing threshold.
+        $result = update_grade::execute('externalname', 'octocat-auto', 45.0, 100.0, 'https://example.com/repo', '');
+
+        $this->assertEquals('info', $result['type']);
+        $this->assertStringContainsString('success', $result['name']);
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $cm = get_fast_modinfo($course)->get_cm($module->id);
+        $completion = new \completion_info($course);
+
+        $this->assertNotEquals(
+            COMPLETION_INCOMPLETE,
+            $completion->get_data($cm, false, $student->id)->completionstate,
+            'Automatic completion must still be recomputed and reflect the passing grade.'
+        );
+    }
 }

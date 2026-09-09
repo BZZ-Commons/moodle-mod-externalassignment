@@ -336,7 +336,14 @@ class update_grade extends external_api {
         $cm = get_coursemodule_from_instance('externalassignment', $assignment->get_id(), 0, false, MUST_EXIST);
          [$course, $coursemodule] = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
         $completion = new \completion_info($course);
-        if ($completion->is_enabled($coursemodule)) {
+        // COMPLETION_UNKNOWN asks completion_info to recompute the state from the custom
+        // completion rule, which only applies to automatic tracking - passing it while
+        // completion is set to manual tracking makes update_state() throw
+        // "Unexpected manual completion state" (GitHub issue #39), since manual tracking only
+        // ever accepts an explicit COMPLETION_COMPLETE/COMPLETION_INCOMPLETE. A manually tracked
+        // activity's completion is driven by the student's own toggle, not by grades, so there is
+        // nothing to update here.
+        if ($completion->is_enabled($coursemodule) && $coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
             $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $userid);
         }
     }
