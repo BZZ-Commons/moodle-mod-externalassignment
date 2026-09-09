@@ -28,6 +28,12 @@
  * Custom code to be run on installing the plugin.
  */
 function xmldb_externalassignment_install() {
+    global $CFG;
+    require_once($CFG->dirroot . '/mod/externalassignment/db/upgradelib.php');
+
+    // Create the "github_user" profile field so the admin does not have to do it by hand
+    // (GitHub issue #9).
+    mod_externalassignment_create_github_username_profile_field();
 
     return true;
 }

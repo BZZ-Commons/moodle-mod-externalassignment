@@ -40,11 +40,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
@@ -93,11 +92,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
@@ -142,11 +140,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
@@ -200,11 +197,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course();
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
@@ -256,11 +252,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
@@ -314,11 +309,10 @@ final class update_grade_test extends \advanced_testcase {
         $this->setAdminUser();
 
         set_config('external_username', 'github_user', 'mod_externalassignment');
-        $field = $this->getDataGenerator()->create_custom_profile_field([
-            'datatype' => 'text',
-            'shortname' => 'github_user',
-            'name' => 'GitHub username',
-        ]);
+        // The plugin creates this profile field automatically on install (see
+        // db/upgradelib.php's mod_externalassignment_create_github_username_profile_field(),
+        // GitHub issue #9) - reuse it rather than creating a conflicting duplicate.
+        $field = $DB->get_record('user_info_field', ['shortname' => 'github_user'], '*', MUST_EXIST);
 
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');

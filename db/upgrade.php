@@ -37,5 +37,14 @@ require_once(__DIR__ . '/upgradelib.php');
 function xmldb_externalassignment_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
+
+    if ($oldversion < 2026090900) {
+        // Create the "github_user" profile field for sites that installed the plugin before this
+        // existed - new installs get it via db/install.php instead (GitHub issue #9).
+        mod_externalassignment_create_github_username_profile_field();
+
+        upgrade_mod_savepoint(true, 2026090900, 'externalassignment');
+    }
+
     return true;
 }
