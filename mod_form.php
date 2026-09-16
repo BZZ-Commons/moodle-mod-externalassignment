@@ -143,6 +143,23 @@ class mod_externalassignment_mod_form extends moodleform_mod {
             }
         }
 
+        if (!empty($data['externallink'])) {
+            $externallink = trim($data['externallink']);
+            if (!preg_match('#^https?://#i', $externallink) || clean_param($externallink, PARAM_URL) === '') {
+                $errors['externallink'] = get_string('externallinkinvalidvalidation', 'externalassignment');
+            }
+        }
+
+        $externalgrademax = unformat_float($data['externalgrademax'] ?? '', true);
+        if (is_float($externalgrademax) && $externalgrademax < 0) {
+            $errors['externalgrademax'] = get_string('externalgrademaxnegativevalidation', 'externalassignment');
+        }
+
+        $manualgrademax = unformat_float($data['manualgrademax'] ?? '', true);
+        if (is_float($manualgrademax) && $manualgrademax < 0) {
+            $errors['manualgrademax'] = get_string('manualgrademaxnegativevalidation', 'externalassignment');
+        }
+
         return $errors;
     }
 
