@@ -6,10 +6,19 @@ Feature: The "needs passing grade" completion rule must never silently disappear
   assignment with automatic completion and when I later edit its other settings
 
   This covers acceptance_tests.md section 3 ("Edit existing external assignment"), and is the
-  Behat-level regression test for GitHub issues #12 ("Illegal completion conditions": it must not
-  be possible to have automatic completion enabled with no completion rule selected) and #36
-  ("Losing the 'Needs passing grade'": editing an assignment's settings used to clear the
-  requirement even though students had already started completing it).
+  Behat-level regression test for GitHub issue #36 ("Losing the 'Needs passing grade'": editing
+  an assignment's settings used to clear the requirement even though students had already
+  started completing it).
+
+  GitHub issue #12 ("Illegal completion conditions": automatic completion must never be saved
+  with no completion rule selected) has a server-side safety net in
+  assign::load_data() that force-enables "needs passing grade" whenever completion tracking is
+  automatic - see assign_control_test.php's
+  test_add_instance_forces_needspassinggrade_for_automatic_completion(). That path can't be
+  exercised through this form: Moodle's own client-side completion-conditions validation already
+  refuses to submit "Add requirements" with no rule checked ("You must select at least one
+  condition."), so a real teacher can never reach the server with an unchecked rule in the first
+  place.
 
   Background:
     Given the following "courses" exist:
@@ -23,7 +32,7 @@ Feature: The "needs passing grade" completion rule must never silently disappear
       | teacher1 | C1     | editingteacher |
 
   @javascript
-  Scenario: Enabling automatic completion at creation time enables "needs passing grade" too
+  Scenario: Enabling automatic completion with the passing grade rule saves and reloads correctly
     Given I am logged in as "teacher1"
     And I turn editing mode on
     And I add an externalassignment activity to course "Course 1" section "1" and I fill the form with:
@@ -31,6 +40,7 @@ Feature: The "needs passing grade" completion rule must never silently disappear
       | External assignment | m999-autocompletion                |
       | Assignment link     | https://www.example.com/assignment |
       | Add requirements    | 1                                   |
+      | needspassinggrade   | 1                                   |
     When I am on the "Automatic completion assignment" "externalassignment activity editing" page
     Then the field "needspassinggrade" matches value "1"
 
@@ -47,7 +57,8 @@ Feature: The "needs passing grade" completion rule must never silently disappear
       | needspassinggrade   | 1                                   |
     # Re-open the settings and change something that has nothing to do with completion.
     When I am on the "Passing grade assignment" "externalassignment activity editing" page
-    And I set the field "Due date[day]" to "1"
+    And I expand all fieldsets
+    And I set the field "duedate[day]" to "1"
     And I press "Save and display"
     # The completion rule must have survived the save.
     And I am on the "Passing grade assignment" "externalassignment activity editing" page

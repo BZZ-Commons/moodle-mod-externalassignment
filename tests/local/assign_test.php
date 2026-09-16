@@ -34,6 +34,7 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(assign::class, 'sort_students')]
 #[CoversMethod(assign::class, 'count_students')]
 #[CoversMethod(assign::class, 'take_student')]
+#[CoversMethod(assign::class, 'get_next_student_id')]
 #[CoversMethod(assign::class, 'load_overrides')]
 #[CoversMethod(assign::class, 'set_id')]
 #[CoversMethod(assign::class, 'get_id')]
@@ -223,6 +224,35 @@ final class assign_test extends \advanced_testcase {
         assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('John', reset($users)->get_firstname());
+    }
+
+    /**
+     * Test get_next_student_id
+     */
+    public function test_get_next_student_id(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($cm->id);
+
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'John', 'lastname' => 'Doe']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Jane', 'lastname' => 'Smith']);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        $user3 = $this->getDataGenerator()->create_user(['firstname' => 'Alice', 'lastname' => 'Johnson']);
+        $this->getDataGenerator()->enrol_user($user3->id, $course->id);
+
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid, 'lastname', 'asc');
+
+        // Sorted by lastname ascending: Doe, Johnson, Smith.
+        $this->assertEquals($user3->id, $assign->get_next_student_id($user1->id));
+        $this->assertEquals($user2->id, $assign->get_next_student_id($user3->id));
+        $this->assertNull($assign->get_next_student_id($user2->id));
+        $this->assertNull($assign->get_next_student_id(-1));
     }
 
     /**

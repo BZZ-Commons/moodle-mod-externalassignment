@@ -160,4 +160,82 @@ final class view_student_test extends \advanced_testcase {
 
         $this->assertEquals('https://example.com/the-assignment', $data->externallink);
     }
+
+    /**
+     * Regression test for GitHub issue #27 ("Assignment link"): the student's "Submission
+     * status" table used to always render the assignment link regardless of the "Always show
+     * link" setting and the "allow submissions from" date, bypassing the same visibility rule
+     * that view_link.php already enforced elsewhere on the page.
+     */
+    public function test_export_for_template_hides_link_before_submissions_open_when_not_always_shown(): void {
+        global $PAGE;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'alwaysshowlink' => 0,
+            'allowsubmissionsfromdate' => time() + DAYSECS,
+        ]);
+
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($module->id);
+
+        $assign = new assign(null, $context);
+        $assign->load_db($module->id);
+
+        $grade = new grade(null);
+        $grade->load_db($assign->get_id(), $student->id);
+
+        $renderer = $PAGE->get_renderer('core');
+        $view = new view_student($module->id, $context, $assign, $grade, $student->id);
+
+        $data = $view->export_for_template($renderer);
+
+        $this->assertFalse($data->showexternallink);
+    }
+
+    /**
+     * The link must still be shown once the "allow submissions from" date has passed, even
+     * with "Always show link" off.
+     */
+    public function test_export_for_template_shows_link_once_submissions_have_opened(): void {
+        global $PAGE;
+
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'alwaysshowlink' => 0,
+            'allowsubmissionsfromdate' => time() - DAYSECS,
+        ]);
+
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $module = get_coursemodule_from_instance('externalassignment', $instance->id);
+        $context = \context_module::instance($module->id);
+
+        $assign = new assign(null, $context);
+        $assign->load_db($module->id);
+
+        $grade = new grade(null);
+        $grade->load_db($assign->get_id(), $student->id);
+
+        $renderer = $PAGE->get_renderer('core');
+        $view = new view_student($module->id, $context, $assign, $grade, $student->id);
+
+        $data = $view->export_for_template($renderer);
+
+        $this->assertTrue($data->showexternallink);
+    }
 }

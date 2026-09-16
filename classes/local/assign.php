@@ -319,6 +319,21 @@ class assign {
     }
 
     /**
+     * returns the userid of the student that follows the given one in the current sort order,
+     * as set up by the most recent call to load_db()/sort_students()
+     * @param int $userid
+     * @return int|null null if the given user is the last student, or isn't found
+     */
+    public function get_next_student_id(int $userid): ?int {
+        $userids = array_keys($this->students);
+        $position = array_search($userid, $userids, true);
+        if ($position === false || !isset($userids[$position + 1])) {
+            return null;
+        }
+        return $userids[$position + 1];
+    }
+
+    /**
      * loads all the grades for this assignment
      * @param int $coursemodule
      * @param int|null $userid

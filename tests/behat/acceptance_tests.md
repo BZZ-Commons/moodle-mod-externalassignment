@@ -13,7 +13,6 @@ are not yet covered.
 - [5. Grading → completion status](#5-grading--completion-status)
 - [6. Student view of an assignment](#6-student-view-of-an-assignment)
 - [7. Other feature / regression coverage](#7-other-feature--regression-coverage)
-- [8. Archived tests](#8-archived-tests)
 - [Summary of gaps](#summary-of-gaps)
 
 ---

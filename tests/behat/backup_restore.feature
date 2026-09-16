@@ -19,9 +19,14 @@ Feature: External assignments must survive a course backup and restore
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+    And the following "system role assigns" exist:
+      | user     | role    | contextlevel |
+      | teacher1 | manager | System       |
     And the following "activities" exist:
       | activity           | course | name                    | externalname     | externallink                       | duedate            |
       | externalassignment | C1     | Backup test assignment  | m999-backuptest   | https://www.example.com/assignment | ##tomorrow noon##  |
+    And the following config values are set as admin:
+      | enableasyncbackup | 0 |
 
   @javascript
   Scenario: An external assignment survives a course backup and restore into a new course
@@ -30,7 +35,7 @@ Feature: External assignments must survive a course backup and restore
       | Confirmation | Filename | test_backup.mbz |
     When I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
-    And I am on "Course 2" course homepage with editing mode on
+    And I am on "Course 2 copy 1" course homepage
     Then I should see "Backup test assignment"
     When I follow "Backup test assignment"
     Then I should see "https://www.example.com/assignment"

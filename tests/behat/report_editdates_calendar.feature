@@ -27,7 +27,7 @@ Feature: Editing dates through the "Dates" report must update the calendar
       | student1 | C1     | student        |
     And the following "activities" exist:
       | activity           | course | name                    | externalname       | externallink                        | duedate        |
-      | externalassignment | C1     | Dates report assignment | m999-editdatescal   | https://www.example.com/assignment  | ##yesterday##  |
+      | externalassignment | C1     | Editdates calendar test | m999-editdatescal   | https://www.example.com/assignment  | ##yesterday##  |
 
   Scenario: Moving a due date into the future via the Dates report clears the calendar's overdue flag
     Given I am logged in as "teacher1"
@@ -42,4 +42,4 @@ Feature: Editing dates through the "Dates" report must update the calendar
     And I log in as "student1"
     And I click on "Filter timeline by date" "button" in the "Timeline" "block"
     And I click on "Overdue" "link" in the "Timeline" "block"
-    Then I should not see "Dates report assignment" in the "Timeline" "block"
+    Then I should not see "Editdates calendar test" in the "Timeline" "block"

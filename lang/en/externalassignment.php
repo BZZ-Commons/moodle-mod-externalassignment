@@ -149,6 +149,7 @@ $string['submissionsdue'] = 'Due:';
 $string['submissionsopen'] = 'Opens:';
 $string['submissionsopened'] = 'Opened:';
 $string['submissionstatus'] = 'Submission status';
+$string['submitandnext'] = 'Save and show next';
 
 $string['taskduplicatenames'] = 'Check for duplicate external assignment names for all students';
 $string['timeremaining'] = 'Time left';

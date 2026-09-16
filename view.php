@@ -107,6 +107,10 @@ function show_details($context, $coursemoduleid): void {
         ($assignment->get_allowsubmissionsfromdate() > 0 && $assignment->get_allowsubmissionsfromdate() >= time())
     ) {
         $assignment->set_intro('');
+        // Blanking $assignment's own intro above has no effect on what's displayed: Moodle's
+        // standard activity header reads the description straight from the course module
+        // record, not from this object, so it must be suppressed here too (GitHub issue #13).
+        $PAGE->activityheader->set_description('');
     }
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();

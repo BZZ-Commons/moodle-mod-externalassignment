@@ -118,6 +118,9 @@ class grader_form extends moodleform {
 
         $buttonarray = [];
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+        if ($this->_customdata->hasnextstudent) {
+            $buttonarray[] =& $mform->createElement('submit', 'submitandnext', get_string('submitandnext', 'externalassignment'));
+        }
         $buttonarray[] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');

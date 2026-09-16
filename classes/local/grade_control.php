@@ -106,6 +106,9 @@ class grade_control {
         }
         $data->cutoffdate = $this->get_assign()->get_cutoffdate();
 
+        $nextstudentid = $this->get_assign()->get_next_student_id($this->get_userid());
+        $data->hasnextstudent = $nextstudentid !== null;
+
         // Time remaining.
         $timeremaining = $data->duedate - time();
         $due = '';
@@ -149,13 +152,17 @@ class grade_control {
                 if ($completion->is_enabled($coursemodule) && $coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
                     $completion->update_state($coursemodule, COMPLETION_UNKNOWN, $this->get_userid());
                 }
+                $nextuserid = $this->userid;
+                if (isset($formdata->submitandnext) && $nextstudentid !== null) {
+                    $nextuserid = $nextstudentid;
+                }
                 redirect(
                     new \moodle_url(
                         'view.php',
                         [
                             'id' => $this->coursemoduleid,
                             'action' => 'grader',
-                            'userid' => $this->userid,
+                            'userid' => $nextuserid,
                         ]
                     )
                 );
@@ -207,7 +214,7 @@ class grade_control {
         $data->courseid = $this->courseid;
         $data->allowsubmissionsfromdate = $this->get_assign()->get_allowsubmissionsfromdate();
         $data->duedate = $this->get_assign()->get_duedate();
-        $data->cutoffdate = $this->get_assign()->get_duedate();
+        $data->cutoffdate = $this->get_assign()->get_cutoffdate();
         $data->users = [];
         foreach ($userids as $userid) {
             if (array_key_exists($userid, $this->get_assign()->get_students())) {

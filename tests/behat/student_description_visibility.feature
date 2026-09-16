@@ -9,12 +9,10 @@ Feature: The assignment description must respect "Always show description" befor
   ignored": "If an 'opendate' is set and 'always show description' is not checked, the
   description is still shown").
 
-  NOTE: view.php's show_details() only blanks a local copy of the description
-  ($assignment->set_intro('')) - it is never echoed anywhere in view.php or its templates. The
-  activity's description on this page is actually rendered by Moodle's standard activity header,
-  which reads the description straight from the course module record and is never told about
-  this flag. Based on that reading, the first scenario below is expected to fail until the
-  description is either suppressed on the activity header itself or actually echoed conditionally.
+  NOTE: view.php's show_details() used to only blank a local copy of the description
+  ($assignment->set_intro('')), which had no effect: Moodle's standard activity header reads the
+  description straight from the course module record, not from that local object. Fixed by also
+  calling $PAGE->activityheader->set_description('') before rendering the page header.
 
   Background:
     Given the following "courses" exist:
@@ -53,8 +51,8 @@ Feature: The assignment description must respect "Always show description" befor
       | External assignment      | m999-showndescription               |
       | Assignment link          | https://www.example.com/assignment |
       | Description               | ThisDescriptionTextMustBeVisible   |
-      | Always show description | 1                                   |
       | Allow submissions from   | ##tomorrow noon##                  |
+      | Always show description | 1                                   |
     When I log out
     And I log in as "student1"
     And I am on the "Shown description assignment" "externalassignment activity" page
