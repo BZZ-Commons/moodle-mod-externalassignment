@@ -52,7 +52,10 @@ class grade {
         global $USER;
         if (isset($formdata)) {
             $this->load_data($formdata);
-            $this->set_externalassignment($formdata->externalassignmentid);
+            // The grader form submits this as "externalassignmentid" (its hidden field name),
+            // while a raw DB record (loaded via assign::load_grades()) has it as
+            // "externalassignment" (the actual column name) - accept either.
+            $this->set_externalassignment($formdata->externalassignmentid ?? $formdata->externalassignment ?? null);
         } else {
             $this->set_id(null);
             $this->set_externalassignment(null);

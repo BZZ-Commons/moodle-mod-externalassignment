@@ -82,12 +82,13 @@ class view_grading implements renderable, templatable {
             $gradedata = $student->to_stdclass();
             $gradedata->coursemoduleid = $this->coursemoduleid;
             $gradedata->courseid = $assign->get_course();
-            $gradedata->externalgrade = number_format($gradedata->grade->externalgrade, 2);
-            $gradedata->manualgrade = number_format($gradedata->grade->manualgrade, 2);
-            $gradedata->gradefinal = number_format(
-                $gradedata->grade->externalgrade + $gradedata->grade->manualgrade,
-                2
-            );
+            // A student who has never been graded has no "grade" property at all (see
+            // student::to_stdclass()) - treat that as a grade of 0, same as a freshly graded 0.
+            $externalgrade = $gradedata->grade->externalgrade ?? 0.0;
+            $manualgrade = $gradedata->grade->manualgrade ?? 0.0;
+            $gradedata->externalgrade = number_format($externalgrade, 2);
+            $gradedata->manualgrade = number_format($manualgrade, 2);
+            $gradedata->gradefinal = number_format($externalgrade + $manualgrade, 2);
             $list[] = $gradedata;
         }
         $data->students = $list;

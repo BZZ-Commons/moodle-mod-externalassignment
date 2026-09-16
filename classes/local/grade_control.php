@@ -96,8 +96,10 @@ class grade_control {
         $grade = $student->get_grade();
         if (!empty($student->get_grade())) {
             $data->gradeid = $grade->get_id();
+            $data->externallink = $grade->get_externallink();
         } else {
             $data->gradeid = -1;
+            $data->externallink = '';
         }
         $data->externalassignment = $this->get_assign()->get_id();
         $data->status = $student->get_status();

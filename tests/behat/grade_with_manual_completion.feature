@@ -36,7 +36,7 @@ Feature: Grading an external assignment must not error when completion is tracke
     And I log out
     And I am on the "Manual completion test" "externalassignment activity" page logged in as teacher1
     And I click on "Show all" "link"
-    And I click on "Grade" "link"
+    And I click on "Grade" "link" in the "Student 1" "table_row"
     When I set the field "Grading (max. 20)" to "15"
     And I press "Save changes"
     Then I should not see "Unexpected manual completion state"

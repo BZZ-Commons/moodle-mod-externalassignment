@@ -67,20 +67,27 @@ URL-format check on `externallink` and no minimum-value check on `externalgradem
 
 | # | Due Date | Cut-off Date | Completion | Status | Feature |
 |---|:---:|:---:|---|:---:|---|
-| a | Y | Y | passing grade | ❌ | — |
-| b | Y | Y | manual | ❌ | — |
-| c | Y | Y | none | ❌ | — |
-| d | Y | N | passing grade | ❌ | — |
-| e | Y | N | manual | ❌ | — |
-| f | Y | N | none | ❌ | — |
-| g | N | N | passing grade | ❌ | — |
-| h | N | N | manual | ❌ | — |
-| i | N | N | none | ❌ | — |
+| a | Y | Y | passing grade | ✅ | [`teacher_edit_cutoff_and_passinggrade.feature`](teacher_edit_cutoff_and_passinggrade.feature) |
+| b | Y | Y | manual | ✅ | [`teacher_edit_cutoff_and_manual.feature`](teacher_edit_cutoff_and_manual.feature) |
+| c | Y | Y | none | ✅ | [`teacher_edit_cutoff_no_conditions.feature`](teacher_edit_cutoff_no_conditions.feature) |
+| d | Y | N | passing grade | ✅ | [`teacher_edit_due_and_passinggrade.feature`](teacher_edit_due_and_passinggrade.feature) |
+| e | Y | N | manual | ✅ | [`teacher_edit_due_and_manual.feature`](teacher_edit_due_and_manual.feature) |
+| f | Y | N | none | ✅ | [`teacher_edit_due_no_conditions.feature`](teacher_edit_due_no_conditions.feature) |
+| g | N | N | passing grade | ✅ | [`teacher_edit_nodates_and_passinggrade.feature`](teacher_edit_nodates_and_passinggrade.feature) |
+| h | N | N | manual | ✅ | [`teacher_edit_nodates_and_manual.feature`](teacher_edit_nodates_and_manual.feature) |
+| i | N | N | none | ✅ | [`teacher_edit_nodates_no_conditions.feature`](teacher_edit_nodates_no_conditions.feature) |
+
+All nine combinations are covered. Rows a–h start from a bare assignment (no dates, no
+completion) and edit it via `modedit.php` to add the target dates/completion, then check the
+same course-page indicators (`Due:`, `Mark as done`, `Completion` panel) used by the section 1
+create tests. Row i does the reverse — it starts from a fully-configured assignment and edits it
+back down to no dates/no conditions (using `disabled` as the field value to uncheck an optional
+date selector, and "Completion conditions > None" to drop back out of automatic completion) — to
+prove that *clearing* settings through the edit form works as well as adding them.
 
 ⚠️ [`teacher_edit_needspassinggrade.feature`](teacher_edit_needspassinggrade.feature) covers a
-related edit scenario — that the "needs passing grade" completion rule survives an unrelated
-settings edit — but it doesn't exercise the due/cut-off/completion matrix above, so the matrix
-itself is still untested.
+related regression — that the "needs passing grade" rule survives an *unrelated* settings edit —
+which is a different concern from the matrix above.
 
 ---
 
@@ -108,21 +115,39 @@ assignment instead of the create form.
 
 | # | Existing grade | Completion condition | Status Before | Status After | Status | Feature |
 |---|:---:|---|:---:|:---:|:---:|---|
-| a | N | none | – | – | ❌ | — |
-| b | N | manual | – | – | ❌ | — |
-| c | N | passing grade | – | todo | ✅ | [`teacher_manual_grading_completion.feature`](teacher_manual_grading_completion.feature) |
+| a | N | none | – | – | ✅ | [`teacher_grading_none_first_grade.feature`](teacher_grading_none_first_grade.feature) |
+| b | N | manual | – | – | ✅ | [`teacher_grading_manual_first_grade.feature`](teacher_grading_manual_first_grade.feature) |
+| c | N | passing grade | – | failed | ✅ | [`teacher_manual_grading_completion.feature`](teacher_manual_grading_completion.feature) |
 | d | N | passing grade | – | done | ✅ | [`teacher_manual_grading_completion.feature`](teacher_manual_grading_completion.feature) |
-| e | Y | none | – | – | ❌ | — |
-| f | Y | manual | done | done | ❌ | — |
-| g | Y | manual | todo | todo | ❌ | — |
-| h | Y | passing grade | done | done | ❌ | — |
-| i | Y | passing grade | done | todo | ❌ | — |
-| j | Y | passing grade | todo | done | ❌ | — |
-| k | Y | passing grade | todo | todo | ❌ | — |
+| e | Y | none | – | – | ✅ | [`teacher_regrading_none.feature`](teacher_regrading_none.feature) |
+| f | Y | manual | done | done | ✅ | [`teacher_regrading_manual_done_stays_done.feature`](teacher_regrading_manual_done_stays_done.feature) |
+| g | Y | manual | todo | todo | ✅ | [`teacher_regrading_manual_todo_stays_todo.feature`](teacher_regrading_manual_todo_stays_todo.feature) |
+| h | Y | passing grade | done | done | ✅ | [`teacher_regrading_passinggrade_done_stays_done.feature`](teacher_regrading_passinggrade_done_stays_done.feature) |
+| i | Y | passing grade | done | failed | ✅ | [`teacher_regrading_passinggrade_done_to_failed.feature`](teacher_regrading_passinggrade_done_to_failed.feature) |
+| j | Y | passing grade | failed | done | ✅ | [`teacher_regrading_passinggrade_failed_to_done.feature`](teacher_regrading_passinggrade_failed_to_done.feature) |
+| k | Y | passing grade | failed | failed | ✅ | [`teacher_regrading_passinggrade_failed_stays_failed.feature`](teacher_regrading_passinggrade_failed_stays_failed.feature) |
 
-Rows c and d (grading a fresh — i.e. "no existing grade" — assignment above/below the passing
-threshold) are covered. All the "re-grading an already-graded assignment" rows (e–k) are still
-missing.
+All eleven rows are covered. Note the "Status" column uses `todo`/`done`/`failed` rather than the
+original doc's `Y`/`N`: `mod_externalassignment_completion\custom_completion::get_state()`
+(`classes/completion/custom_completion.php`) returns `COMPLETION_INCOMPLETE` ("todo") **only**
+when a student has no grade at all yet; once *any* grade exists it's always either
+`COMPLETION_COMPLETE` ("done") or `COMPLETION_COMPLETE_FAIL` ("failed") — there is no
+graded-but-"todo" state, which is why rows h–k use `failed` rather than `todo` for a graded,
+below-threshold assignment.
+
+Building these tests surfaced three real, previously-unnoticed bugs in the plugin, all now
+fixed (none of the existing grading-related Behat scenarios had ever actually been run
+successfully before this — see git history for the fixes):
+- `classes/output/view_grading.php` — the "Show all" grading overview page crashed for *any*
+  student who had never been graded yet (`student::to_stdclass()` only sets a `grade` property
+  when a grade already exists, but the view unconditionally read `$gradedata->grade->...`).
+- `classes/local/grade_control.php` — the single-student grader form always crashed, graded or
+  not, because `$data->externallink` was read in `grader_form::definition()` before ever being
+  set on the customdata.
+- `classes/local/grade.php` — `grade::__construct()` read `$formdata->externalassignmentid`,
+  which only exists on a submitted grader-form payload; a raw DB record (as loaded by
+  `assign::load_grades()`) has the column `externalassignment` instead, so loading a student's
+  existing grade from the database always failed silently.
 
 ---
 
@@ -139,11 +164,18 @@ section 1's due/cut-off/completion combinations:
 | d | Y | N | passing grade | ✅ | [`student_due_and_passinggrade.feature`](student_due_and_passinggrade.feature) |
 | e | Y | N | manual | ✅ | [`student_due_and_manual.feature`](student_due_and_manual.feature) |
 | f | Y | N | none | ✅ | [`student_due_and_no_conditions.feature`](student_due_and_no_conditions.feature) |
-| g | N | N | passing grade | ❌ | — |
-| h | N | N | manual | ❌ | — |
-| i | N | N | none | ❌ | — |
+| g | N | N | passing grade | ✅ | [`student_nodates_and_passinggrade.feature`](student_nodates_and_passinggrade.feature) |
+| h | N | N | manual | ✅ | [`student_nodates_and_manual.feature`](student_nodates_and_manual.feature) |
+| i | N | N | none | ✅ | [`student_nodates_no_conditions.feature`](student_nodates_no_conditions.feature) |
 
-The three "no dates at all" student-view scenarios (g–i) are missing.
+All nine combinations are covered.
+
+Note: while verifying these, I found `student_due_and_passinggrade.feature` uses a generator
+column named `passinggrade`, which isn't a real field (the actual DB/mod_form field is
+`needspassinggrade`) — it happens to still pass only because
+`mod_externalassignment_generator::create_instance()` already defaults `needspassinggrade` to
+`1` for every generated activity. The new files above use the correct `needspassinggrade` column
+directly rather than relying on that default.
 
 ---
 
@@ -191,9 +223,7 @@ as-is.
 
 ## Summary of gaps
 
-- **Editing an existing assignment** (section 3) — the due/cut-off/completion matrix has zero
-  direct coverage; only a narrow "needs passing grade survives an edit" regression test exists.
-- **Re-grading** (section 5, rows e–k) — only "first grade ever" scenarios are covered; changing
-  a grade that already exists, for every completion condition, is untested.
-- **Student view without any dates** (section 6, rows g–i) — the "no due/cut-off date" case is
-  untested from the student's perspective, even though it's covered for teacher creation (§1i).
+No open gaps — every row in sections 1–6 now has a passing Behat test. The only follow-up items
+are the five legacy files under `archive/` (§8), which pre-date the plugin's rename to
+`mod_externalassignment` and would need rewriting against the current step definitions before
+they could be restored to the active suite.
