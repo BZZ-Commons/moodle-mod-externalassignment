@@ -168,7 +168,7 @@ final class grade_control_test extends \advanced_testcase {
         $override = new override();
         $override->set_externalassignment($instance->id);
         $override->set_userid($student->id);
-        $override->set_allowsubmissionsfromdate(0);
+        $override->set_allowfromdate(0);
         $override->set_duedate($overrideduedate);
         $override->set_cutoffdate($overrideduedate);
 
@@ -224,7 +224,7 @@ final class grade_control_test extends \advanced_testcase {
         $override = new override();
         $override->set_externalassignment($instance->id);
         $override->set_userid($student->id);
-        $override->set_allowsubmissionsfromdate(0);
+        $override->set_allowfromdate(0);
         $override->set_duedate(time() + 2 * DAYSECS);
         $override->set_cutoffdate(time() + 2 * DAYSECS);
 
@@ -266,7 +266,7 @@ final class grade_control_test extends \advanced_testcase {
         $override = new override();
         $override->set_externalassignment($instance->id);
         $override->set_userid($student->id);
-        $override->set_allowsubmissionsfromdate(0);
+        $override->set_allowfromdate(0);
         $override->set_duedate(time() + 2 * DAYSECS);
         $override->set_cutoffdate(time() + 2 * DAYSECS);
         $gradecontrol->override_update($override);

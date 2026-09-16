@@ -36,9 +36,9 @@ class override_form extends moodleform {
 
     /**
      * override_form constructor.
-     * @param $submiturl string the url to submit the form
-     * @param $assign assign the assignment object
-     * @param $customdata mixed the data entered in the form
+     * @param string $submiturl the url to submit the form
+     * @param assign $assign the assignment object
+     * @param mixed $customdata the data entered in the form
      */
     public function __construct($submiturl, $assign, $customdata = null) {
         $this->assign = $assign;
@@ -124,8 +124,8 @@ class override_form extends moodleform {
 
     /**
      * validates the formdata for the override
-     * @param $data
-     * @param $files
+     * @param array $data the data entered in the form
+     * @param array $files the files uploaded in the form
      * @return array  error messages
      * @throws \coding_exception
      */

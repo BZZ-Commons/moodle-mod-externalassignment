@@ -171,15 +171,15 @@ class provider implements
                         [],
                         'externalassignment:grades',
                         (object)['userid' => $userid],
-                        new \lang_string('privacy:export:externalassignment:grades')
+                        new \lang_string('privacy:export:externalassignment:grades', 'externalassignment')
                     );
             }
         }
     }
 
     /**
-     * Delete all user data for the given contextlist.
-     * @param approved_contextlist $contextlist
+     * Delete all user data for the given context.
+     * @param \context $context
      * @return void
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
@@ -236,53 +236,19 @@ class provider implements
 
         $context = $userlist->get_context();
         $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
-        $assignid = $DB->get_record('externalassignment', ['id' => $cm->instance]);
+        $assign = $DB->get_record('externalassignment', ['id' => $cm->instance]);
         $userids = $userlist->get_userids();
-        $params = [
-            'externalassignment' => $assignid->id,
-            'userids' => $userids,
-        ];
-        $in = $DB->get_in_or_equal($userids);
+        [$insql, $inparams] = $DB->get_in_or_equal($userids);
+
         $DB->delete_records_select(
             'externalassignment_grades',
-            'externalassignment = :externalassignment AND userid $in',
-            $params
+            "externalassignment = ? AND userid $insql",
+            array_merge([$assign->id], $inparams)
         );
         $DB->delete_records_select(
             'externalassignment_overrides',
-            'externalassignment = :externalassignment AND userid $in',
-            $params
+            "externalassignment = ? AND userid $insql",
+            array_merge([$assign->id], $inparams)
         );
-    }
-
-    /**
-     * Get the course module ids from the contextlist.
-     *
-     * @param approved_contextlist $contextlist
-     * @return array
-     */
-    private static function get_course_module_ids(approved_contextlist $contextlist) {
-        foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel == CONTEXT_MODULE) {
-                $coursemoduleids[] = $context->instanceid;
-            }
-        }
-        return $coursemoduleids;
-    }
-
-    /**
-     * Get the ids of the external assignments from the array of cmids.
-     *
-     * @param array $cmids
-     * @return array
-     */
-    private static function get_assign_ids(array $cmids): array {
-        global $DB;
-        $params = [
-            'cmids' => $cmids,
-        ];
-        $in = $DB->get_in_or_equal($cmids);
-        $sql = 'SELECT instance FROM {course_module} WHERE id $in';
-        return $DB->get_fieldset_sql($sql, $params);
     }
 }

@@ -44,8 +44,8 @@ class assign_control {
 
     /**
      * Default constructor
-     * @param $coursemodulecontext
-     * @param $coursemodule cm_info|null  The course module
+     * @param context $coursemodulecontext the context of the course module
+     * @param cm_info|null $coursemodule The course module
      * @throws \coding_exception
      */
     public function __construct($coursemodulecontext, ?cm_info $coursemodule) {
@@ -81,13 +81,14 @@ class assign_control {
      * Update this instance in the database.
      *
      * @param \stdClass $formdata - the data submitted from the form
+     * @param int $coursemoduleid the id of the course module
      * @return bool false if an error occurs
      * @throws \dml_exception
      */
     public function update_instance(\stdClass $formdata, int $coursemoduleid): bool {
         global $DB;
 
-        if ($formdata->completion == 2) { // Completion by grade.
+        if (isset($formdata->completion) && $formdata->completion == 2) { // Completion by grade.
             $formdata->needspassinggrade = 1;
         }
         $assign = new assign($formdata, $this->get_context());
@@ -295,7 +296,7 @@ class assign_control {
                 'instance' => $instance->id,
                 'eventtype' => 'due',
                 'userid' => $userid,
-                // courseid=0 is what marks this as the personal override event, as opposed to
+                // Courseid=0 is what marks this as the personal override event, as opposed to
                 // the shared event (see update_calendar_event()).
                 'courseid' => 0,
             ]

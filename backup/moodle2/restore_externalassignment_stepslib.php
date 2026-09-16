@@ -78,7 +78,8 @@ class restore_externalassignment_activity_structure_step extends restore_activit
     }
     /**
      * checks if there is another assignment with the same external name in the same course
-     * @param $data
+     * @param stdClass $data the restored externalassignment record
+     * @return bool
      */
     protected function has_duplicate_name($data): bool {
 

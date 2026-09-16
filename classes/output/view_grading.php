@@ -46,10 +46,10 @@ class view_grading implements renderable, templatable {
     private string $tdir;
     /**
      * default constructor
-     * @param int $coursemoduleid
-     * @param context $context
-     * @param String $sort the sort field
-     * @param String $tdir the sort direction
+     * @param int $coursemoduleid the id of the course module
+     * @param context $context the context of the course module
+     * @param string $sort the sort field
+     * @param string $tdir the sort direction
      */
     public function __construct(
         int $coursemoduleid,

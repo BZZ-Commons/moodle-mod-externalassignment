@@ -19,9 +19,6 @@ namespace mod_externalassignment;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\Group;
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/externalassignment/db/upgradelib.php');
-
 /**
  * Unit tests for db/upgradelib.php.
  *
@@ -39,6 +36,15 @@ require_once($CFG->dirroot . '/mod/externalassignment/db/upgradelib.php');
 #[Group('mod_externalassignment')]
 #[CoversFunction('mod_externalassignment_create_github_username_profile_field')]
 final class upgradelib_test extends \advanced_testcase {
+    /**
+     * Load the function under test.
+     */
+    public static function setUpBeforeClass(): void {
+        parent::setUpBeforeClass();
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/externalassignment/db/upgradelib.php');
+    }
+
     /**
      * Removes any "github_user" field / "external_usernames" category already present.
      *

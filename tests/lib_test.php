@@ -24,10 +24,6 @@ use PHPUnit\Framework\Attributes\Group;
 use restore_controller;
 use restore_dbops;
 
-global $CFG;
-require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-
 /**
  * Unit tests for lib.php, in particular externalassignment_refresh_events().
  *
@@ -46,6 +42,16 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 #[Group('mod_externalassignment')]
 #[CoversMethod(assign_control::class, 'update_calendar_event')]
 final class lib_test extends \advanced_testcase {
+    /**
+     * Load the backup and restore classes.
+     */
+    public static function setUpBeforeClass(): void {
+        parent::setUpBeforeClass();
+        global $CFG;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+    }
+
     /**
      * externalassignment_refresh_events() must (re-)create the due-date calendar event for a
      * single given instance, exactly as assign_control::add_instance()/update_instance() do.

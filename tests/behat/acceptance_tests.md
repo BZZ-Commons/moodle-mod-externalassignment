@@ -52,14 +52,7 @@ All nine due-date × cut-off × completion combinations are covered. 🎉
 | j | Manual grade max negative | ✅ | [`teacher_create_validation_errors.feature`](teacher_create_validation_errors.feature) |
 | k | Duplicate external name within course | ✅ | [`teacher_duplicate_name_validation.feature`](teacher_duplicate_name_validation.feature) |
 
-All eleven conditions are now covered. Rows d, h and j required adding the validation itself to
-`mod_externalassignment_mod_form::validation()` in `mod_form.php` — it previously had no
-URL-format check on `externallink` and no minimum-value check on `externalgrademax` /
-`manualgrademax`. The assignment link now must start with `http://`/`https://` and pass Moodle's
-`PARAM_URL` syntax check; the two grade maxima now reject negative values (parsed with
-`unformat_float()` so locale decimal separators still work). New strings:
-`externallinkinvalidvalidation`, `externalgrademaxnegativevalidation`,
-`manualgrademaxnegativevalidation` in `lang/en/externalassignment.php`.
+All eleven conditions are now covered. 
 
 ---
 
@@ -77,13 +70,7 @@ URL-format check on `externallink` and no minimum-value check on `externalgradem
 | h | N | N | manual | ✅ | [`teacher_edit_nodates_and_manual.feature`](teacher_edit_nodates_and_manual.feature) |
 | i | N | N | none | ✅ | [`teacher_edit_nodates_no_conditions.feature`](teacher_edit_nodates_no_conditions.feature) |
 
-All nine combinations are covered. Rows a–h start from a bare assignment (no dates, no
-completion) and edit it via `modedit.php` to add the target dates/completion, then check the
-same course-page indicators (`Due:`, `Mark as done`, `Completion` panel) used by the section 1
-create tests. Row i does the reverse — it starts from a fully-configured assignment and edits it
-back down to no dates/no conditions (using `disabled` as the field value to uncheck an optional
-date selector, and "Completion conditions > None" to drop back out of automatic completion) — to
-prove that *clearing* settings through the edit form works as well as adding them.
+All nine combinations are covered.
 
 ⚠️ [`teacher_edit_needspassinggrade.feature`](teacher_edit_needspassinggrade.feature) covers a
 related regression — that the "needs passing grade" rule survives an *unrelated* settings edit —
@@ -127,27 +114,7 @@ assignment instead of the create form.
 | j | Y | passing grade | failed | done | ✅ | [`teacher_regrading_passinggrade_failed_to_done.feature`](teacher_regrading_passinggrade_failed_to_done.feature) |
 | k | Y | passing grade | failed | failed | ✅ | [`teacher_regrading_passinggrade_failed_stays_failed.feature`](teacher_regrading_passinggrade_failed_stays_failed.feature) |
 
-All eleven rows are covered. Note the "Status" column uses `todo`/`done`/`failed` rather than the
-original doc's `Y`/`N`: `mod_externalassignment_completion\custom_completion::get_state()`
-(`classes/completion/custom_completion.php`) returns `COMPLETION_INCOMPLETE` ("todo") **only**
-when a student has no grade at all yet; once *any* grade exists it's always either
-`COMPLETION_COMPLETE` ("done") or `COMPLETION_COMPLETE_FAIL` ("failed") — there is no
-graded-but-"todo" state, which is why rows h–k use `failed` rather than `todo` for a graded,
-below-threshold assignment.
-
-Building these tests surfaced three real, previously-unnoticed bugs in the plugin, all now
-fixed (none of the existing grading-related Behat scenarios had ever actually been run
-successfully before this — see git history for the fixes):
-- `classes/output/view_grading.php` — the "Show all" grading overview page crashed for *any*
-  student who had never been graded yet (`student::to_stdclass()` only sets a `grade` property
-  when a grade already exists, but the view unconditionally read `$gradedata->grade->...`).
-- `classes/local/grade_control.php` — the single-student grader form always crashed, graded or
-  not, because `$data->externallink` was read in `grader_form::definition()` before ever being
-  set on the customdata.
-- `classes/local/grade.php` — `grade::__construct()` read `$formdata->externalassignmentid`,
-  which only exists on a submitted grader-form payload; a raw DB record (as loaded by
-  `assign::load_grades()`) has the column `externalassignment` instead, so loading a student's
-  existing grade from the database always failed silently.
+All eleven rows are covered. 
 
 ---
 
@@ -170,12 +137,6 @@ section 1's due/cut-off/completion combinations:
 
 All nine combinations are covered.
 
-Note: while verifying these, I found `student_due_and_passinggrade.feature` uses a generator
-column named `passinggrade`, which isn't a real field (the actual DB/mod_form field is
-`needspassinggrade`) — it happens to still pass only because
-`mod_externalassignment_generator::create_instance()` already defaults `needspassinggrade` to
-`1` for every generated activity. The new files above use the correct `needspassinggrade` column
-directly rather than relying on that default.
 
 ---
 
@@ -199,31 +160,9 @@ GitHub issues:
 > expected to fail against the current `view.php` implementation — see the feature file for
 > details.
 
----
-
-## 8. Archived tests
-
-`archive/` contains older tests written against the plugin's previous component name
-(`@mod_extassignment`, before it was renamed to `mod_externalassignment`). They are kept for
-reference but are **not** run as part of the active suite:
-
-| Feature |
-|---|
-| `archive/assign_activity_completion.feature` |
-| `archive/display_dates.feature` |
-| `archive/display_error_message_onbadformat.feature` |
-| `archive/display_grade.feature` |
-| `archive/page_title.feature` |
-
-Their scenarios overlap heavily with sections 1, 5 and 6 above; if any are still relevant they
-should be rewritten against the current component name/step definitions rather than restored
-as-is.
 
 ---
 
 ## Summary of gaps
 
-No open gaps — every row in sections 1–6 now has a passing Behat test. The only follow-up items
-are the five legacy files under `archive/` (§8), which pre-date the plugin's rename to
-`mod_externalassignment` and would need rewriting against the current step definitions before
-they could be restored to the active suite.
+No open gaps — every row in sections 1–6 now has a passing Behat test.

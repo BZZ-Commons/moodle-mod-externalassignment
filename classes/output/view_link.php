@@ -30,12 +30,13 @@ use templatable;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class view_link implements renderable, templatable {
-    /** @var string $externallink the link to the external assignment */
+    /** @var assign $assignment the external assignment */
     private assign $assignment;
 
     /**
      * default constructor
-     * @param int $coursemoduleid
+     * @param int $coursemoduleid the id of the course module
+     * @param assign $assignment the external assignment
      * @throws \dml_exception
      */
     public function __construct(int $coursemoduleid, assign $assignment) {

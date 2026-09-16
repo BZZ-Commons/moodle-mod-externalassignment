@@ -84,8 +84,8 @@ if ($urlparams['action'] == '') {
 
 /**
  * shows the details for the external assignment
- * @param $context
- * @param $coursemoduleid
+ * @param context_module $context the context of the course module
+ * @param int $coursemoduleid the id of the course module
  * @return void
  * @throws \coding_exception
  * @throws \dml_exception
@@ -134,10 +134,10 @@ function show_details($context, $coursemoduleid): void {
 
 /**
  * shows the grading overview
- * @param $context context the context of the course module
- * @param $coursemoduleid int the id of the course module
- * @param $sort String the sort order for the students
- * @param $tdir String the direction of the sort
+ * @param context $context the context of the course module
+ * @param int $coursemoduleid the id of the course module
+ * @param string $sort the sort order for the students
+ * @param string $tdir the direction of the sort
  * @return void
  * @throws \coding_exception
  * @throws \required_capability_exception
@@ -168,9 +168,9 @@ function show_grading(
 
 /**
  * shows the grading form for the student
- * @param $context
- * @param $coursemoduleid
- * @param $userid
+ * @param context_module $context the context of the course module
+ * @param int $coursemoduleid the id of the course module
+ * @param int|null $userid the id of the student being graded, or null to redirect to the first student
  * @return void
  * @throws \coding_exception
  * @throws \required_capability_exception
@@ -213,9 +213,9 @@ function show_grader($context, $coursemoduleid, $userid): void {
 
 /**
  * shows the overrides
- * @param $context
- * @param int $coursemoduleid
- * @param array $userids
+ * @param context_module $context the context of the course module
+ * @param int $coursemoduleid the id of the course module
+ * @param array $userids the ids of the users to override
  * @return void
  * @throws coding_exception
  * @throws required_capability_exception

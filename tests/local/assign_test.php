@@ -223,19 +223,6 @@ final class assign_test extends \advanced_testcase {
         assert(is_array($users));
         $this->assertCount(4, $users);
         $this->assertEquals('John', reset($users)->get_firstname());
-
-        /* Sort by grade ascending
-        $assign->load_db($instance->cmid, 'grade', 'asc');
-        $users = $assign->get_students();
-        assert (is_array($users));
-        $this->assertCount(4, $users);
-        $this->assertEquals('Doe', $users[0]->lastname);
-        // Sort by grade descending
-        $assign->load_db($instance->cmid, 'grade', 'desc');
-        $users = $assign->get_students();
-        assert (is_array($users));
-        $this->assertCount(4, $users);
-        $this->assertEquals('Smith', $users[0]->lastname); */
     }
 
     /**

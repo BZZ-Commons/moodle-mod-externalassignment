@@ -49,12 +49,12 @@ class update_grade extends external_api {
     /**
      * Update grades and feedback from an external system
      *
-     * @param $assignmentname  string the name of the external assignment
-     * @param $username  string the external username
-     * @param $points float the number of points
-     * @param $max  float the maximum points from tests
-     * @param $externallink  string the url of the students repo
-     * @param $feedback  string the feedback as json-structure
+     * @param string $assignmentname the name of the external assignment
+     * @param string $username the external username
+     * @param float $points the number of points
+     * @param float $max the maximum points from tests
+     * @param string $externallink the url of the students repo
+     * @param string $feedback the feedback as json-structure
      * @return array info, warning or error messages
      * @throws dml_exception
      * @throws invalid_parameter_exception
@@ -118,7 +118,7 @@ class update_grade extends external_api {
                 $override = $students[$userid]->get_override();
             }
 
-            if (empty($override) || $override == 0) {
+            if (empty($override)) {
                 $results = self::generate_warning(
                     $results,
                     'info',
@@ -283,8 +283,10 @@ class update_grade extends external_api {
             'message' => '',
         ];
         foreach ($results as $result) {
-            if ($result['type'] !== 'warning' && $result['type'] !== 'error') {
-                $return['type'] = 'info';
+            if ($result['type'] === 'error') {
+                $return['type'] = 'error';
+            } else if ($result['type'] === 'warning' && $return['type'] !== 'error') {
+                $return['type'] = 'warning';
             }
 
             $return['name'] .= $result['name'] . '\n';

@@ -47,17 +47,13 @@ class grade_control {
      */
     private int $userid;
 
-    /** @var array A key used to identify userlists created by this object. *
-     * private array $userlist;
-     *
-     * /** @var int The key to identify the user
-     */
+    /** @var array A key used to identify userlists created by this object. */
     private array $userlist;
 
     /**
      * default constructor
-     * @param $coursemoduleid
-     * @param $context
+     * @param int $coursemoduleid the id of the course module
+     * @param context $context the context of the course module for this grade instance
      * @param int|null $userid
      * @throws \dml_exception
      */
@@ -234,7 +230,7 @@ class grade_control {
                     $override = new override();
                     $override->set_externalassignment($formdata->externalassignment);
                     $override->set_userid($userid);
-                    $override->set_allowsubmissionsfromdate($formdata->allowsubmissionsfromdate);
+                    $override->set_allowfromdate($formdata->allowsubmissionsfromdate);
                     $override->set_duedate($formdata->duedate);
                     $override->set_cutoffdate($formdata->cutoffdate);
                     $this->override_update($override);

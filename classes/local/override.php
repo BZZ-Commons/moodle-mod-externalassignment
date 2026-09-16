@@ -32,7 +32,7 @@ class override {
     /** @var int|null the id of the user this grade belongs to */
     private ?int $userid;
     /** @var int|null  the time when submissions are allowed */
-    private ?int $allowsubmissionsfromdate;
+    private ?int $allowfromdate;
     /** @var int|null the time this assignment is due */
     private ?int $duedate;
     /** @var int|null the time when submissions are no longer possible */
@@ -46,7 +46,7 @@ class override {
         $this->set_id(null);
         $this->set_externalassignment(null);
         $this->set_userid(null);
-        $this->set_allowsubmissionsfromdate(null);
+        $this->set_allowfromdate(null);
         $this->set_duedate(null);
         $this->set_cutoffdate(null);
 
@@ -65,6 +65,13 @@ class override {
             if ($value != null) {
                 $result->$property = $value;
             }
+        }
+        // The externalassignment_overrides table (and any code reading/writing it) still uses
+        // the full "allowsubmissionsfromdate" column name; only the in-memory property was
+        // shortened to $allowfromdate.
+        if (property_exists($result, 'allowfromdate')) {
+            $result->allowsubmissionsfromdate = $result->allowfromdate;
+            unset($result->allowfromdate);
         }
         return $result;
     }
@@ -97,7 +104,7 @@ class override {
         $this->set_externalassignment($data->externalassignment);
         $this->set_userid($data->userid);
         if (!empty($data->allowsubmissionsfromdate)) {
-            $this->set_allowsubmissionsfromdate($data->allowsubmissionsfromdate);
+            $this->set_allowfromdate($data->allowsubmissionsfromdate);
         }
         if (!empty($data->duedate)) {
             $this->set_duedate($data->duedate);
@@ -109,7 +116,7 @@ class override {
 
     /**
      * initialize the attributes from the formdata
-     * @param $formdata
+     * @param \stdClass $formdata the data submitted from the form
      * @return void
      */
     public function load_formdata($formdata): void {
@@ -170,16 +177,16 @@ class override {
      * get the time when submissions are allowed
      * @return int|null
      */
-    public function get_allowsubmissionsfromdate(): ?int {
-        return $this->allowsubmissionsfromdate;
+    public function get_allowfromdate(): ?int {
+        return $this->allowfromdate;
     }
 
     /**
      * set the time when submissions are allowed
-     * @param int|null $allowsubmissionsfromdate
+     * @param int|null $allowfromdate
      */
-    public function set_allowsubmissionsfromdate(?int $allowsubmissionsfromdate): void {
-        $this->allowsubmissionsfromdate = $allowsubmissionsfromdate;
+    public function set_allowfromdate(?int $allowfromdate): void {
+        $this->allowfromdate = $allowfromdate;
     }
 
     /**

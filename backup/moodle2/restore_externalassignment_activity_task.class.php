@@ -83,9 +83,9 @@ class restore_externalassignment_activity_task extends restore_activity_task {
 
     /**
      * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
+     * by the {@see restore_logs_processor} when restoring
      * externalassignment logs. It must return one array
-     * of {@link restore_log_rule} objects
+     * of {@see restore_log_rule} objects
      */
     public static function define_restore_log_rules() {
         $rules = [];
@@ -132,9 +132,9 @@ class restore_externalassignment_activity_task extends restore_activity_task {
 
     /**
      * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
+     * by the {@see restore_logs_processor} when restoring
      * course logs. It must return one array
-     * of {@link restore_log_rule} objects
+     * of {@see restore_log_rule} objects
      *
      * Note this rules are applied when restoring course logs
      * by the restore final task, but are defined here at

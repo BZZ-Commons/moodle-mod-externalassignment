@@ -199,8 +199,8 @@ function externalassignment_extend_settings_navigation(settings_navigation $sett
 
 /**
  * Callback to update the grade settings or the grade for one student
- * @param $modinstance
- * @param $grades
+ * @param stdClass $modinstance the externalassignment instance record
+ * @param mixed $grades the grade(s) to update, or null to just update the grade item settings
  * @return int
  */
 function externalassignment_grade_item_update($modinstance, $grades = null): int {
@@ -217,9 +217,9 @@ function externalassignment_grade_item_update($modinstance, $grades = null): int
 
 /**
  * Updates the grade for one student
- * @param $modinstance
- * @param $userid
- * @param $nullifnone
+ * @param stdClass $modinstance the externalassignment instance record
+ * @param int $userid the id of the user to update the grade for, or 0 for all users
+ * @param bool $nullifnone whether to set the grade to null if there is no grade
  * @return void
  * @throws coding_exception
  * @throws dml_exception

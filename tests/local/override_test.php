@@ -36,8 +36,8 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(override::class, 'get_externalassignment')]
 #[CoversMethod(override::class, 'set_userid')]
 #[CoversMethod(override::class, 'get_userid')]
-#[CoversMethod(override::class, 'set_allowsubmissionsfromdate')]
-#[CoversMethod(override::class, 'get_allowsubmissionsfromdate')]
+#[CoversMethod(override::class, 'set_allowfromdate')]
+#[CoversMethod(override::class, 'get_allowfromdate')]
 #[CoversMethod(override::class, 'set_duedate')]
 #[CoversMethod(override::class, 'get_duedate')]
 #[CoversMethod(override::class, 'set_cutoffdate')]
@@ -62,7 +62,7 @@ final class override_test extends \advanced_testcase {
         $this->assertEquals(1, $override->get_id());
         $this->assertEquals(2, $override->get_externalassignment());
         $this->assertEquals(3, $override->get_userid());
-        $this->assertEquals(100000, $override->get_allowsubmissionsfromdate());
+        $this->assertEquals(100000, $override->get_allowfromdate());
         $this->assertEquals(200000, $override->get_duedate());
         $this->assertEquals(300000, $override->get_cutoffdate());
     }
@@ -76,7 +76,7 @@ final class override_test extends \advanced_testcase {
         $this->assertNull($override->get_id());
         $this->assertNull($override->get_externalassignment());
         $this->assertNull($override->get_userid());
-        $this->assertNull($override->get_allowsubmissionsfromdate());
+        $this->assertNull($override->get_allowfromdate());
         $this->assertNull($override->get_duedate());
         $this->assertNull($override->get_cutoffdate());
     }
@@ -98,14 +98,14 @@ final class override_test extends \advanced_testcase {
         $override->set_id(10);
         $override->set_externalassignment(20);
         $override->set_userid(30);
-        $override->set_allowsubmissionsfromdate(150000);
+        $override->set_allowfromdate(150000);
         $override->set_duedate(250000);
         $override->set_cutoffdate(350000);
 
         $this->assertEquals(10, $override->get_id());
         $this->assertEquals(20, $override->get_externalassignment());
         $this->assertEquals(30, $override->get_userid());
-        $this->assertEquals(150000, $override->get_allowsubmissionsfromdate());
+        $this->assertEquals(150000, $override->get_allowfromdate());
         $this->assertEquals(250000, $override->get_duedate());
         $this->assertEquals(350000, $override->get_cutoffdate());
     }
@@ -118,7 +118,7 @@ final class override_test extends \advanced_testcase {
         $override->set_id(1);
         $override->set_externalassignment(2);
         $override->set_userid(3);
-        $override->set_allowsubmissionsfromdate(100000);
+        $override->set_allowfromdate(100000);
         $override->set_duedate(200000);
         $override->set_cutoffdate(300000);
 
@@ -168,7 +168,7 @@ final class override_test extends \advanced_testcase {
 
         $this->assertEquals(5, $override->get_externalassignment());
         $this->assertEquals(15, $override->get_userid());
-        $this->assertEquals(100000, $override->get_allowsubmissionsfromdate());
+        $this->assertEquals(100000, $override->get_allowfromdate());
         $this->assertEquals(200000, $override->get_duedate());
         $this->assertEquals(300000, $override->get_cutoffdate());
     }

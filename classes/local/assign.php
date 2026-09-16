@@ -243,8 +243,8 @@ class assign {
 
     /**
      * sorts the students by sort field and direction
-     * @param String $sort the sort field
-     * @param String $tdir the sort direction
+     * @param string $sort the sort field
+     * @param string $tdir the sort direction
      * @return void
      */
     private function sort_students(string $sort, string $tdir): void {
@@ -467,7 +467,8 @@ class assign {
 
     /**
      * Sets the context
-     * @param context|null the $context
+     * @param context|null $context the context
+     * @return void
      */
     public function set_context(?context $context): void {
         $this->context = $context;

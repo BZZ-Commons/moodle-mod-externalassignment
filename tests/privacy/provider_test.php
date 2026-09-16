@@ -19,6 +19,7 @@ namespace mod_externalassignment\privacy;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
 use core_privacy\tests\provider_testcase;
+use core_privacy\local\request\approved_userlist;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -40,6 +41,7 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(provider::class, 'export_user_data')]
 #[CoversMethod(provider::class, 'delete_data_for_all_users_in_context')]
 #[CoversMethod(provider::class, 'delete_data_for_user')]
+#[CoversMethod(provider::class, 'delete_data_for_users')]
 final class provider_test extends provider_testcase {
     public function test_get_contexts_for_userid_finds_context_with_a_grade(): void {
         [, , $context, $student] = $this->create_assignment_with_grade();
@@ -104,6 +106,32 @@ final class provider_test extends provider_testcase {
 
         $approvedlist = new approved_contextlist($student, 'mod_externalassignment', [$context->id]);
         provider::delete_data_for_user($approvedlist);
+
+        $this->assertEmpty(
+            $DB->get_records('externalassignment_grades', ['externalassignment' => $instance->id, 'userid' => $student->id])
+        );
+        $this->assertNotEmpty(
+            $DB->get_records('externalassignment_grades', ['externalassignment' => $instance->id, 'userid' => $other->id])
+        );
+    }
+
+    public function test_delete_data_for_users_only_removes_listed_users_grades(): void {
+        global $DB;
+        [$course, $instance, $context, $student] = $this->create_assignment_with_grade();
+
+        $other = self::getDataGenerator()->create_user();
+        self::getDataGenerator()->enrol_user($other->id, $course->id, 'student');
+        $DB->insert_record('externalassignment_grades', (object)[
+            'externalassignment' => $instance->id,
+            'userid' => $other->id,
+            'grader' => 2,
+            'externallink' => '',
+            'externalgrade' => 5,
+            'manualgrade' => 0,
+        ]);
+
+        $userlist = new approved_userlist($context, 'mod_externalassignment', [$student->id]);
+        provider::delete_data_for_users($userlist);
 
         $this->assertEmpty(
             $DB->get_records('externalassignment_grades', ['externalassignment' => $instance->id, 'userid' => $student->id])
