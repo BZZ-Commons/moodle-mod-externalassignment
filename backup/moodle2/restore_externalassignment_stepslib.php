@@ -106,6 +106,11 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $oldid = $data->id;
 
         $data->externalassignment = $this->get_new_parentid('externalassignment');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        if (empty($data->userid)) {
+            return; // The student was not restored.
+        }
+        $data->grader = $this->get_mappingid('user', $data->grader, 0);
 
         $newitemid = $DB->insert_record('externalassignment_grades', $data);
         $this->set_mapping('externalassignment_grades', $oldid, $newitemid);
@@ -123,6 +128,13 @@ class restore_externalassignment_activity_structure_step extends restore_activit
         $oldid = $data->id;
 
         $data->externalassignment = $this->get_new_parentid('externalassignment');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        if (empty($data->userid)) {
+            return; // The student was not restored.
+        }
+        $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
+        $data->duedate = $this->apply_date_offset($data->duedate);
+        $data->cutoffdate = $this->apply_date_offset($data->cutoffdate);
 
         $newitemid = $DB->insert_record('externalassignment_overrides', $data);
         $this->set_mapping('externalassignment_overrides', $oldid, $newitemid);

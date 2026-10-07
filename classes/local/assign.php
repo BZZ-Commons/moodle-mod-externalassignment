@@ -264,27 +264,14 @@ class assign {
             uasort($this->students, function ($a, $b) {
                 return strcmp($b->get_firstname(), $a->get_firstname());
             });
-        } else if ($sort == 'grade' && $tdir == 'asc') {
-            uasort($this->students, function ($a, $b) {
-                if ($a->get_grade() === null) {
-                    return 1;
-                } else if ($b->get_grade() === null) {
-                    return - 1;
-                } else {
-                    return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() <=
-                        $b->get_grade()->get_externalgrade() + $b->get_grade()->get_manualgrade();
+        } else if ($sort == 'grade') {
+            // Ungraded students are always listed last, whatever the direction.
+            $direction = $tdir == 'desc' ? -1 : 1;
+            uasort($this->students, function ($a, $b) use ($direction) {
+                if ($a->get_grade() === null || $b->get_grade() === null) {
+                    return ($a->get_grade() === null) <=> ($b->get_grade() === null);
                 }
-            });
-        } else if ($sort == 'grade' && $tdir == 'desc') {
-            uasort($this->students, function ($a, $b) {
-                if ($a->get_grade() === null) {
-                    return - 1;
-                } else if ($b->get_grade() === null) {
-                    return 1;
-                } else {
-                    return $a->get_grade()->get_externalgrade() + $a->get_grade()->get_manualgrade() >=
-                        $b->get_grade()->get_externalgrade() + $b->get_grade()->get_manualgrade();
-                }
+                return $direction * ($a->get_grade()->get_finalgrade() <=> $b->get_grade()->get_finalgrade());
             });
         } else if ($sort == 'status' && $tdir == 'asc') {
             uasort($this->students, function ($a, $b) {
@@ -301,13 +288,10 @@ class assign {
     /**
      * returns a student from the array identified by the userid
      * @param int $userid
-     * @return void
+     * @return student|null null if the user is not a student of this assignment
      */
     public function take_student(int $userid): ?student {
-        if ($this->students[$userid] !== null) {
-            return $this->students[$userid];
-        }
-        return null;
+        return $this->students[$userid] ?? null;
     }
 
     /**
@@ -322,15 +306,23 @@ class assign {
      * returns the userid of the student that follows the given one in the current sort order,
      * as set up by the most recent call to load_db()/sort_students()
      * @param int $userid
+     * @param string $status only consider students with this status: 'open' (not graded yet),
+     *                       'done' (graded) or '' for all students
      * @return int|null null if the given user is the last student, or isn't found
      */
-    public function get_next_student_id(int $userid): ?int {
+    public function get_next_student_id(int $userid, string $status = ''): ?int {
         $userids = array_keys($this->students);
         $position = array_search($userid, $userids, true);
-        if ($position === false || !isset($userids[$position + 1])) {
+        if ($position === false) {
             return null;
         }
-        return $userids[$position + 1];
+        foreach (array_slice($userids, $position + 1) as $nextid) {
+            $done = $this->students[$nextid]->get_grade() !== null;
+            if ($status === '' || ($status === 'done' && $done) || ($status === 'open' && !$done)) {
+                return $nextid;
+            }
+        }
+        return null;
     }
 
     /**
@@ -349,8 +341,8 @@ class assign {
         foreach ($data as $record) {
             $record->gradeid = $record->id;
             $grade = new grade($record);
-            // Check if student object exists.
-            if ($this->students[$record->userid] != null) {
+            // Ignore grades of users who are not (or no longer) students.
+            if (isset($this->students[$record->userid])) {
                 $this->students[$record->userid]->set_grade($grade);
             }
         }

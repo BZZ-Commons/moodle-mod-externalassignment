@@ -50,21 +50,76 @@ class grade_control {
     /** @var array A key used to identify userlists created by this object. */
     private array $userlist;
 
+    /** @var string the field the students are sorted by on the grading overview */
+    private string $sort;
+
+    /** @var string the sort direction: asc or desc */
+    private string $tdir;
+
+    /** @var string the status filter of the grader: open, done or '' for all students */
+    private string $status;
+
     /**
      * default constructor
      * @param int $coursemoduleid the id of the course module
      * @param context $context the context of the course module for this grade instance
      * @param int|null $userid
+     * @param string $sort the field the students are sorted by
+     * @param string $tdir the sort direction: asc or desc
+     * @param string $status the status filter: open, done or '' for all students
      * @throws \dml_exception
      */
-    public function __construct($coursemoduleid, $context, ?int $userid = 0) {
+    public function __construct(
+        $coursemoduleid,
+        $context,
+        ?int $userid = 0,
+        string $sort = 'lastname',
+        string $tdir = 'asc',
+        string $status = ''
+    ) {
         $this->set_coursemoduleid($coursemoduleid);
         $this->set_courseid($context->get_course_context()->instanceid);
         $this->set_context($context);
+        $this->sort = $sort;
+        $this->tdir = $tdir;
+        $this->status = $status;
         $this->set_assign(new assign(null, $this->get_context()));
-        $this->get_assign()->load_db($coursemoduleid, 'lastname', 'asc', $userid);
+        // All grades are loaded (not only the current user's): the status filter for the next
+        // student depends on whether the other students have been graded.
+        $this->get_assign()->load_db($coursemoduleid, $sort, $tdir);
         $this->set_userid($userid);
         $this->set_userlist([]);
+    }
+
+    /**
+     * returns the student following the current one in the grader's sort order and status
+     * filter, the same one the grader navigation's "next" arrow leads to
+     * @return int|null null if the current student is the last one
+     */
+    public function get_next_student_id(): ?int {
+        return $this->get_assign()->get_next_student_id($this->get_userid(), $this->status);
+    }
+
+    /**
+     * creates the url of the grader page for a student, keeping the sort order and status filter
+     * @param int $userid the student to grade
+     * @return \moodle_url
+     */
+    public function grader_url(int $userid): \moodle_url {
+        $url = new \moodle_url(
+            '/mod/externalassignment/view.php',
+            [
+                'id' => $this->coursemoduleid,
+                'action' => 'grader',
+                'userid' => $userid,
+                'sort' => $this->sort,
+                'tdir' => $this->tdir,
+            ]
+        );
+        if ($this->status !== '') {
+            $url->param('status', $this->status);
+        }
+        return $url;
     }
 
     /**
@@ -106,7 +161,7 @@ class grade_control {
         }
         $data->cutoffdate = $this->get_assign()->get_cutoffdate();
 
-        $nextstudentid = $this->get_assign()->get_next_student_id($this->get_userid());
+        $nextstudentid = $this->get_next_student_id();
         $data->hasnextstudent = $nextstudentid !== null;
 
         // Time remaining.
@@ -120,7 +175,9 @@ class grade_control {
         $data->timeremainingstr = $due;
 
         require_once($CFG->dirroot . '/mod/externalassignment/classes/form/grader_form.php');
-        $mform = new grader_form(null, $data);
+        // Post back to the same page including the sort order and status filter, so that
+        // "Submit & Next" can find the next student in that order.
+        $mform = new grader_form($this->grader_url($this->userid), $data);
 
         // Form processing and displaying is done here.
         if ($mform->is_cancelled()) {
@@ -156,16 +213,7 @@ class grade_control {
                 if (isset($formdata->submitandnext) && $nextstudentid !== null) {
                     $nextuserid = $nextstudentid;
                 }
-                redirect(
-                    new \moodle_url(
-                        'view.php',
-                        [
-                            'id' => $this->coursemoduleid,
-                            'action' => 'grader',
-                            'userid' => $nextuserid,
-                        ]
-                    )
-                );
+                redirect($this->grader_url($nextuserid));
             } else {  // Display the form.
                 $data->externalgrade = '';
                 $data->manualgrade = '';

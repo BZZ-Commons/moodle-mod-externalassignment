@@ -41,6 +41,7 @@ use restore_dbops;
  */
 #[Group('mod_externalassignment')]
 #[CoversMethod(assign_control::class, 'update_calendar_event')]
+#[CoversMethod(assign_control::class, 'add_instance')]
 final class lib_test extends \advanced_testcase {
     /**
      * Load the backup and restore classes.
@@ -344,5 +345,230 @@ final class lib_test extends \advanced_testcase {
         $this->assertEquals($newinstance->name . ' is due', $event->name);
         $this->assertEquals($duedate, $event->timestart);
         $this->assertEquals($newcourseid, $event->courseid);
+    }
+
+    /**
+     * An assignment without a due date must not get an "is due" calendar event. The duedate
+     * column is NOT NULL DEFAULT 0, so "no due date" is 0, never null - the event used to be
+     * created at timestamp 0 (1 January 1970) and showed up as overdue.
+     */
+    public function test_no_calendar_event_without_duedate(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => 0]);
+
+        $this->assertFalse($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+
+        externalassignment_refresh_events(0, $instance->id);
+        $this->assertFalse($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+    }
+
+    /**
+     * Removing the due date (e.g. with report_editdates, GitHub issue #38) must delete the
+     * existing "is due" event instead of moving it to 1 January 1970.
+     */
+    public function test_removing_duedate_deletes_calendar_event(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+        $this->assertTrue($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+
+        $DB->set_field('externalassignment', 'duedate', 0, ['id' => $instance->id]);
+        externalassignment_refresh_events(0, $instance->id);
+
+        $this->assertFalse($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+    }
+
+    /**
+     * Creating the shared "is due" event is part of saving the activity, not a calendar action
+     * of the current user: it must not depend on moodle/calendar:manageentries (otherwise e.g.
+     * a restore running as a user without that capability fails).
+     */
+    public function test_calendar_event_created_without_calendar_capability(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setUser($this->getDataGenerator()->create_user());
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+
+        $this->assertTrue($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+    }
+
+    /**
+     * externalassignment_update_grades() is the hook core calls to push a module's grades to the
+     * gradebook (e.g. when regrading). It must actually write the grades.
+     */
+    public function test_update_grades_pushes_grades_to_gradebook(): void {
+        global $CFG, $DB;
+        require_once($CFG->libdir . '/gradelib.php');
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $students = [];
+        foreach ([42, 17] as $points) {
+            $student = $this->getDataGenerator()->create_user();
+            $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+            $DB->insert_record('externalassignment_grades', (object)[
+                'externalassignment' => $instance->id,
+                'userid' => $student->id,
+                'grader' => 2,
+                'externallink' => '',
+                'externalgrade' => $points,
+                'manualgrade' => 3,
+            ]);
+            $students[$student->id] = $points + 3;
+        }
+
+        $record = $DB->get_record('externalassignment', ['id' => $instance->id]);
+        $firstid = array_key_first($students);
+        externalassignment_update_grades($record, $firstid);
+        $grades = grade_get_grades($course->id, 'mod', 'externalassignment', $instance->id, array_keys($students));
+        $this->assertEquals(45, $grades->items[0]->grades[$firstid]->grade);
+        $this->assertNull($grades->items[0]->grades[array_key_last($students)]->grade);
+
+        // Userid 0 means all users.
+        externalassignment_update_grades($record);
+        $grades = grade_get_grades($course->id, 'mod', 'externalassignment', $instance->id, array_keys($students));
+        foreach ($students as $userid => $total) {
+            $this->assertEquals($total, $grades->items[0]->grades[$userid]->grade);
+        }
+    }
+
+    /**
+     * Updating the grades must never mark the activity as complete for the acting user (it used
+     * to call update_state(COMPLETION_COMPLETE) for userid 0, i.e. the current user).
+     */
+    public function test_update_grades_does_not_complete_activity_for_current_user(): void {
+        global $DB, $USER;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'completion' => COMPLETION_TRACKING_MANUAL,
+        ]);
+
+        externalassignment_update_grades($DB->get_record('externalassignment', ['id' => $instance->id]));
+
+        $this->assertFalse($DB->record_exists('course_modules_completion', [
+            'coursemoduleid' => $instance->cmid,
+            'userid' => $USER->id,
+        ]));
+    }
+
+    /**
+     * Resetting the gradebook of a course must work (it used to call mod_assign's
+     * assign_grade_item_update(), which is not defined unless mod_assign happens to be loaded).
+     */
+    public function test_reset_gradebook(): void {
+        global $CFG, $DB;
+        require_once($CFG->libdir . '/gradelib.php');
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        externalassignment_grade_item_update(
+            $DB->get_record('externalassignment', ['id' => $instance->id]),
+            (object)['userid' => $student->id, 'rawgrade' => 50]
+        );
+
+        externalassignment_reset_gradebook($course->id);
+
+        $grades = grade_get_grades($course->id, 'mod', 'externalassignment', $instance->id, $student->id);
+        $this->assertNull($grades->items[0]->grades[$student->id]->grade);
+    }
+
+    /**
+     * Restoring a course with user data must restore grades and extensions for the restored
+     * users and shift the extension dates by the same offset as the assignment's own dates
+     * (GitHub issue #14: user ids were copied unmapped and override dates were not shifted).
+     */
+    public function test_restore_with_user_data_maps_users_and_shifts_override_dates(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $startdate = mktime(0, 0, 0, 9, 1, 2026);
+        $course = $this->getDataGenerator()->create_course(['startdate' => $startdate]);
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $duedate = $startdate + WEEKSECS;
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => $duedate]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $DB->insert_record('externalassignment_grades', (object)[
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'grader' => get_admin()->id,
+            'externallink' => '',
+            'externalgrade' => 42,
+            'manualgrade' => 0,
+        ]);
+        $generator->create_override_entry([
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'duedate' => $duedate + DAYSECS,
+        ]);
+
+        $userid = get_admin()->id;
+        $bc = new backup_controller(
+            backup::TYPE_1COURSE,
+            $course->id,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            $userid
+        );
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        $results['backup_destination']->extract_to_pathname(
+            get_file_packer('application/vnd.moodle.backup'),
+            make_backup_temp_directory('') . '/issue14_backup_test'
+        );
+        $bc->destroy();
+
+        $categoryid = $DB->get_field_sql('SELECT MIN(id) FROM {course_categories}');
+        $newcourseid = restore_dbops::create_new_course('Restored course', 'restoredcourse', $categoryid);
+        $rc = new restore_controller(
+            'issue14_backup_test',
+            $newcourseid,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            $userid,
+            backup::TARGET_NEW_COURSE
+        );
+        $rc->get_plan()->get_setting('course_startdate')->set_value($startdate + 10 * DAYSECS);
+        $this->assertTrue($rc->execute_precheck());
+        $rc->execute_plan();
+        $rc->destroy();
+
+        $newinstance = $DB->get_record('externalassignment', ['course' => $newcourseid], '*', MUST_EXIST);
+        $this->assertEquals($duedate + 10 * DAYSECS, $newinstance->duedate);
+
+        $grade = $DB->get_record('externalassignment_grades', ['externalassignment' => $newinstance->id], '*', MUST_EXIST);
+        $this->assertEquals($student->id, $grade->userid);
+        $this->assertEquals($userid, $grade->grader);
+
+        $override = $DB->get_record('externalassignment_overrides', ['externalassignment' => $newinstance->id], '*', MUST_EXIST);
+        $this->assertEquals($student->id, $override->userid);
+        $this->assertEquals($duedate + DAYSECS + 10 * DAYSECS, $override->duedate);
     }
 }

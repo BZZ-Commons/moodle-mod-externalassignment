@@ -20,9 +20,9 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
-use mod_externalassignment\local\assign;
 
 /**
  * Privacy class for requesting user data.
@@ -74,181 +74,160 @@ class provider implements
     }
 
     /**
-     * Returns all the contexts that has information relating to the userid.
+     * Get the list of contexts that contain user information for the specified user.
      *
-     * @param int $userid The user ID.
-     * @return contextlist an object with the contexts related to a userid.
+     * @param int $userid The user to search.
+     * @return contextlist The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
-        $query = 'SELECT ctx.id ' .
-            'FROM {context} ctx ' .
-            'JOIN {course_modules} coursemodule ON (coursemodule.id = ctx.instanceid AND ctx.contextlevel = :contextlevel) ' .
-            'JOIN {externalassignment} extassign ON (coursemodule.instance = extassign.id) ' .
-            'JOIN {externalassignment_grades} grades ON (extassign.id = grades.externalassignment) ' .
-            'WHERE grades.userid = :userid';
         $params = [
             'modname' => 'externalassignment',
             'contextlevel' => CONTEXT_MODULE,
             'userid' => $userid,
         ];
-        $contextlist->add_from_sql($query, $params);
-
-        $query = 'SELECT ctx.id ' .
-            'FROM {context} ctx ' .
-            'JOIN {course_modules} coursemodule ON (coursemodule.id = ctx.instanceid AND ctx.contextlevel = :contextlevel) ' .
-            'JOIN {externalassignment} extassign ON (coursemodule.instance = extassign.id) ' .
-            'JOIN {externalassignment_overrides} overrides ON (extassign.id = overrides.externalassignment) ' .
-            'WHERE overrides.userid = :userid';
-        $params = [
-            'modname' => 'externalassignment',
-            'contextlevel' => CONTEXT_MODULE,
-            'userid' => $userid,
-        ];
-        $contextlist->add_from_sql($query, $params);
+        // Instance ids are only unique per module type, so course_modules must be restricted to
+        // this module - otherwise the contexts of unrelated activities are returned as well.
+        foreach (['externalassignment_grades', 'externalassignment_overrides'] as $table) {
+            $query = 'SELECT ctx.id ' .
+                '  FROM {context} ctx ' .
+                '  JOIN {course_modules} cm ON (cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel) ' .
+                '  JOIN {modules} m ON (m.id = cm.module AND m.name = :modname) ' .
+                '  JOIN {' . $table . '} data ON (data.externalassignment = cm.instance) ' .
+                ' WHERE data.userid = :userid';
+            $contextlist->add_from_sql($query, $params);
+        }
         return $contextlist;
     }
 
     /**
-     * Returns all the users that have data in the given context.
+     * Get the list of users who have data within a context.
      *
-     * @param userlist $userlist An object with the users related to a context.
-     * @return void
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function get_users_in_context(userlist $userlist) {
-        $context = $userlist->get_context();
-        if (!$context instanceof \context_module) {
+        $assignmentid = self::get_assignment_id($userlist->get_context());
+        if ($assignmentid === null) {
             return;
         }
 
-        $params = [
-            'instanceid' => $context->instanceid,
-            'modulename' => 'externalassignment',
-        ];
-        $query = 'SELECT DISTINCT user.id AS userid ' .
-            'FROM {user} user ' .
-            'JOIN {externalassignment_grades} grades ON (user.id = grades.userid) ' .
-            'JOIN {externalassignment} extassign ON (grades.externalassignment = extassign.id) ' .
-            'JOIN {course_modules} cm ON (extassign.id = cm.instance) ' .
-            'WHERE cm.id = :instanceid ';
-        $userlist->add_from_sql('userid', $query, $params);
-
-        $query = 'SELECT DISTINCT user.id AS userid ' .
-            'FROM {user} user ' .
-            'JOIN {externalassignment_overrides} overrides ON (user.id = overrides.userid) ' .
-            'JOIN {externalassignment} extassign ON (overrides.externalassignment = extassign.id) ' .
-            'JOIN {course_modules} cm ON (extassign.id = cm.instance) ' .
-            'WHERE cm.id = :instanceid';
-        $userlist->add_from_sql('userid', $query, $params);
+        $params = ['assignmentid' => $assignmentid];
+        foreach (['externalassignment_grades', 'externalassignment_overrides'] as $table) {
+            $userlist->add_from_sql(
+                'userid',
+                'SELECT userid FROM {' . $table . '} WHERE externalassignment = :assignmentid',
+                $params
+            );
+        }
     }
 
     /**
-     * Export all user data for the given contextlist.
-     * @param approved_contextlist $contextlist
-     * @return void
+     * Export all user data (grades and extensions) for the specified user, in the specified contexts.
+     *
+     * @param approved_contextlist $contextlist The approved contexts to export information for.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
-        $user = $contextlist->get_user();
-        $userid = $user->id;
+        $userid = $contextlist->get_user()->id;
         foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel == CONTEXT_MODULE) {
-                $assign = new assign(null, $context);
-                $assign->load_db($context->instanceid, $userid);
-                $data = new \stdClass();
-                $data->userid = $userid;
-                $student = $assign->take_student($userid);
-                $data->grader = $student->get_grade()->get_grader();
-                $data->externallink = $student->get_grade()->get_externallink();
-                $data->externalgrade = $student->get_grade()->get_externalgrade();
-                $data->externalfeedback = $student->get_grade()->get_externalfeedback();
-                $data->manualgrade = $student->get_grade()->get_manualgrade();
-                $data->manualfeedback = $student->get_grade()->get_manualfeedback();
+            $assignmentid = self::get_assignment_id($context);
+            if ($assignmentid === null) {
+                continue;
+            }
+            $conditions = ['externalassignment' => $assignmentid, 'userid' => $userid];
 
-                writer::with_context($context)
-                    ->export_data([], $data)
-                    ->export_metadata(
-                        [],
-                        'externalassignment:grades',
-                        (object)['userid' => $userid],
-                        new \lang_string('privacy:export:externalassignment:grades', 'externalassignment')
-                    );
+            if ($grade = $DB->get_record('externalassignment_grades', $conditions)) {
+                $data = (object)[
+                    'userid' => $userid,
+                    'grader' => $grade->grader,
+                    'externallink' => $grade->externallink,
+                    'externalgrade' => $grade->externalgrade,
+                    'externalfeedback' => $grade->externalfeedback,
+                    'manualgrade' => $grade->manualgrade,
+                    'manualfeedback' => $grade->manualfeedback,
+                ];
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:export:externalassignment:grades', 'externalassignment')],
+                    $data
+                );
+            }
+
+            if ($override = $DB->get_record('externalassignment_overrides', $conditions)) {
+                $data = (object)['userid' => $userid];
+                foreach (['allowsubmissionsfromdate', 'duedate', 'cutoffdate'] as $field) {
+                    $data->$field = empty($override->$field) ? null : transform::datetime($override->$field);
+                }
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:export:externalassignment:overrides', 'externalassignment')],
+                    $data
+                );
             }
         }
     }
 
     /**
-     * Delete all user data for the given context.
-     * @param \context $context
-     * @return void
+     * Delete all data for all users in the specified context.
+     *
+     * @param \context $context The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
-
-        // Check that this is a context_module.
-        if (!$context instanceof \context_module) {
+        $assignmentid = self::get_assignment_id($context);
+        if ($assignmentid === null) {
             return;
         }
-
-        // Get the course module and exit if not 'externalassignment'.
-        if (!$cm = get_coursemodule_from_id('externalassignment', $context->instanceid)) {
-            return;
-        }
-
-        $assignid = $cm->instance;
-        $DB->delete_records('externalassignment_grades', ['externalassignment' => $assignid]);
-        $DB->delete_records('externalassignment_overrides', ['externalassignment' => $assignid]);
+        $DB->delete_records('externalassignment_grades', ['externalassignment' => $assignmentid]);
+        $DB->delete_records('externalassignment_overrides', ['externalassignment' => $assignmentid]);
     }
 
     /**
-     * Delete all user data for the given contextlist.
-     * @param approved_contextlist $contextlist
-     * @return void
+     * Delete all user data for the specified user, in the specified contexts.
+     *
+     * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
-        $user = $contextlist->get_user();
-        $userid = $user->id;
-        foreach ($contextlist as $context) {
-            // Get the course module.
-            $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
-            $assignment = $DB->get_record('externalassignment', ['id' => $cm->instance]);
-            $DB->delete_records(
-                'externalassignment_grades',
-                ['externalassignment' => $assignment->id,
-                    'userid' => $userid]
-            );
-            $DB->delete_records(
-                'externalassignment_overrides',
-                ['externalassignment' => $assignment->id,
-                    'userid' => $userid]
-            );
+        $userid = $contextlist->get_user()->id;
+        foreach ($contextlist->get_contexts() as $context) {
+            $assignmentid = self::get_assignment_id($context);
+            if ($assignmentid === null) {
+                continue;
+            }
+            $conditions = ['externalassignment' => $assignmentid, 'userid' => $userid];
+            $DB->delete_records('externalassignment_grades', $conditions);
+            $DB->delete_records('externalassignment_overrides', $conditions);
         }
     }
 
     /**
-     * Delete all user data for the given userlist.
-     * @param approved_userlist $userlist
-     * @return void
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
-
-        $context = $userlist->get_context();
-        $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
-        $assign = $DB->get_record('externalassignment', ['id' => $cm->instance]);
+        $assignmentid = self::get_assignment_id($userlist->get_context());
         $userids = $userlist->get_userids();
-        [$insql, $inparams] = $DB->get_in_or_equal($userids);
+        if ($assignmentid === null || empty($userids)) {
+            return;
+        }
+        [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params = array_merge(['assignmentid' => $assignmentid], $inparams);
+        $DB->delete_records_select('externalassignment_grades', "externalassignment = :assignmentid AND userid $insql", $params);
+        $DB->delete_records_select('externalassignment_overrides', "externalassignment = :assignmentid AND userid $insql", $params);
+    }
 
-        $DB->delete_records_select(
-            'externalassignment_grades',
-            "externalassignment = ? AND userid $insql",
-            array_merge([$assign->id], $inparams)
-        );
-        $DB->delete_records_select(
-            'externalassignment_overrides',
-            "externalassignment = ? AND userid $insql",
-            array_merge([$assign->id], $inparams)
-        );
+    /**
+     * Returns the id of the external assignment a context belongs to
+     *
+     * @param \context $context
+     * @return int|null null if the context is not the context of an external assignment
+     */
+    private static function get_assignment_id(\context $context): ?int {
+        if (!$context instanceof \context_module) {
+            return null;
+        }
+        $cm = get_coursemodule_from_id('externalassignment', $context->instanceid);
+        return $cm ? (int)$cm->instance : null;
     }
 }

@@ -70,7 +70,10 @@ class view_student implements renderable, templatable {
         $this->context = $context;
         $this->assignment = $assign;
         $this->grade = $grade;
-        $this->student = $this->assignment->take_student($userid);
+        // Users who may view the activity without being a student (e.g. non-editing teachers or
+        // guests) are not in the assignment's student list: show them the plain assignment.
+        $this->student = $this->assignment->take_student($userid)
+            ?? new student($this->assignment, \core_user::get_user($userid));
     }
 
     /**

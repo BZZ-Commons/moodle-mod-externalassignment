@@ -244,16 +244,21 @@ class assign_control {
             ]
         );
 
+        // The duedate column is NOT NULL DEFAULT 0, so "no due date" is 0: such an assignment
+        // must not have an "is due" event, it would be dated 1 January 1970 and shown as overdue.
+        $hasduedate = !empty($instance->duedate);
         if ($event->id) {   // Does the event already exists?
             $calendarevent = \calendar_event::load($event->id);
-            if ($instance->duedate !== null) {
+            if ($hasduedate) {
                 $calendarevent->update($event, false);
             } else {    // No more due date, so delete the event
                 // Calendar event is no longer needed.
                 $calendarevent->delete();
             }
-        } else {
-            \calendar_event::create($event);
+        } else if ($hasduedate) {
+            // The event belongs to the activity, so creating it must not depend on the current
+            // user's calendar capabilities (e.g. a restore running as another user).
+            \calendar_event::create($event, false);
         }
     }
 

@@ -35,9 +35,8 @@ require_login($course, false, $coursemodule);
 $modulecontext = context_module::instance($coursemodule->id);
 
 // Re-direct the user.
-if (has_capability('mod/externalassignment:manage', $modulecontext)) {
-    $url = new moodle_url('reports.php', ['courseid' => $coursemodule->course,
-        'id' => $assignment->id]);
+if (has_capability('mod/externalassignment:reviewgrades', $modulecontext)) {
+    $url = new moodle_url('view.php', ['id' => $id, 'action' => 'grading']);
 } else {
     $url = new moodle_url('view.php', ['id' => $id]);
 }

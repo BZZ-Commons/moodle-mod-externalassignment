@@ -44,75 +44,79 @@ class duplicate_names_task extends \core\task\scheduled_task
     }
 
     /**
-     * Execute the task
-     * @throws \dml_exception
+     * Execute the task: logs every external name that is used by more than one assignment a
+     * student is enrolled in, since update_grade can then only update one of them.
      */
     public function execute(): void {
         mtrace('  Looking for duplicate external names...');
-        // Find all courses and students with duplicate external assignment names.
-        $rows = $this->read_duplicates();
-        $duplicates = [];
-        foreach ($rows as $row) {
-            if (!$this->is_teacher($row->userid, $row->course)) {
-                $duplicates[$row->externalname][$row->coursename] = true;
-            }
-        }
-
-        foreach ($duplicates as $externalname => $courses) {
-            $courselist = implode(', ', array_keys($courses));
-            mtrace('  External assignment name "' . $externalname . '" is duplicated in courses: ' . $courselist);
+        foreach ($this->find_duplicates() as $externalname => $courses) {
+            mtrace('  External assignment name "' . $externalname . '" is duplicated in courses: ' . implode(', ', $courses));
         }
         mtrace('  ... done');
     }
 
     /**
-     * Read all duplicate external assignment names for the same user across all courses.
-     * @return array
+     * Finds the external names used by more than one assignment that the same student is enrolled in
+     * @return array externalname => sorted list of the names of the courses using it
      * @throws \dml_exception
      */
-    private function read_duplicates() {
+    public function find_duplicates(): array {
         global $DB;
+        // Only names that occur more than once at all can be duplicates for a student.
         $query =
-            'SELECT t.*' .
-            ' FROM (' .
-            '    SELECT UUID(), ae.id, ae.course, ae.externalname, ae.name,' .
-            '           ue.userid, ue.id AS userenrolid, us.firstname, us.lastname, en.id AS enroleid,' .
-            '           cm.id AS coursemoduleid, co.fullname AS coursename' .
-            '   FROM mdl_externalassignment ae' .
-            '   JOIN mdl_enrol en ON (ae.course = en.courseid)' .
-            '   JOIN mdl_user_enrolments ue ON (ue.enrolid = en.id)' .
-            '   JOIN mdl_user us ON (us.id = ue.userid)' .
-            '   JOIN mdl_course_modules cm ON (cm.instance = ae.id)' .
-            '   JOIN mdl_course co ON (ae.course = co.id)' .
-            ' ) AS t' .
-            ' JOIN (' .
-            '    SELECT externalname, userid' .
-            '    FROM (' .
-            '        SELECT ae.externalname, ue.userid' .
-            '        FROM mdl_externalassignment ae' .
-            '        JOIN mdl_enrol en ON (ae.course = en.courseid)' .
-            '        JOIN mdl_user_enrolments ue ON (ue.enrolid = en.id)' .
-            '        JOIN mdl_user us ON (us.id = ue.userid)' .
-            '        JOIN mdl_course_modules cm ON (cm.instance = ae.id)' .
-            '        JOIN mdl_course co ON (ae.course = co.id)' .
-            '    ) d' .
-            '    GROUP BY externalname, userid' .
-            '    HAVING COUNT(*) > 1' .
-            ' ) AS dup' .
-            ' ON t.externalname = dup.externalname' .
-            ' AND t.userid = dup.userid;';
-        return $DB->get_records_sql($query);
+            'SELECT ae.id AS assignmentid, ae.externalname, ae.course, co.fullname AS coursename, ue.userid' .
+            '  FROM {externalassignment} ae' .
+            '  JOIN {course_modules} cm ON (cm.instance = ae.id AND cm.deletioninprogress = 0)' .
+            '  JOIN {modules} mo ON (mo.id = cm.module AND mo.name = :modname)' .
+            '  JOIN {course} co ON (co.id = ae.course)' .
+            '  JOIN {enrol} en ON (en.courseid = ae.course)' .
+            '  JOIN {user_enrolments} ue ON (ue.enrolid = en.id)' .
+            ' WHERE ae.externalname IN (' .
+            '       SELECT externalname FROM {externalassignment} GROUP BY externalname HAVING COUNT(1) > 1' .
+            '       )';
+        $rows = $DB->get_recordset_sql($query, ['modname' => 'externalassignment']);
+
+        // Collect the assignments per external name and student, ignoring teachers. A student
+        // with several enrolments in one course appears several times for the same assignment.
+        $assignments = [];
+        $teachers = [];
+        foreach ($rows as $row) {
+            $key = $row->userid . '_' . $row->course;
+            if (!array_key_exists($key, $teachers)) {
+                $teachers[$key] = $this->is_teacher($row->userid, $row->course);
+            }
+            if (!$teachers[$key]) {
+                $assignments[$row->externalname][$row->userid][$row->assignmentid] = $row->coursename;
+            }
+        }
+        $rows->close();
+
+        $duplicates = [];
+        foreach ($assignments as $externalname => $students) {
+            foreach ($students as $courses) {
+                if (count($courses) > 1) {
+                    foreach ($courses as $coursename) {
+                        $duplicates[$externalname][$coursename] = $coursename;
+                    }
+                }
+            }
+        }
+        ksort($duplicates);
+        foreach ($duplicates as $externalname => $courses) {
+            sort($courses);
+            $duplicates[$externalname] = $courses;
+        }
+        return $duplicates;
     }
 
     /**
-     * Check if the user is a teacher in the given course.
+     * checks if the user is a teacher in the course
      * @param int $userid
      * @param int $courseid
      * @return bool
-     * @throws \dml_exception
+     * @throws \coding_exception
      */
     private function is_teacher($userid, $courseid): bool {
-        global $DB;
         $context = \context_course::instance($courseid);
         return has_capability('moodle/course:viewhiddenactivities', $context, $userid);
     }

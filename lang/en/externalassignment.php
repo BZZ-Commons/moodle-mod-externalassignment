@@ -109,6 +109,7 @@ $string['modulenameplural'] = 'External assignments';
 $string['needspassinggrade'] = 'Receive a passing grade';
 $string['needspassinggradedesc'] = 'Student needs a passing grade to complete the assignment';
 $string['nextuser'] = 'Next user';
+$string['nostudents'] = 'There are no students to grade.';
 $string['notsubmitted'] = 'not submitted';
 
 $string['open'] = 'open';
@@ -125,6 +126,7 @@ $string['pluginadministration'] = 'External Assignment';
 $string['pluginname'] = 'External Assignment';
 $string['previoususer'] = 'Previous user';
 $string['privacy:export:externalassignment:grades'] = 'Grades for external assignment';
+$string['privacy:export:externalassignment:overrides'] = 'Extensions for external assignment';
 $string['privacy:metadata:allowsubmissionsfromdate'] = 'The overridden allow submissions from date';
 $string['privacy:metadata:cutoffdate'] = 'The overridden cut-off date';
 $string['privacy:metadata:duedate'] = 'The overridden due date';

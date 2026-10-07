@@ -30,6 +30,7 @@ use PHPUnit\Framework\Attributes\Group;
  */
 #[Group('mod_externalassignment')]
 #[CoversMethod(view_student::class, 'export_for_template')]
+#[CoversMethod(view_student::class, '__construct')]
 final class view_student_test extends \advanced_testcase {
     /**
      * Regression test for GitHub issue #22 ("Zero division error in student view"): if the
@@ -237,5 +238,35 @@ final class view_student_test extends \advanced_testcase {
         $data = $view->export_for_template($renderer);
 
         $this->assertTrue($data->showexternallink);
+    }
+
+    /**
+     * Users who may view the activity but are not students (non-editing teachers, guests) are
+     * shown the student view as well. They are not in the assignment's student list, which used
+     * to make the constructor fail with "Cannot assign null to property ...$student".
+     */
+    public function test_student_view_for_non_student(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'teacher');
+        $context = \context_module::instance($instance->cmid);
+        $this->assertFalse(has_capability('mod/externalassignment:reviewgrades', $context, $teacher));
+
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid);
+        $grade = new grade(null);
+        $grade->load_db($assign->get_id(), $teacher->id);
+
+        $view = new view_student($instance->cmid, $context, $assign, $grade, $teacher->id);
+        $data = $view->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertNotEquals(get_string('assignmentisdue', 'externalassignment'), $data->timeremaining);
+        $this->assertEquals('0.00', $data->externalgrade);
     }
 }

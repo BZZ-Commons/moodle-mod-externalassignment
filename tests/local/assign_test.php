@@ -445,4 +445,120 @@ final class assign_test extends \advanced_testcase {
         $this->assertEquals(60, $stdclass->passingpercentage);
         $this->assertEquals(1, $stdclass->needspassinggrade);
     }
+
+    /**
+     * Sorting by grade must order by the total of external + manual grade, with ungraded
+     * students always listed last (GitHub issue #2). The comparators used to return a bool,
+     * which PHP treats as "greater" or "equal" only - this reversed the order and raised a
+     * deprecation warning on every page load.
+     */
+    public function test_sort_students_by_grade(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $context = \context_module::instance($instance->cmid);
+
+        $ids = [];
+        foreach (['A' => 10, 'B' => 50, 'C' => 30, 'D' => null] as $lastname => $points) {
+            $user = $this->getDataGenerator()->create_user(['lastname' => $lastname]);
+            $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+            $ids[$lastname] = $user->id;
+            if ($points !== null) {
+                $this->insert_grade($instance->id, $user->id, $points);
+            }
+        }
+
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid, 'grade', 'asc');
+        $this->assertEquals([$ids['A'], $ids['C'], $ids['B'], $ids['D']], array_keys($assign->get_students()));
+
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid, 'grade', 'desc');
+        $this->assertEquals([$ids['B'], $ids['C'], $ids['A'], $ids['D']], array_keys($assign->get_students()));
+    }
+
+    /**
+     * A grade row for somebody who is not (or no longer) an enrolled student must be ignored
+     * silently instead of raising "Undefined array key" warnings (GitHub issue #32).
+     */
+    public function test_load_db_ignores_grade_of_non_student(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $context = \context_module::instance($instance->cmid);
+        $notenrolled = $this->getDataGenerator()->create_user();
+        $this->insert_grade($instance->id, $notenrolled->id, 42);
+
+        $warnings = [];
+        set_error_handler(function (int $errno, string $errstr) use (&$warnings) {
+            $warnings[] = $errstr;
+            return true;
+        });
+        try {
+            $assign = new assign(null, $context);
+            $assign->load_db($instance->cmid);
+            $student = $assign->take_student($notenrolled->id);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([], $warnings);
+        $this->assertNull($student);
+        $this->assertSame(0, $assign->count_students());
+    }
+
+    /**
+     * The next student must respect the open/done filter of the grader page, so that
+     * "Submit & Next" moves to the same student as the navigation arrow (GitHub issues #4/#6).
+     */
+    public function test_get_next_student_id_with_status_filter(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $context = \context_module::instance($instance->cmid);
+
+        $ids = [];
+        foreach (['A' => true, 'B' => false, 'C' => true, 'D' => false] as $lastname => $graded) {
+            $user = $this->getDataGenerator()->create_user(['lastname' => $lastname]);
+            $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+            $ids[$lastname] = $user->id;
+            if ($graded) {
+                $this->insert_grade($instance->id, $user->id, 10);
+            }
+        }
+
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid, 'lastname', 'asc');
+
+        $this->assertEquals($ids['B'], $assign->get_next_student_id($ids['A']));
+        $this->assertEquals($ids['C'], $assign->get_next_student_id($ids['A'], 'done'));
+        $this->assertEquals($ids['B'], $assign->get_next_student_id($ids['A'], 'open'));
+        $this->assertEquals($ids['D'], $assign->get_next_student_id($ids['B'], 'open'));
+        $this->assertNull($assign->get_next_student_id($ids['C'], 'done'));
+    }
+
+    /**
+     * Inserts a grade record
+     * @param int $assignmentid
+     * @param int $userid
+     * @param float $externalgrade
+     * @return void
+     */
+    private function insert_grade(int $assignmentid, int $userid, float $externalgrade): void {
+        global $DB;
+        $DB->insert_record('externalassignment_grades', (object)[
+            'externalassignment' => $assignmentid,
+            'userid' => $userid,
+            'grader' => 2,
+            'externallink' => '',
+            'externalgrade' => $externalgrade,
+            'manualgrade' => 0,
+        ]);
+    }
 }

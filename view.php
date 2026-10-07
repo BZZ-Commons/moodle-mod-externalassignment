@@ -77,7 +77,7 @@ if ($urlparams['action'] == '') {
 } else if ($urlparams['action'] == 'grading') {
     show_grading($context, $coursemoduleid, $urlparams['sort'], $urlparams['tdir']);
 } else if ($urlparams['action'] == 'grader') {
-    show_grader($context, $coursemoduleid, $urlparams['userid']);
+    show_grader($context, $coursemoduleid, $urlparams['userid'], $urlparams['sort'], $urlparams['tdir'], $urlparams['status']);
 } else if ($urlparams['action'] == 'override') {
     show_override($context, $coursemoduleid, $urlparams['userids']);
 }
@@ -100,7 +100,9 @@ function show_details($context, $coursemoduleid): void {
     $title = $courseshortname . ': ' . $assignmentname;
     $PAGE->set_title($title);
     $PAGE->set_heading('External assignment details');
-    $PAGE->set_pagelayout('standard');
+    // The "incourse" layout is what core needs to show the links to the previous/next
+    // activity below the page (GitHub issue #10).
+    $PAGE->set_pagelayout('incourse');
 
     if (
         !$assignment->is_alwaysshowdescription() &&
@@ -175,27 +177,35 @@ function show_grading(
  * @param context_module $context the context of the course module
  * @param int $coursemoduleid the id of the course module
  * @param int|null $userid the id of the student being graded, or null to redirect to the first student
+ * @param string $sort the sort order for the students
+ * @param string $tdir the direction of the sort
+ * @param string $status the status filter: open, done or '' for all students
  * @return void
  * @throws \coding_exception
  * @throws \required_capability_exception
  * @throws \dml_exception
  * @throws \moodle_exception
  */
-function show_grader($context, $coursemoduleid, $userid): void {
+function show_grader($context, $coursemoduleid, $userid, string $sort, string $tdir, string $status): void {
     global $PAGE;
     require_capability('mod/externalassignment:reviewgrades', $context);
-    $assign = new \mod_externalassignment\local\assign(null, $context);
 
-    if ($userid == null) {
+    if (empty($userid)) {
+        $assign = new assign(null, $context);
+        $assign->load_db($coursemoduleid, $sort, $tdir);
         $userid = array_key_first($assign->get_students());
-        $urlparams = [
-            'id' => $coursemoduleid,
-            'action' => 'grader',
-            'userid' => $userid,
-        ];
-
-        $url = new moodle_url('/mod/externalassignment/view.php', $urlparams);
-        redirect($url);
+        if ($userid === null) {
+            // Without any students there is nobody to grade - redirecting to the grader again
+            // would loop forever (GitHub issue #23).
+            redirect(
+                new moodle_url('/mod/externalassignment/view.php', ['id' => $coursemoduleid, 'action' => 'grading']),
+                get_string('nostudents', 'externalassignment'),
+                null,
+                \core\output\notification::NOTIFY_INFO
+            );
+        }
+        // The page url already carries the sort order and the status filter.
+        redirect(new moodle_url($PAGE->url, ['userid' => $userid]));
     }
 
     $courseshortname = $context->get_course_context()->get_context_name(false, true);
@@ -210,7 +220,7 @@ function show_grader($context, $coursemoduleid, $userid): void {
 
     $renderable = new view_grader_navigation($coursemoduleid, $context, $userid);
     echo $output->render($renderable);
-    $gradecontrol = new grade_control($coursemoduleid, $context, $userid);
+    $gradecontrol = new grade_control($coursemoduleid, $context, $userid, $sort, $tdir, $status);
     $gradecontrol->process_feedback();
     echo $output->footer();
 }

@@ -97,13 +97,12 @@ final class custom_completion_test extends \advanced_testcase {
     }
 
     /**
-     * When the assignment does not require a passing grade, the "needspassinggrade" custom rule
-     * is not used by the activity at all (see externalassignment_get_coursemodule_info()), so
-     * completion is driven by the main completion state instead of the custom rule. Recording a
-     * grade and running the grade-update hook (as externalassignment_update_grades() does whenever
-     * a grade is saved) must mark the activity complete.
+     * With manual completion tracking the "needspassinggrade" rule is not used at all: the
+     * activity is completed by the student's own toggle only (see GitHub issue #39). The
+     * gradebook hook externalassignment_update_grades() must therefore leave it alone - it used
+     * to force COMPLETION_COMPLETE for whoever it was called for.
      */
-    public function test_get_state_complete_without_passing_grade_requirement(): void {
+    public function test_update_grades_does_not_change_manual_completion(): void {
         global $DB;
 
         $this->resetAfterTest(true);
@@ -129,14 +128,13 @@ final class custom_completion_test extends \advanced_testcase {
             'manualgrade' => 0,
         ]);
 
-        externalassignment_update_grades($instance, $student->id);
-
         $module = get_coursemodule_from_instance('externalassignment', $instance->id);
         $cm = get_fast_modinfo($course)->get_cm($module->id);
-        $completion = new \completion_info($course);
 
+        externalassignment_update_grades($DB->get_record('externalassignment', ['id' => $instance->id]), $student->id);
+        $completion = new \completion_info($course);
         $this->assertEquals(
-            COMPLETION_COMPLETE,
+            COMPLETION_INCOMPLETE,
             $completion->get_data($cm, false, $student->id)->completionstate
         );
     }

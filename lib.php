@@ -27,7 +27,6 @@
 
 use mod_externalassignment\local\assign;
 use mod_externalassignment\local\assign_control;
-use mod_externalassignment\local\grade;
 
 /**
  * Adds an assignment instance
@@ -200,10 +199,17 @@ function externalassignment_extend_settings_navigation(settings_navigation $sett
 /**
  * Callback to update the grade settings or the grade for one student
  * @param stdClass $modinstance the externalassignment instance record
- * @param mixed $grades the grade(s) to update, or null to just update the grade item settings
+ * @param mixed $grades the grade(s) to update, 'reset' to delete all grades, or null to just update the grade item settings
  * @return int
  */
 function externalassignment_grade_item_update($modinstance, $grades = null): int {
+    global $CFG;
+    require_once($CFG->libdir . '/gradelib.php');
+    $params = null;
+    if ($grades === 'reset') {
+        $params = ['reset' => true];
+        $grades = null;
+    }
     return grade_update(
         'mod/externalassignment',
         $modinstance->course,
@@ -211,40 +217,45 @@ function externalassignment_grade_item_update($modinstance, $grades = null): int
         'externalassignment',
         $modinstance->id,
         0,
-        $grades
+        $grades,
+        $params
     );
 }
 
 /**
- * Updates the grade for one student
+ * Pushes the grades of one or all students to the gradebook
+ *
+ * This is the hook core calls whenever it needs the module's grades again, e.g. when regrading.
  * @param stdClass $modinstance the externalassignment instance record
  * @param int $userid the id of the user to update the grade for, or 0 for all users
  * @param bool $nullifnone whether to set the grade to null if there is no grade
  * @return void
- * @throws coding_exception
  * @throws dml_exception
- * @throws moodle_exception
  */
 function externalassignment_update_grades($modinstance, $userid = 0, $nullifnone = true) {
-    global $DB;
-    $cm = get_coursemodule_from_instance('externalassignment', $modinstance->id, 0, false, MUST_EXIST);
-    $grade = new grade(null);
-    $grade->load_db($modinstance->id, $userid);
-    $gradevalues = new \stdClass();
-    $gradevalues->userid = $userid;
-    $gradevalues->rawgrade = floatval($grade->get_externalgrade()) + floatval($grade->get_manualgrade());
-    $link = new \moodle_url(
-        '/mod/externalassignment/view.php',
-        ['id' => $modinstance->id]
-    );
-    $gradevalues->feedback = '<a href="' . $link->out(true) . '">' .
-        get_string('seefeedback', 'externalassignment') . '</a>';
-    $gradevalues->feedbackformat = 1;
+    global $CFG, $DB;
+    require_once($CFG->libdir . '/gradelib.php');
 
-     [$course, $coursemodule] = get_course_and_cm_from_cmid($cm->id, 'externalassignment');
-    $completion = new \completion_info($course);
-    if ($completion->is_enabled($coursemodule)) {
-        $completion->update_state($coursemodule, COMPLETION_COMPLETE, $userid);
+    $conditions = ['externalassignment' => $modinstance->id];
+    if ($userid) {
+        $conditions['userid'] = $userid;
+    }
+    $grades = [];
+    $records = $DB->get_records('externalassignment_grades', $conditions, '', 'id, userid, externalgrade, manualgrade');
+    foreach ($records as $record) {
+        $grades[$record->userid] = (object)[
+            'userid' => $record->userid,
+            'rawgrade' => floatval($record->externalgrade) + floatval($record->manualgrade),
+        ];
+    }
+    if (empty($grades) && $userid && $nullifnone) {
+        $grades[$userid] = (object)['userid' => $userid, 'rawgrade' => null];
+    }
+
+    if (empty($grades)) {
+        externalassignment_grade_item_update($modinstance);
+    } else {
+        externalassignment_grade_item_update($modinstance, $grades);
     }
 }
 
@@ -264,7 +275,7 @@ function externalassignment_reset_gradebook(int $courseid, string $type = '') {
 
     if ($assignments = $DB->get_records_sql($sql, $params)) {
         foreach ($assignments as $assignment) {
-            assign_grade_item_update($assignment, 'reset');
+            externalassignment_grade_item_update($assignment, 'reset');
         }
     }
 }

@@ -109,6 +109,7 @@ $string['modulenameplural'] = 'Externe Aufgaben';
 $string['needspassinggrade'] = 'Eine genügende Bewertung erreichen';
 $string['needspassinggradedesc'] = 'Studierende müssen eine genügende Bewertung erreichen, um die Aufgabe abzuschliessen';
 $string['nextuser'] = 'Nächster Nutzer';
+$string['nostudents'] = 'Es gibt keine Studierenden zu bewerten.';
 $string['notsubmitted'] = 'nicht abgegeben';
 
 $string['open'] = 'offen';
@@ -125,6 +126,7 @@ $string['pluginadministration'] = 'Externe Aufgabe';
 $string['pluginname'] = 'Externe Aufgabe';
 $string['previoususer'] = 'Vorheriger Nutzer';
 $string['privacy:export:externalassignment:grades'] = 'Bewertungen für externe Aufgabe';
+$string['privacy:export:externalassignment:overrides'] = 'Fristverlängerungen für externe Aufgabe';
 $string['privacy:metadata:allowsubmissionsfromdate'] = 'Das überschriebene Datum "Abgabe erlauben ab"';
 $string['privacy:metadata:cutoffdate'] = 'Der überschriebene Abgabeschluss';
 $string['privacy:metadata:duedate'] = 'Der überschriebene Abgabetermin';

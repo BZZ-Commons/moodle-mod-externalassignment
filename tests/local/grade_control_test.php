@@ -39,6 +39,8 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(grade_control::class, 'set_userid')]
 #[CoversMethod(grade_control::class, 'get_userid')]
 #[CoversMethod(grade_control::class, 'override_update')]
+#[CoversMethod(grade_control::class, 'get_next_student_id')]
+#[CoversMethod(grade_control::class, 'grader_url')]
 final class grade_control_test extends \advanced_testcase {
     /**
      * Test constructor
@@ -281,5 +283,73 @@ final class grade_control_test extends \advanced_testcase {
         $this->assertEquals(0, $DB->count_records('event', [
             'modulename' => 'externalassignment', 'instance' => $instance->id, 'userid' => $student->id,
         ]));
+    }
+
+    /**
+     * "Submit & Next" must move to the next student in the order and with the open/done filter
+     * the teacher chose on the grading overview (GitHub issues #4, #5 and #6) - it used to always
+     * use lastname ascending without any filter, so it jumped to a different student than the
+     * navigation arrow did.
+     */
+    public function test_get_next_student_id_respects_sort_and_status(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $context = \context_module::instance($instance->cmid);
+
+        // Firstname order is the reverse of lastname order.
+        $ids = [];
+        foreach (['Dora' => 'Adams', 'Carl' => 'Baker', 'Bert' => 'Clark', 'Anna' => 'Davis'] as $firstname => $lastname) {
+            $user = $this->getDataGenerator()->create_user(['firstname' => $firstname, 'lastname' => $lastname]);
+            $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+            $ids[$firstname] = $user->id;
+        }
+        // Only Bert has already been graded.
+        $DB->insert_record('externalassignment_grades', (object)[
+            'externalassignment' => $instance->id,
+            'userid' => $ids['Bert'],
+            'grader' => 2,
+            'externallink' => '',
+            'externalgrade' => 10,
+            'manualgrade' => 0,
+        ]);
+
+        $gradecontrol = new grade_control($instance->cmid, $context, $ids['Anna'], 'firstname', 'asc');
+        $this->assertEquals($ids['Bert'], $gradecontrol->get_next_student_id());
+
+        $gradecontrol = new grade_control($instance->cmid, $context, $ids['Anna'], 'firstname', 'asc', 'open');
+        $this->assertEquals($ids['Carl'], $gradecontrol->get_next_student_id());
+
+        $gradecontrol = new grade_control($instance->cmid, $context, $ids['Dora'], 'lastname', 'asc', 'done');
+        $this->assertEquals($ids['Bert'], $gradecontrol->get_next_student_id());
+    }
+
+    /**
+     * The URL the grader redirects to after saving must keep the sort order and the status
+     * filter, otherwise the navigation falls back to lastname order after every save.
+     */
+    public function test_grader_url_keeps_sort_and_status(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $context = \context_module::instance($instance->cmid);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+
+        $gradecontrol = new grade_control($instance->cmid, $context, $student->id, 'grade', 'desc', 'open');
+        $url = $gradecontrol->grader_url(123);
+
+        $this->assertEquals($instance->cmid, $url->get_param('id'));
+        $this->assertEquals('grader', $url->get_param('action'));
+        $this->assertEquals(123, $url->get_param('userid'));
+        $this->assertEquals('grade', $url->get_param('sort'));
+        $this->assertEquals('desc', $url->get_param('tdir'));
+        $this->assertEquals('open', $url->get_param('status'));
     }
 }

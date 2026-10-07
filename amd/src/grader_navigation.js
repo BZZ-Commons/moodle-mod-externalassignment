@@ -161,19 +161,20 @@ function selectUser(event) {
 function navigateUser(event) {
     const datalist = document.getElementById('user_autocomplete_suggestions');
     const children = datalist.getElementsByTagName('LI');
+    if (children.length === 0) {
+        return;
+    }
     let currentItem = datalist.getAttribute('data-currentitem');
-    if (event.target.id === 'previous-user') {
-        if (currentItem === '0') {
-            currentItem = children.length - 1;
-        } else {
-            currentItem--;
-        }
+    if (currentItem === null) {
+        // The current student is not in the (filtered) list: start at its end or beginning.
+        currentItem = event.target.id === 'previous-user' ? children.length : -1;
     } else {
-        if (currentItem >= children.length - 1) {
-            currentItem = 0;
-        } else {
-            currentItem++;
-        }
+        currentItem = parseInt(currentItem);
+    }
+    if (event.target.id === 'previous-user') {
+        currentItem = currentItem <= 0 ? children.length - 1 : currentItem - 1;
+    } else {
+        currentItem = currentItem >= children.length - 1 ? 0 : currentItem + 1;
     }
     const nextNode = children[currentItem];
     const userid = nextNode.getAttribute('data-value');

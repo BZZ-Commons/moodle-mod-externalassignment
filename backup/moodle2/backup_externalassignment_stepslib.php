@@ -83,6 +83,7 @@ class backup_externalassignment_activity_structure_step extends backup_activity_
         }
         // Define id annotations.
         $grade->annotate_ids('user', 'userid');
+        $grade->annotate_ids('user', 'grader');
         $override->annotate_ids('user', 'userid');
 
         // Define file annotations.
