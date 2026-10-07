@@ -269,4 +269,28 @@ final class view_student_test extends \advanced_testcase {
         $this->assertNotEquals(get_string('assignmentisdue', 'externalassignment'), $data->timeremaining);
         $this->assertEquals('0.00', $data->externalgrade);
     }
+
+    /**
+     * Without a due date the student's time left must not say "Assignment is due".
+     */
+    public function test_export_for_template_without_duedate(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => 0]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $context = \context_module::instance($instance->cmid);
+        $assign = new assign(null, $context);
+        $assign->load_db($instance->cmid);
+        $grade = new grade(null);
+        $grade->load_db($assign->get_id(), $student->id);
+
+        $data = (new view_student($instance->cmid, $context, $assign, $grade, $student->id))
+            ->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertEquals(get_string('noduedate', 'externalassignment'), $data->timeremaining);
+    }
 }

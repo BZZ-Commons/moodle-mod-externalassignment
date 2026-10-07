@@ -73,7 +73,9 @@ class view_summary implements renderable, templatable {
         $data->graded_count = $assignment->count_grades();
 
         $timeremaining = $assignment->get_duedate() - time();
-        if ($timeremaining <= 0) {
+        if (empty($assignment->get_duedate())) {
+            $due = get_string('noduedate', 'externalassignment');
+        } else if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
         } else {
             $due = format_time($timeremaining);

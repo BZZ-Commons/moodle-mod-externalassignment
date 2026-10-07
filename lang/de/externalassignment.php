@@ -103,12 +103,13 @@ $string['manualgrademax_help'] = 'Maximal erreichbare Bewertung der manuellen Be
 $string['manualgrademaxnegativevalidation'] = 'Die maximale manuelle Bewertung darf nicht negativ sein.';
 $string['manualgrading'] = 'Manuelle Bewertung';
 $string['modulename'] = 'Externe Aufgabe';
-$string['modulename_help'] = 'Mit der Aktivität "Externe Aufgabe" können Sie Ihren Studierenden eine Aufgabe in einem externen System stellen (z. B. GitHub Classroom).\nSie enthält einen Webservice, um die Bewertung der Studierenden aus der externen Beurteilung zu aktualisieren';
+$string['modulename_help'] = 'Mit der Aktivität "Externe Aufgabe" können Sie Ihren Studierenden eine Aufgabe in einem externen System stellen (z. B. Classroom50).\nSie enthält einen Webservice, um die Bewertung der Studierenden aus der externen Beurteilung zu aktualisieren';
 $string['modulenameplural'] = 'Externe Aufgaben';
 
 $string['needspassinggrade'] = 'Eine genügende Bewertung erreichen';
 $string['needspassinggradedesc'] = 'Studierende müssen eine genügende Bewertung erreichen, um die Aufgabe abzuschliessen';
 $string['nextuser'] = 'Nächster Nutzer';
+$string['noduedate'] = 'Kein Abgabetermin';
 $string['nostudents'] = 'Es gibt keine Studierenden zu bewerten.';
 $string['notsubmitted'] = 'nicht abgegeben';
 

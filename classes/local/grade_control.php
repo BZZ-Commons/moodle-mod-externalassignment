@@ -166,8 +166,9 @@ class grade_control {
 
         // Time remaining.
         $timeremaining = $data->duedate - time();
-        $due = '';
-        if ($timeremaining <= 0) {
+        if (empty($data->duedate)) {
+            $due = get_string('noduedate', 'externalassignment');
+        } else if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
         } else {
             $due = get_string('timeremainingcolon', 'externalassignment', format_time($timeremaining));

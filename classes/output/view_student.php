@@ -91,7 +91,9 @@ class view_student implements renderable, templatable {
         $data->showexternallink = $this->assignment->is_alwaysshowlink() ||
             ($allowsubmissionsfromdate > 0 && $allowsubmissionsfromdate <= time());
         $timeremaining = $this->student->get_duedate() - time();
-        if ($timeremaining <= 0) {
+        if (empty($this->student->get_duedate())) {
+            $due = get_string('noduedate', 'externalassignment');
+        } else if ($timeremaining <= 0) {
             $due = get_string('assignmentisdue', 'externalassignment');
         } else {
             $due = format_time($timeremaining);

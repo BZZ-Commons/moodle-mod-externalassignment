@@ -68,7 +68,6 @@ use PHPUnit\Framework\Attributes\Group;
 #[CoversMethod(assign::class, 'get_passingpercentage')]
 #[CoversMethod(assign::class, 'set_needspassinggrade')]
 #[CoversMethod(assign::class, 'get_needspassinggrade')]
-#[CoversMethod(assign::class, 'is_needspassinggrade')]
 #[CoversMethod(assign::class, 'to_stdclass')]
 final class assign_test extends \advanced_testcase {
     /**

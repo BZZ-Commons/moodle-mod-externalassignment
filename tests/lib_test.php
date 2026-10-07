@@ -19,6 +19,7 @@ namespace mod_externalassignment;
 use backup;
 use backup_controller;
 use mod_externalassignment\local\assign_control;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Group;
 use restore_controller;
@@ -40,8 +41,21 @@ use restore_dbops;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[Group('mod_externalassignment')]
+#[CoversFunction('externalassignment_add_instance')]
+#[CoversFunction('externalassignment_delete_instance')]
+#[CoversFunction('externalassignment_get_coursemodule_info')]
+#[CoversFunction('externalassignment_cm_info_view')]
+#[CoversFunction('externalassignment_extend_settings_navigation')]
+#[CoversFunction('externalassignment_grade_item_update')]
+#[CoversFunction('externalassignment_update_grades')]
+#[CoversFunction('externalassignment_reset_gradebook')]
+#[CoversFunction('externalassignment_refresh_events')]
+#[CoversFunction('externalassignment_refresh_instance_events')]
+#[CoversFunction('mod_externalassignment_core_calendar_is_event_visible')]
+#[CoversFunction('mod_externalassignment_core_calendar_provide_event_action')]
 #[CoversMethod(assign_control::class, 'update_calendar_event')]
 #[CoversMethod(assign_control::class, 'add_instance')]
+#[CoversMethod(assign_control::class, 'delete_instance')]
 final class lib_test extends \advanced_testcase {
     /**
      * Load the backup and restore classes.
@@ -570,5 +584,182 @@ final class lib_test extends \advanced_testcase {
         $override = $DB->get_record('externalassignment_overrides', ['externalassignment' => $newinstance->id], '*', MUST_EXIST);
         $this->assertEquals($student->id, $override->userid);
         $this->assertEquals($duedate + DAYSECS + 10 * DAYSECS, $override->duedate);
+    }
+
+    /**
+     * Deleting the activity must remove the instance together with its grades, extensions and
+     * every calendar event (the shared one and the students' personal override events).
+     */
+    public function test_delete_instance_removes_all_data(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $DB->insert_record('externalassignment_grades', (object)[
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'grader' => 2,
+            'externallink' => '',
+            'externalgrade' => 42,
+            'manualgrade' => 0,
+        ]);
+        $generator->create_override_entry([
+            'externalassignment' => $instance->id,
+            'userid' => $student->id,
+            'duedate' => time() + WEEKSECS,
+        ]);
+        externalassignment_refresh_events(0, $instance->id);
+        $this->assertEquals(2, $DB->count_records('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+
+        $this->assertTrue(externalassignment_delete_instance($instance->id));
+
+        $this->assertFalse($DB->record_exists('externalassignment', ['id' => $instance->id]));
+        $this->assertFalse($DB->record_exists('externalassignment_grades', ['externalassignment' => $instance->id]));
+        $this->assertFalse($DB->record_exists('externalassignment_overrides', ['externalassignment' => $instance->id]));
+        $this->assertFalse($DB->record_exists('event', ['modulename' => 'externalassignment', 'instance' => $instance->id]));
+    }
+
+    /**
+     * The course page shows the link to the external assignment and its dates.
+     */
+    public function test_cm_info_view_without_open_date(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $duedate = time() + DAYSECS;
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'externallink' => 'https://www.example.com/a01',
+            'duedate' => $duedate,
+        ]);
+
+        $content = get_fast_modinfo($course)->get_cm($instance->cmid)->content;
+
+        $this->assertStringContainsString('href="https://www.example.com/a01"', $content);
+        $this->assertStringContainsString(get_string('submissionsdue', 'externalassignment'), $content);
+        $this->assertStringContainsString(userdate($duedate), $content);
+        $this->assertStringNotContainsString(get_string('submissionsopen', 'externalassignment'), $content);
+    }
+
+    /**
+     * Before submissions open the link is hidden (unless "always show link" is set) and the
+     * opening date is announced.
+     */
+    public function test_cm_info_view_before_open_date(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $opendate = time() + DAYSECS;
+        $hidden = $generator->create_instance([
+            'course' => $course->id,
+            'externallink' => 'https://www.example.com/hidden',
+            'alwaysshowlink' => 0,
+            'allowsubmissionsfromdate' => $opendate,
+        ]);
+        $shown = $generator->create_instance([
+            'course' => $course->id,
+            'externalname' => 'shown',
+            'externallink' => 'https://www.example.com/shown',
+            'alwaysshowlink' => 1,
+            'allowsubmissionsfromdate' => $opendate,
+        ]);
+
+        $modinfo = get_fast_modinfo($course);
+        $content = $modinfo->get_cm($hidden->cmid)->content;
+        $this->assertStringNotContainsString('https://www.example.com/hidden', $content);
+        $this->assertStringContainsString(get_string('submissionsopen', 'externalassignment'), $content);
+        $this->assertStringContainsString(userdate($opendate), $content);
+
+        $this->assertStringContainsString('href="https://www.example.com/shown"', $modinfo->get_cm($shown->cmid)->content);
+    }
+
+    /**
+     * Once submissions have opened the link is shown together with the opening date.
+     */
+    public function test_cm_info_view_after_open_date(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance([
+            'course' => $course->id,
+            'externallink' => 'https://www.example.com/a01',
+            'alwaysshowlink' => 0,
+            'allowsubmissionsfromdate' => time() - DAYSECS,
+        ]);
+
+        $content = get_fast_modinfo($course)->get_cm($instance->cmid)->content;
+
+        $this->assertStringContainsString('href="https://www.example.com/a01"', $content);
+        $this->assertStringContainsString(get_string('submissionsopened', 'externalassignment'), $content);
+    }
+
+    /**
+     * The "Submissions" entry of the activity navigation is only added for users who may
+     * review the grades.
+     */
+    public function test_extend_settings_navigation(): void {
+        $this->resetAfterTest(true);
+        $course = $this->getDataGenerator()->create_course();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+        $cm = get_fast_modinfo($course)->get_cm($instance->cmid);
+
+        $build = function () use ($cm, $course): \navigation_node {
+            $page = new \moodle_page();
+            $page->set_cm($cm, $course);
+            $page->set_url('/mod/externalassignment/view.php', ['id' => $cm->id]);
+            $node = \navigation_node::create('test');
+            externalassignment_extend_settings_navigation(new \settings_navigation($page), $node);
+            return $node;
+        };
+
+        $this->setUser($teacher);
+        $node = $build()->get('mod_externalassignment_submissions');
+        $this->assertNotFalse($node);
+        $this->assertEquals('grading', $node->action->get_param('action'));
+        $this->assertEquals($cm->id, $node->action->get_param('id'));
+
+        $this->setUser($student);
+        $this->assertFalse($build()->get('mod_externalassignment_submissions'));
+    }
+
+    /**
+     * The "is due" event links to the activity on the dashboard's timeline.
+     */
+    public function test_calendar_event_callbacks(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_externalassignment');
+        $instance = $generator->create_instance(['course' => $course->id, 'duedate' => time() + DAYSECS]);
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $eventid = $DB->get_field('event', 'id', ['modulename' => 'externalassignment', 'instance' => $instance->id]);
+        $event = \calendar_event::load($eventid);
+
+        $this->assertTrue(mod_externalassignment_core_calendar_is_event_visible($event, $student->id));
+
+        $action = mod_externalassignment_core_calendar_provide_event_action(
+            $event,
+            new \core_calendar\action_factory(),
+            $student->id
+        );
+        $this->assertEquals('view', $action->get_name());
+        $this->assertEquals($instance->cmid, $action->get_url()->get_param('id'));
+        $this->assertTrue($action->is_actionable());
     }
 }
