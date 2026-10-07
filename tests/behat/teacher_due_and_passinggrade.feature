@@ -39,4 +39,3 @@ Feature: Create external assignment with due date and passing grade
     And I should not see "Mark as done"
     And I should see "Completion"
     And I should see "Receive a passing grade"
-

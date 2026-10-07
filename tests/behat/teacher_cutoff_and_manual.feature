@@ -1,5 +1,5 @@
 @mod @mod_externalassignment
-Feature: Create external assignment with due/cut off dates and passing grade
+Feature: Create external assignment with due/cut off dates and manual completion
   In order to manage assignments effectively
   As a teacher
   I need to be able to create external assignments with specific dates and passing grades
@@ -21,7 +21,7 @@ Feature: Create external assignment with due/cut off dates and passing grade
       | Group 1 | C1     | G1       |
 
   @javascript
-  Scenario: Create an external assignment with dates and passing grade
+  Scenario: Create an external assignment with due/cut off dates and manual completion
     Given I am logged in as "teacher1"
     And I turn editing mode on
     And I add an externalassignment activity to course "Course 1" section "1" and I fill the form with:
@@ -38,4 +38,3 @@ Feature: Create external assignment with due/cut off dates and passing grade
     And I should see "Due:"
     And I should see "##last day of this month noon##%A, %d %B %Y, %I:%M##"
     And I should see "Mark as done"
-

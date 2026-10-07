@@ -1,5 +1,5 @@
 @mod @mod_externalassignment
-Feature: Create external assignment with due date and passing grade
+Feature: Create external assignment with due date and no completion conditions
   In order to manage assignments effectively
   As a teacher
   I need to be able to create external assignments with specific dates and passing grades
@@ -21,7 +21,7 @@ Feature: Create external assignment with due date and passing grade
       | Group 1 | C1     | G1       |
 
   @javascript
-  Scenario: Create an external assignment with due date and passing grade
+  Scenario: Create an external assignment with due date and no completion conditions
     Given I am logged in as "teacher1"
     And I turn editing mode on
     And I add an externalassignment activity to course "Course 1" section "1" and I fill the form with:
@@ -30,12 +30,9 @@ Feature: Create external assignment with due date and passing grade
       | Assignment link              | https://www.example.com/assignment                     |
       | Description                  | This is a test assignment.                             |
       | Due date                     | ##last day of this month noon##                        |
-      | Cut-off date                 | ##last day of this month 11pm##                        |
       | Completion conditions > None | 1                                                      |
     Then I should see "Assignment with due Date without completion conditions"
     And I should see "Due:"
     And I should see "##last day of this month noon##%A, %d %B %Y, %I:%M##"
     And I should not see "Mark as done"
     And I should not see "Completion"
-
-

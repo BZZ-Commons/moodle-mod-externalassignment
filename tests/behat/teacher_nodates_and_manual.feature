@@ -35,5 +35,3 @@ Feature: Create external assignment without due date and manual completion
     Then I should see "Assignment without due Date and manual completion"
     And I should not see "Due:"
     And I should see "Mark as done"
-
-

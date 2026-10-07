@@ -26,4 +26,3 @@ Feature: As I student view external assignment with due/cut off dates and no com
     And I should see "Due:"
     And I should see "##last day of this month noon##%A, %d %B %Y, %I:%M##"
     And I should not see "Mark as done"
-

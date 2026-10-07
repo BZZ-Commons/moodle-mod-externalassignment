@@ -48,12 +48,11 @@
     </select>
 </span>
 <div class="d-md-inline-block mr-md-2 position-relative">
-    <input type="text" id="user_autocomplete_input" class="form-control"
-           list="user_autocomplete_suggestions" placeholder="{{#str}} changeuser, mod_externalassignment {{/str}}"
+    <input type="text" id="user_autocomplete_input" class="form-control" role="combobox"
+           placeholder="{{#str}} changeuser, mod_externalassignment {{/str}}"
            aria-expanded="false" autocomplete="off" spellcheck="false" autocapitalize="none" aria-autocomplete="list"
-           aria-owns="user_autocomplete_suggestions user_autocomplete_selection"
-           data-fieldtype="autocomplete" style="min-width: 11ch;" data-initial-value=""
-           aria-activedescendant="user_autocomplete_selection">
+           aria-controls="user_autocomplete_suggestions"
+           data-fieldtype="autocomplete" style="min-width: 11ch;" data-initial-value="">
     <span class="form-autocomplete-downarrow position-absolute p-1" id="user_autocomplete_downarrow">▼</span>
 </div>
 <ul class="form-autocomplete-suggestions" id="user_autocomplete_suggestions" role="listbox"

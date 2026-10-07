@@ -34,5 +34,3 @@ Feature: Create external assignment without dates and completion conditions
     And I should not see "Due:"
     And I should not see "Mark as done"
     And I should not see "Completion"
-
-

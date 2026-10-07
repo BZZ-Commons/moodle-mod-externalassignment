@@ -27,4 +27,3 @@ Feature: As I student view external assignment with due date and passing grade
     And I should see "Due:"
     And I should see "##last day of this month noon##%A, %d %B %Y, %I:%M##"
     And I should see "Receive a passing grade"
-

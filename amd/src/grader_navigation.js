@@ -110,11 +110,14 @@ function addStudents(student, dropdown, datalist, currentStudentId) {
  */
 function toggleUserlist() {
     let userlist = document.getElementById('user_autocomplete_suggestions');
+    const input = document.getElementById('user_autocomplete_input');
     if (userlist.style.display === 'none') {
         userlist.style.display = 'block';
-        document.getElementById('user_autocomplete_input').focus();
+        input.setAttribute('aria-expanded', 'true');
+        input.focus();
     } else {
         userlist.style.display = 'none';
+        input.setAttribute('aria-expanded', 'false');
     }
 }
 
@@ -122,10 +125,12 @@ function toggleUserlist() {
  * Filter the userlist
  */
 function filterUserlist() {
-    const filter = document.getElementById('user_autocomplete_input').value.toUpperCase();
+    const input = document.getElementById('user_autocomplete_input');
+    const filter = input.value.toUpperCase();
     const userlist = document.getElementById('user_autocomplete_suggestions');
     const users = userlist.getElementsByTagName('li');
     userlist.style.display = 'inline';
+    input.setAttribute('aria-expanded', 'true');
     for (const user of users) {
         const value = user.innerText.toUpperCase();
         if (filter === '' || value.includes(filter)) {

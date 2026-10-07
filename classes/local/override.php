@@ -77,24 +77,6 @@ class override {
     }
 
     /**
-     * loads the override from the database
-     * @param int $coursemodule
-     * @param int $userid
-     * @return void
-     * @throws \dml_exception
-     */
-    public function load_db(int $coursemodule, int $userid): void {
-        global $DB;
-        $data = $DB->get_record(
-            'externalassignment_overrides',
-            ['externalassignment' => $coursemodule, 'userid' => $userid]
-        );
-        if (!empty($data)) {
-            $this->load_data($data);
-        }
-    }
-
-    /**
      * loads the attribute values from a stdClass
      * @param \stdClass $data
      * @return void

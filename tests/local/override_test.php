@@ -29,7 +29,6 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('mod_externalassignment')]
 #[CoversMethod(override::class, '__construct')]
 #[CoversMethod(override::class, 'load_data')]
-#[CoversMethod(override::class, 'load_db')]
 #[CoversMethod(override::class, 'set_id')]
 #[CoversMethod(override::class, 'get_id')]
 #[CoversMethod(override::class, 'set_externalassignment')]
@@ -79,14 +78,6 @@ final class override_test extends \advanced_testcase {
         $this->assertNull($override->get_allowfromdate());
         $this->assertNull($override->get_duedate());
         $this->assertNull($override->get_cutoffdate());
-    }
-
-    /**
-     * Test load_db
-     */
-    public function test_load_db(): void {
-        // TODO: implement when db access is possible in unit tests.
-        $this->markTestIncomplete('This test has not been implemented yet.');
     }
 
     /**
