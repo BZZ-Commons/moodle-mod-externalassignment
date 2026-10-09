@@ -3,6 +3,32 @@
     display: none;
 }
 
+/* The user selector looks like the one in mod_assign. */
+.path-mod-externalassignment [data-region="user-selector"] select {
+    margin-bottom: 0;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] .alignment {
+    float: right;
+    width: 320px;
+    text-align: center;
+    margin-top: 7px;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] [data-action="previous-user"],
+.path-mod-externalassignment [data-region="user-selector"] [data-action="next-user"] {
+    font-size: 26px;
+    text-decoration: none;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] [data-action="next-user"] {
+    margin-left: -10px;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] .alignment input {
+    margin-bottom: 5px;
+}
+
 .path-mod-externalassignment [data-region="user-selector"] .form-autocomplete-suggestions {
     text-align: left;
     margin-left: 48px;
@@ -10,4 +36,33 @@
 
 .path-mod-externalassignment [data-region="user-selector"] .form-autocomplete-downarrow {
     top: 0;
+}
+
+.path-mod-externalassignment [data-region="grading-navigation"] {
+    padding: 1em;
+}
+
+.path-mod-externalassignment [data-region="assignment-info"] {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.path-mod-externalassignment [data-region="user-info"] a {
+    text-decoration: none;
+}
+
+@media (max-width: 767.98px) {
+    .path-mod-externalassignment [data-region="user-selector"] .alignment {
+        float: none;
+        margin: 0 auto 10px;
+    }
+}
+
+.path-mod-externalassignment [data-region="user-info"] .userpicture {
+    border-radius: 50%;
+}
+
+.path-mod-externalassignment [data-region="user-selector"] .form-autocomplete-selection {
+    display: none;
 }

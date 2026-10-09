@@ -23,15 +23,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      4.1
  */
+import $ from 'jquery';
+import Autocomplete from 'core/form-autocomplete';
+import {get_string as getString} from 'core/str';
 import {fetchAllStudents} from './repository';
 
 export const init = () => {
     initStatusFilter();
     loadAllStudents()
         .then(() => {
-            document.getElementById('user_autocomplete_downarrow').addEventListener('click', toggleUserlist);
-            document.getElementById('user_autocomplete_input').addEventListener('input', filterUserlist);
-            document.getElementById('user_autocomplete_suggestions').addEventListener('click', selectUser);
             document.getElementById('previous-user').addEventListener('click', navigateUser);
             document.getElementById('next-user').addEventListener('click', navigateUser);
             return true;
@@ -64,7 +64,8 @@ function initStatusFilter() {
 }
 
 /**
- * Loads all students for the current external assignment, respecting the current sort and status filter
+ * Loads all students for the current external assignment, respecting the current sort and status filter,
+ * and turns the select into the standard Moodle autocomplete
  * @returns {Promise<void>}
  */
 const loadAllStudents = async() => {
@@ -74,91 +75,46 @@ const loadAllStudents = async() => {
     const tdir = urlParams.get('tdir') ?? 'asc';
     const status = urlParams.get('status') ?? '';
     const response = await fetchAllStudents(coursemoduleid, sort, tdir, status);
-    let dropdown = document.getElementById('change-user-select');
-    let datalist = document.getElementById('user_autocomplete_suggestions');
+    const select = document.getElementById('change-user-select');
     const currentId = urlParams.get('userid');
+    let hascurrent = false;
     for (let i = 0; i < response.length; i++) {
-        addStudents(response[i], dropdown, datalist, currentId);
+        hascurrent = addStudent(response[i], select, currentId) || hascurrent;
     }
+    if (!hascurrent) {
+        // The current student is not in the (filtered) list: do not preselect somebody else.
+        select.selectedIndex = -1;
+    }
+    const placeholder = await getString('changeuser', 'mod_externalassignment');
+    await Autocomplete.enhance('#change-user-select', false, false, placeholder, false, true, placeholder, true);
+    $(select).on('change', () => gotoUser(select.value));
 };
 
 /**
- * Adds a student to the dropdown and datalist
+ * Adds a student to the select
  * @param {object} student the student
- * @param {dom} dropdown
- * @param {dom} datalist
- * @param {int} currentStudentId
+ * @param {HTMLSelectElement} select
+ * @param {string|null} currentStudentId
+ * @returns {boolean} true if the student is the current one
  */
-function addStudents(student, dropdown, datalist, currentStudentId) {
-    let option = document.createElement('option');
-    option.text = student.firstname + ' ' + student.lastname;
+function addStudent(student, select, currentStudentId) {
+    const option = document.createElement('option');
+    option.text = student.firstname + ' ' + student.lastname + ' (' + student.email + ')';
     option.value = student.userid;
-    dropdown.add(option);
-
-    let item = document.createElement('li');
-    item.id = 'user_autocomplete_suggestion_' + student.userid;
-    item.innerHTML = student.firstname + ' ' + student.lastname + ' <small>' + student.email + '</small>';
-    item.setAttribute('data-value', student.userid);
-    if (student.userid == currentStudentId) {
-        item.setAttribute('aria-selected', 'true');
-        datalist.setAttribute('data-currentItem', datalist.childElementCount);
-    }
-    item.setAttribute('role', 'option');
-    datalist.appendChild(item);
+    const iscurrent = student.userid == currentStudentId;
+    option.selected = iscurrent;
+    select.add(option);
+    return iscurrent;
 }
 
 /**
- * Toggles show/noshow for the userlist
+ * Shows the grader form of a student
+ * @param {string|number} userid
  */
-function toggleUserlist() {
-    let userlist = document.getElementById('user_autocomplete_suggestions');
-    const input = document.getElementById('user_autocomplete_input');
-    if (userlist.style.display === 'none') {
-        userlist.style.display = 'block';
-        input.setAttribute('aria-expanded', 'true');
-        input.focus();
-    } else {
-        userlist.style.display = 'none';
-        input.setAttribute('aria-expanded', 'false');
-    }
-}
-
-/**
- * Filter the userlist
- */
-function filterUserlist() {
-    const input = document.getElementById('user_autocomplete_input');
-    const filter = input.value.toUpperCase();
-    const userlist = document.getElementById('user_autocomplete_suggestions');
-    const users = userlist.getElementsByTagName('li');
-    userlist.style.display = 'inline';
-    input.setAttribute('aria-expanded', 'true');
-    for (const user of users) {
-        const value = user.innerText.toUpperCase();
-        if (filter === '' || value.includes(filter)) {
-            user.style.display = 'block';
-        } else {
-            user.style.display = 'none';
-        }
-    }
-}
-
-/**
- * Gets the list item that was clicked
- * @param {Object} event  the event
- */
-function selectUser(event) {
-    let element = event.target;
-    if (event.target) {
-        if (event.target.nodeName === 'SMALL') {
-            element = event.target.parentNode;
-        }
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        urlParams.set('userid', element.getAttribute('data-value'));
-        window.location.href = '?' + urlParams.toString();
-    }
-
+function gotoUser(userid) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('userid', userid);
+    window.location.href = '?' + urlParams.toString();
 }
 
 /**
@@ -166,27 +122,22 @@ function selectUser(event) {
  * @param {Object} event
  */
 function navigateUser(event) {
-    const datalist = document.getElementById('user_autocomplete_suggestions');
-    const children = datalist.getElementsByTagName('LI');
-    if (children.length === 0) {
+    event.preventDefault();
+    const options = Array.from(document.getElementById('change-user-select').options);
+    if (options.length === 0) {
         return;
     }
-    let currentItem = datalist.getAttribute('data-currentitem');
-    if (currentItem === null) {
+    const currentId = new URLSearchParams(window.location.search).get('userid');
+    let currentItem = options.findIndex((option) => option.value === currentId);
+    const previous = event.currentTarget.id === 'previous-user';
+    if (currentItem === -1) {
         // The current student is not in the (filtered) list: start at its end or beginning.
-        currentItem = event.target.id === 'previous-user' ? children.length : -1;
-    } else {
-        currentItem = parseInt(currentItem);
+        currentItem = previous ? options.length : -1;
     }
-    if (event.target.id === 'previous-user') {
-        currentItem = currentItem <= 0 ? children.length - 1 : currentItem - 1;
+    if (previous) {
+        currentItem = currentItem <= 0 ? options.length - 1 : currentItem - 1;
     } else {
-        currentItem = currentItem >= children.length - 1 ? 0 : currentItem + 1;
+        currentItem = currentItem >= options.length - 1 ? 0 : currentItem + 1;
     }
-    const nextNode = children[currentItem];
-    const userid = nextNode.getAttribute('data-value');
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    urlParams.set('userid', userid);
-    window.location.href = '?' + urlParams.toString();
+    gotoUser(options[currentItem].value);
 }

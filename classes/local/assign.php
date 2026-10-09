@@ -127,7 +127,7 @@ class assign {
      * @throws \dml_exception
      */
     public function load_db_external(string $assignmentname, int $userid): void {
-        global $DB, $CFG;
+        global $DB;
 
         $query =
             'SELECT ae.id, ae.course, ae.externalgrademax, ae.duedate, ae.cutoffdate, ae.externalname,
@@ -156,7 +156,6 @@ class assign {
                 !has_capability('mod/externalassignment:grade', $context, $userid) &&  // No grader/teacher.
                 has_capability('mod/externalassignment:submit', $context, $userid)     // Student.
             ) {
-                require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
                 $this->set_id($row->id);
                 $this->set_course($row->course);
                 $this->set_externalgrademax($row->externalgrademax);
@@ -223,9 +222,6 @@ class assign {
      * @throws \dml_exception
      */
     private function load_students(): void {
-        global $CFG;
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/local/student.php');
-        // FIXME: Find out why autoloading does not work here.
         $users = get_enrolled_users(
             $this->get_context(),
             'mod/externalassignment:submit',
@@ -400,7 +396,7 @@ class assign {
      * @return void
      */
     private function load_overrides(int $coursemodule, ?int $userid): void {
-        global $CFG, $DB;
+        global $DB;
         $conditions = ['externalassignment' => $coursemodule];
         if (!empty($userid)) {
             $conditions['userid'] = $userid;
@@ -410,8 +406,6 @@ class assign {
             'externalassignment_overrides',
             $conditions
         );
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
-        // FIXME: Find out why autoloading does not work here.
         foreach ($data as $record) {
             $override = new override($record);
             if (!array_key_exists($record->userid, $this->students) || $this->students[$record->userid] == null) {

@@ -26,13 +26,14 @@
     * None
 
     Context variables required for this template:
-    * userid, courseid, firstname, lastname, email, duedate
+    * userid, courseid, firstname, lastname, email, duedate, profilepicture (html)
 
     Example context (json):
     { }
 }}
 
 <a href="{{config.wwwroot}}/user/view.php?id={{userid}}&amp;course={{courseid}}">
+{{#profilepicture}}<span class="d-block float-start me-2 mt-n1">{{{profilepicture}}}</span>{{/profilepicture}}
 {{firstname}} {{lastname}} <br>
 {{email}}<br>
 {{due_text}}

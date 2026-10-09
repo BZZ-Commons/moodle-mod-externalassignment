@@ -15,19 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Integration with report_editdates plugin.
- *
- * This class provides the necessary methods for the report_editdates plugin
- * to display and edit date fields for externalassignment activities.
- *
- * @package   mod_externalassignment
- * @copyright 2026 Marcel Suter and Kevin Maurizi
- * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
- * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
  * Date extractor class for external assignment module integration with report_editdates.
  *
  * This class extends the report_editdates_mod_date_extractor to provide

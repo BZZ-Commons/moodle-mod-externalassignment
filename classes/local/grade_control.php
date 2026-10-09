@@ -176,7 +176,6 @@ class grade_control {
         }
         $data->timeremainingstr = $due;
 
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/form/grader_form.php');
         // Post back to the same page including the sort order and status filter, so that
         // "Submit & Next" can find the next student in that order.
         $mform = new grader_form($this->grader_url($this->userid), $data);
@@ -256,8 +255,6 @@ class grade_control {
      * @codeCoverageIgnore
      */
     public function process_override(array $userids): void {
-        global $CFG;
-
         $data = new \stdClass();
         $data->id = $this->coursemoduleid;
         $data->externalassignment = $this->get_assign()->get_id();
@@ -275,15 +272,12 @@ class grade_control {
 
         // Form processing and displaying is done here.
         $url = new \moodle_url('/mod/externalassignment/view.php', ['action' => 'override']);
-        require_once($CFG->dirroot . '/mod/externalassignment/classes/form/override_form.php');
         $mform = new override_form($url->out(false), $this->get_assign(), $data);
         if ($mform->is_cancelled()) {
             debugging('Cancelled');  // FIXME reset the form.
         } else {
             if ($formdata = $mform->get_data()) {
                 foreach ($formdata->uid as $userid) {
-                    require_once($CFG->dirroot . '/mod/externalassignment/classes/local/override.php');
-                    // FIXME: Find out why autoloading does not work here.
                     $override = new override();
                     $override->set_externalassignment($formdata->externalassignment);
                     $override->set_userid($userid);

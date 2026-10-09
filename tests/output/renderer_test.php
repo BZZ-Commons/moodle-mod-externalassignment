@@ -124,7 +124,7 @@ final class renderer_test extends \advanced_testcase {
 
         $this->assertStringContainsString('Anna', $html);
         $this->assertStringContainsString('Zeller', $html);
-        $this->assertStringContainsString('id="user_autocomplete_input"', $html);
+        $this->assertStringContainsString('id="change-user-select"', $html);
     }
 
     /**

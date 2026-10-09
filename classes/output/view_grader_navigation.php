@@ -77,6 +77,9 @@ class view_grader_navigation implements renderable, templatable {
         $data->firstname = $user->get_firstname();
         $data->lastname = $user->get_lastname();
         $data->email = $user->get_email();
+        $userrecord = \core_user::get_user($this->get_userid());
+        $data->profilepicture = $userrecord ?
+            $output->user_picture($userrecord, ['size' => 35, 'courseid' => $data->courseid, 'link' => false]) : '';
         $data->duedate = $assign->get_duedate();
         $data->due_text = '';
         $dateformat = get_string('strftimedatetimeshort', 'langconfig');
