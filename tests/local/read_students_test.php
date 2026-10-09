@@ -26,7 +26,9 @@ use required_capability_exception;
  * Unit tests for the read_students external function
  * @package mod_externalassignment
  * @category test
- * @copyright 2026 Marcel Suter <marcel@ghwalin.ch>
+ * @copyright 2026 Marcel Suter and Kevin Maurizi
+ * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
+ * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[Group('mod_externalassignment')]
