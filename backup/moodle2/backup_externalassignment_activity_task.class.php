@@ -52,13 +52,13 @@ class backup_externalassignment_activity_task extends backup_activity_task {
         global $CFG;
         $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of choices.
+        // Link to the list of external assignments.
         $search = "/(" . $base . "\/mod\/externalassignment\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@CHOICEINDEX*$2@$', $content);
+        $content = preg_replace($search, '$@EXTERNALASSIGNMENTINDEX*$2@$', $content);
 
-        // Link to choice view by moduleid.
+        // Link to the external assignment view by course module id.
         $search = "/(" . $base . "\/mod\/externalassignment\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@CHOICEVIEWBYID*$2@$', $content);
+        $content = preg_replace($search, '$@EXTERNALASSIGNMENTVIEWBYID*$2@$', $content);
         return $content;
     }
 }
