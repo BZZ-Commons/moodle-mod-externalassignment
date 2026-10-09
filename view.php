@@ -163,7 +163,9 @@ function show_grading(
         get_string('grading', 'externalassignment');
     $PAGE->set_title($title);
     $PAGE->set_heading('Grading overview');
-    $PAGE->set_pagelayout('base');
+    $PAGE->set_secondary_active_tab('mod_externalassignment_submissions');
+    // The "incourse" layout lets core show the previous/next activity links (GitHub issue #41).
+    $PAGE->set_pagelayout('incourse');
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();
@@ -213,7 +215,9 @@ function show_grader($context, $coursemoduleid, $userid, string $sort, string $t
     $title = $courseshortname . ': ' . $assignmentname . ' - ' . get_string('grade', 'externalassignment');
     $PAGE->set_title($title);
     $PAGE->set_heading('Grader form');
-    $PAGE->set_pagelayout('base');
+    $PAGE->set_secondary_active_tab('mod_externalassignment_submissions');
+    // The "incourse" layout lets core show the previous/next activity links (GitHub issue #41).
+    $PAGE->set_pagelayout('incourse');
     $PAGE->add_body_class('externalassignment-grading');
     $output = $PAGE->get_renderer('mod_externalassignment');
     echo $output->header();

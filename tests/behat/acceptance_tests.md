@@ -154,10 +154,10 @@ GitHub issues:
 | [`teacher_edit_needspassinggrade.feature`](teacher_edit_needspassinggrade.feature) | "Needs passing grade" rule is set on creation and survives unrelated edits | #12, #36 |
 | [`student_assignment_link_visibility.feature`](student_assignment_link_visibility.feature) | Assignment link visibility respects "Always show link" / submission opening date | #27 |
 | [`student_description_visibility.feature`](student_description_visibility.feature) | Description visibility respects "Always show description" / submission opening date | #13 |
+| [`teacher_grader_submit_and_next.feature`](teacher_grader_submit_and_next.feature) | Grader form "Save and show next" saves the grade and opens the next student; button hidden for the last student | #6 |
+| [`teacher_submissions_tab_highlight.feature`](teacher_submissions_tab_highlight.feature) | "Submissions" secondary-navigation tab is highlighted on the submissions overview and the grader form | #40 |
+| [`teacher_grading_pages_layout.feature`](teacher_grading_pages_layout.feature) | Submissions overview and grader form use the `incourse` layout so core can show the previous/next activity links | #41 |
 
-> Note: `student_description_visibility.feature`'s own docblock flags its first scenario as
-> expected to fail against the current `view.php` implementation — see the feature file for
-> details.
 
 
 ---
