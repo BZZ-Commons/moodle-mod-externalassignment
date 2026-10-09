@@ -16,21 +16,14 @@
 
 namespace mod_externalassignment\task;
 
-/**
- * Represents the model of an external assignment
- *
- * @package   mod_externalassignment
- * @copyright 2026 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright 2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 /**
- * Update Overdue Attempts Task
+ * Find duplicate external assignment names
  *
- * @package    mod_quiz
- * @copyright  2017 Michael Hughes
- * @author Michael Hughes
+ * @package   mod_externalassignment
+ * @copyright 2026 Marcel Suter and Kevin Maurizi
+ * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
+ * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */

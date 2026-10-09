@@ -18,8 +18,9 @@
  * Define all the backup steps that will be used by the backup_externalassignment_activity_task
  *
  * @package   mod_externalassignment
- * @copyright 2024 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright 2024 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2026 Marcel Suter and Kevin Maurizi
+ * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
+ * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_externalassignment_activity_structure_step extends backup_activity_structure_step {

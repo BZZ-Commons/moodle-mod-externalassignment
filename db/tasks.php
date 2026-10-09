@@ -19,8 +19,9 @@
  *
  * @package     mod_externalassignment
  * @category    task
- * @copyright 2026 Marcel Suter <marcel.suter@bzz.ch>
- * @copyright 2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
+ * @copyright 2026 Marcel Suter and Kevin Maurizi
+ * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
+ * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

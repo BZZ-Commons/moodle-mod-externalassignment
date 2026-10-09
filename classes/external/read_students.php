@@ -31,7 +31,9 @@ use mod_externalassignment\local\assign;
  * webservice to update the externalgrade and externalfeedback
  *
  * @package   mod_externalassignment
- * @copyright 2023 Marcel Suter <marcel@ghwalin.ch>
+ * @copyright 2026 Marcel Suter and Kevin Maurizi
+ * @author    2026 Marcel Suter <marcel.suter+ea@bzz.ch>
+ * @author    2026 Kevin Maurizi <kevin.maurizi@bzz.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class read_students extends external_api {
